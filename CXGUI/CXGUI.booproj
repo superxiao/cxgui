@@ -1,0 +1,122 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{286AF126-1D81-4818-ADF0-3C5D0428903C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CXGUI</RootNamespace>
+    <AssemblyName>CXGUI</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\clinky\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <NoStdLib>False</NoStdLib>
+    <Ducky>False</Ducky>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <Strict>False</Strict>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AvisynthWrapperDotNet">
+      <HintPath>bin\Debug\AvisynthWrapperDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Useful" />
+    <Reference Include="DirectShowLib-2005">
+      <HintPath>bin\Debug\DirectShowLib-2005.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaInfoLib">
+      <HintPath>bin\Debug\MediaInfoLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WriteWaveHeader">
+      <HintPath>bin\Debug\WriteWaveHeader.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AudioEncoder\AudioEncConfigBase.boo" />
+    <Compile Include="AudioEncoder\AudioEncoderBase.boo" />
+    <Compile Include="AudioEncoder\NeroAAC.boo" />
+    <Compile Include="AudioEncoder\NeroAacConfig.boo" />
+    <Compile Include="Avisynth\AudioScriptConfig.boo" />
+    <Compile Include="Avisynth\AvisynthWriter.boo" />
+    <Compile Include="Avisynth\ResolutionCalculator.boo" />
+    <Compile Include="Avisynth\VideoScriptConfig.boo" />
+    <Compile Include="Exception.boo" />
+    <Compile Include="GUI\AvsConfigSection.boo" />
+    <Compile Include="GUI\ControlResetter.boo" />
+    <Compile Include="GUI\MainForm.boo" />
+    <Compile Include="GUI\MainForm.Designer.boo">
+      <DependentUpon>MainForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ProgramConfigForm.boo" />
+    <Compile Include="GUI\ProgramConfigForm.Designer.boo">
+      <DependentUpon>ProgramConfigForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\JobItem.boo" />
+    <Compile Include="GUI\MediaSettingForm.boo" />
+    <Compile Include="GUI\MediaSettingForm.Designer.boo">
+      <DependentUpon>MediaSettingForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Profile.boo" />
+    <Compile Include="GUI\ProgramConfig.boo" />
+    <Compile Include="MediaInfo\AudioInfo.boo" />
+    <Compile Include="MediaInfo\DirectShowInfo.boo" />
+    <Compile Include="MediaInfo\VideoInfo.boo" />
+    <Compile Include="MediaInfo\VideoInfo.Designer.boo">
+      <DependentUpon>VideoInfo.boo</DependentUpon>
+    </Compile>
+    <Compile Include="My\IStopable.boo" />
+    <Compile Include="My\Math.boo" />
+    <Compile Include="StreamMuxer\MP4Box.boo" />
+    <Compile Include="StreamMuxer\MuxerBase.boo" />
+    <Compile Include="VideoEncoding\VideoEncConfigBase.boo" />
+    <Compile Include="VideoEncoding\VideoEncoderBase.boo" />
+    <Compile Include="VideoEncoding\X264.boo" />
+    <Compile Include="VideoEncoding\X264Config.boo" />
+    <EmbeddedResource Include="GUI\Form1.resx">
+      <DependentUpon>ProgramConfigForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MainForm.resx">
+      <DependentUpon>MainForm.Designer.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MediaSettingForm.resx">
+      <DependentUpon>MediaSettingForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ProgramConfigForm.resx">
+      <DependentUpon>ProgramConfigForm.boo</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AudioEncoder" />
+    <Folder Include="Avisynth" />
+    <Folder Include="GUI" />
+    <Folder Include="MediaInfo" />
+    <Folder Include="My" />
+    <Folder Include="StreamMuxer" />
+    <Folder Include="VideoEncoding" />
+  </ItemGroup>
+  <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
+</Project>
