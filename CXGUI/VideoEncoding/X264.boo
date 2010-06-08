@@ -25,23 +25,23 @@ class X264(VideoEncoderBase):
 		_encodingProcess.Start()
 		readThread.Start()
 		_encodingProcess.WaitForExit()
-		
-		count = 0
-		while true:
-			if _progress >= 1:
-				_timeLeft = timespan(0)
-				readThread.Abort()
-				break
-			elif count <= 10:
-				count += 1
-				Threading.Thread.Sleep(250)
-			else:
-				readThread.Abort()
-				_timeLeft = timespan(0)
-				break
-				
 		if _errOccured:
 			raise InvalidVideoAvisynthScriptException(_avisynthScriptFile)
+		else:
+			count = 0
+			while true:
+				if _progress >= 0.99:
+					_progress = 1
+					_timeLeft = timespan(0)
+					readThread.Abort()
+					break
+				elif count <= 10:	
+					count += 1
+					Threading.Thread.Sleep(250)
+				else:
+					readThread.Abort()
+					_timeLeft = timespan(0)
+					break
 
 	def ReadStdErr():
 		sr = _encodingProcess.StandardError
