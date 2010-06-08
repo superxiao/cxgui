@@ -160,8 +160,10 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.listView1.TabIndex = 3
 		self.listView1.UseCompatibleStateImageBehavior = false
 		self.listView1.View = System.Windows.Forms.View.Details
+		self.listView1.DragDrop += self.ListView1DragDrop as System.Windows.Forms.DragEventHandler
 		self.listView1.ItemSelectionChanged += self.ListView1ItemSelectionChanged as System.Windows.Forms.ListViewItemSelectionChangedEventHandler
-		self.listView1.GiveFeedback += self.ListView1GiveFeedback as System.Windows.Forms.GiveFeedbackEventHandler
+		self.listView1.DragEnter += self.ListView1DragEnter as System.Windows.Forms.DragEventHandler
+		self.listView1.ItemDrag += self.ListView1ItemDrag as System.Windows.Forms.ItemDragEventHandler
 		# 
 		# stateColumn
 		# 

@@ -36,30 +36,32 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.openFileDialog1.ShowDialog()
 
 	private def OpenFileDialog1FileOk(sender as object, e as CancelEventArgs):
-		firstAddedItem as ListViewItem = null
 		for fileName in self.openFileDialog1.FileNames:
-			addFile = do:
-				if self._configForm.destDirComboBox.Text != "":
-					destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+".mp4")
-				else:
-					destFile = Path.ChangeExtension(fileName, "mp4")
-				item = ListViewItem(array(("等待", fileName, destFile)))
-				self.listView1.Items.Add(item)
-				if firstAddedItem == null:
-					firstAddedItem = item
-			o as IMediaDet = MediaDet()
-			errorCode as int = o.put_Filename(fileName)
-			try:
-				Marshal.ThrowExceptionForHR(errorCode)
+			item = AddFile(fileName)
+			if item != null:
+				self.listView1.SelectedItems.Clear()
+				item.Selected = true
+
+	private def AddFile(fileName as string) as ListViewItem:
+		item as ListViewItem
+		addFile = do:
+			if self._configForm.destDirComboBox.Text != "":
+				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+".mp4")
+			else:
+				destFile = Path.ChangeExtension(fileName, "mp4")
+			item = ListViewItem(array(("等待", fileName, destFile)))
+			self.listView1.Items.Add(item)
+		o as IMediaDet = MediaDet()
+		errorCode as int = o.put_Filename(fileName)
+		try:
+			Marshal.ThrowExceptionForHR(errorCode)
+			addFile()
+		except:
+			result = MessageBox.Show(fileName + "\n在文件中找不到视频流或音频流，可能是没有安装对应的DirectShow滤镜。\n" + "仍然要添加该文件吗？", 
+			"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
+			if result == DialogResult.OK:
 				addFile()
-			except:
-				result = MessageBox.Show(fileName + "\n在文件中找不到视频流或音频流，可能是没有安装对应的DirectShow滤镜。\n" + "仍然要添加该文件吗？", 
-				"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-				if result == DialogResult.OK:
-					addFile()
-		if firstAddedItem != null:
-			self.listView1.SelectedItems.Clear()
-			firstAddedItem.Selected = true
+		return item
 
 	private def StartButtonClick(sender as object, e as EventArgs):
 		if _workingJobItems != null:
@@ -387,25 +389,43 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def 选项ToolStripMenuItemClick(sender as object, e as EventArgs):
 		self._configForm.ShowDialog()
 	
-	
-	private def ListView1QueryContinueDrag(sender as object, e as System.Windows.Forms.QueryContinueDragEventArgs):
-		pass
-	
-	private def ListView1DragEnter(sender as object, e as System.Windows.Forms.DragEventArgs):
-		MessageBox.Show("fuck")
-	
-	private def ListView1GiveFeedback(sender as object, e as System.Windows.Forms.GiveFeedbackEventArgs):
-		MessageBox.Show("fuck")
-	
 	private def ListView1ItemDrag(sender as object, e as System.Windows.Forms.ItemDragEventArgs):
-		pass
+		self.listView1.DoDragDrop(listView1.SelectedItems, DragDropEffects.Move)
 		
+	private def ListView1DragEnter(sender as object, e as System.Windows.Forms.DragEventArgs):
+		if e.Data.GetDataPresent(ListView.SelectedListViewItemCollection) or e.Data.GetDataPresent(DataFormats.FileDrop):
+			e.Effect = DragDropEffects.Move
 
-					
+	private def ListView1DragDrop(sender as object, e as System.Windows.Forms.DragEventArgs):
+		if e.Data.GetDataPresent(DataFormats.FileDrop):
+			self.listView1.SelectedItems.Clear()
+			for path in (e.Data.GetData(DataFormats.FileDrop) as (string)):
+				if IO.File.Exists(path):
+					addItem = AddFile(path)
+					if addItem != null:
+						addItem.Selected = true
+				elif IO.Directory.Exists(path):
+					for file in IO.Directory.GetFiles(path):
+						addItem = AddFile(file)
+						if addItem != null:
+							addItem.Selected = true
+			return
 
-	
-
-    
+		dragItems = array(self.listView1.SelectedItems)
+		cp as Point = listView1.PointToClient(Point(e.X, e.Y))
+		dragToItem = self.listView1.GetItemAt(cp.X, cp.Y)
+		if dragToItem == null:
+			return
+		dragToIndex = dragToItem.Index
+		for item as ListViewItem in dragItems:
+			self.listView1.Items.Remove(item)
+		if self.listView1.Items.Count < dragToIndex:
+			dragToIndex = self.listView1.Items.Count
+		for item as ListViewItem in dragItems:
+			self.listView1.Items.Insert(dragToIndex, item)
+			dragToIndex++
+			
+		
 [STAThread]
 public def Main(argv as (string)) as void:
 	Application.EnableVisualStyles()

@@ -96,11 +96,8 @@
     <Compile Include="VideoEncoding\VideoEncoderBase.boo" />
     <Compile Include="VideoEncoding\X264.boo" />
     <Compile Include="VideoEncoding\X264Config.boo" />
-    <EmbeddedResource Include="GUI\Form1.resx">
-      <DependentUpon>ProgramConfigForm.boo</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
-      <DependentUpon>MainForm.Designer.boo</DependentUpon>
+      <DependentUpon>MainForm.boo</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MediaSettingForm.resx">
       <DependentUpon>MediaSettingForm.boo</DependentUpon>
