@@ -8,10 +8,10 @@ import CXGUI.StreamMuxer
 
 #	[StringValidator(InvalidCharacters: ' ~!@#$%^&*()[]{}/;\'"|\\', MinLength: 1, MaxLength: 60)]
 
-public class AvsConfigSection():
+public class AvsConfig():
 
 	public def constructor():
-		_fixAspectRatio = true
+		_lockAspectRatio = true
 		_mod = 2
 		_downMix = true
 		
@@ -21,8 +21,8 @@ public class AvsConfigSection():
 	_height as int
 	[Property(AspectRatio)]
 	_aspectRatio as double
-	[Property(FixAspectRatio)]
-	_fixAspectRatio as bool
+	[Property(LockAspectRatio)]
+	_lockAspectRatio as bool
 	[Property(Mod)]
 	_mod as int
 	[Property(Resizer)]

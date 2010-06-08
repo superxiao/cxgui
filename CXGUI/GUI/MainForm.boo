@@ -7,6 +7,7 @@ import System.Threading
 import System.Runtime.InteropServices
 import System.Windows.Forms
 import System.Drawing
+import System.Runtime.Serialization.Formatters.Binary
 import DirectShowLib
 import System.ComponentModel
 import CXGUI.VideoEncoding
@@ -55,7 +56,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				destFile = Path.ChangeExtension(filePath, "mp4")
 			if IsSameFile(filePath, destFile):
 				destFile = Path.Combine(Path.GetDirectoryName(destFile), Path.GetFileNameWithoutExtension(destFile) + '1' + Path.GetExtension(destFile))
-			item = ListViewItem(array(("等待", fileName, destFile)))
+			item = ListViewItem(("等待", fileName, destFile))
 			self.listView1.Items.Add(item)
 
 			form = MediaSettingForm(filePath, destFile)
@@ -121,11 +122,11 @@ partial class MainForm(System.Windows.Forms.Form):
 		
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
 		_workingJobItem.Event = JobEvent.OneStart
-		ExclusivelyReporteport(_workingJobItem)
+		ExclusivelyReport(_workingJobItem)
 		destinationFile as string 
-		avsConfig as AvsConfigSection = _workingJobItem.AvsConfig
+		avsConfig as AvsConfig = _workingJobItem.AvsConfig
 		if avsConfig is null:
-			avsConfig = AvsConfigSection()
+			avsConfig = AvsConfig()
 
 		if _workingJobItem.WriteVideoScript and not self.backgroundWorker1.CancellationPending:
 			self.WriteVideoAvs(_workingJobItem.SourceFile, 'video.avs', avsConfig)
@@ -146,6 +147,7 @@ partial class MainForm(System.Windows.Forms.Form):
 						avsConfig.AudioSource = AudioScriptConfig.AudioSourceFilter.DirectShowSource
 					else:
 						avsConfig.AudioSource = AudioScriptConfig.AudioSourceFilter.FFAudioSource
+					(_itemSettingForms[_workingJobItem.UIItem] as MediaSettingForm).AvsConfig = avsConfig
 					self.WriteAudioAvs(_workingJobItem.SourceFile, 'audio.avs', avsConfig)
 					try:
 						self.EncodeAudio('audio.avs', destAudio, _workingJobItem.AudioEncConfig)
@@ -168,12 +170,12 @@ partial class MainForm(System.Windows.Forms.Form):
 		
 		if not self.backgroundWorker1.CancellationPending:
 			self._workingJobItem.Event = JobEvent.OneDone
-			ExclusivelyReporteport(_workingJobItem)
+			ExclusivelyReport(_workingJobItem)
 			if self._workingJobItems[-1] is self._workingJobItem:
 				self._workingJobItem.Event = JobEvent.AllDone
-				ExclusivelyReporteport(_workingJobItem)
+				ExclusivelyReport(_workingJobItem)
 			
-	private def ExclusivelyReporteport(userData as object):
+	private def ExclusivelyReport(userData as object):
 		self._workerReporting = true
 		self.backgroundWorker1.ReportProgress(0, userData)
 		while self._workerReporting:
@@ -232,7 +234,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				break 
 			self.backgroundWorker1.ReportProgress(0, _workingJobItem)
 			if encoder.Progress >= 1:
-				ExclusivelyReporteport(_workingJobItem)
+				ExclusivelyReport(_workingJobItem)
 				break 
 		self.thread.Join()
 
@@ -250,7 +252,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				break 
 			self.backgroundWorker1.ReportProgress(0, _workingJobItem)
 			if encoder.Progress >= 1:
-				ExclusivelyReporteport(_workingJobItem)
+				ExclusivelyReport(_workingJobItem)
 				break 
 		self.thread.Join()
 
@@ -270,7 +272,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				break 
 			self.backgroundWorker1.ReportProgress(0, _workingJobItem)
 			if box.Progress >= 100:
-				ExclusivelyReporteport(_workingJobItem)
+				ExclusivelyReport(_workingJobItem)
 				break
 		self.thread.Join()
 
@@ -344,7 +346,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		if self._workingProcess is not null:
 			self._workingProcess.Stop()
 
-	private def WriteAudioAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfigSection):
+	private def WriteAudioAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfig):
 		writer = AvisynthWriter(sourceFile)
 		audioConfig as AudioScriptConfig = writer.AudioConfig
 		audioConfig.DownMix = avsConfig.DownMix
@@ -353,7 +355,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		audioConfig.SourceFilter = avsConfig.AudioSource
 		writer.WriteAudioScript()
 
-	private def WriteVideoAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfigSection):
+	private def WriteVideoAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfig):
 		writer = AvisynthWriter(sourceFile)
 		videoConfig as VideoScriptConfig = writer.VideoConfig
 		if avsConfig.Width > 0:
@@ -434,7 +436,44 @@ partial class MainForm(System.Windows.Forms.Form):
 		for item as ListViewItem in dragItems:
 			self.listView1.Items.Insert(dragToIndex, item)
 			dragToIndex++
-			
+	
+	private def MainFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
+		jobItems = List[of JobItem](self.listView1.Items.Count)
+		for listItem as ListViewItem in self.listView1.Items:
+			form = self._itemSettingForms[listItem] as MediaSettingForm
+			jobItem = JobItem()
+			jobItem.SourceFile = form.SourceFile
+			jobItem.DestinationFile = form.DestinationFile
+			jobItem.AvsConfig = form.AvsConfig
+			jobItem.VideoEncConfig = form.VideoEncConfig
+			jobItem.AudioEncConfig = form.AudioEncConfig
+			jobItem.WriteAudioScript = form.WriteAudioScript
+			jobItem.WriteVideoScript = form.WriteVideoScript
+			jobItem.UIItem = listItem
+			jobItems.Add(jobItem)
+		formater = BinaryFormatter()
+		stream = FileStream("JobItems.bin", FileMode.Create)
+		formater.Serialize(stream, jobItems)
+		stream.Close()
+	
+	private def MainFormLoad(sender as object, e as System.EventArgs):
+		jobItems as List[of JobItem]
+		formater = BinaryFormatter()
+		if not File.Exists("JobItems.bin"):
+			return
+		try:
+			stream = FileStream("JobItems.bin", FileMode.Open)
+			jobItems = formater.Deserialize(stream)
+			stream.Close()
+		except:
+			stream.Close()
+			return
+		if jobItems != null:
+			for jobItem as JobItem in jobItems:
+				self.listView1.Items.Add(jobItem.UIItem)
+				form = MediaSettingForm(jobItem.SourceFile, jobItem.DestinationFile,
+				jobItem.AvsConfig, jobItem.VideoEncConfig, jobItem.AudioEncConfig)
+				self._itemSettingForms.Add(jobItem.UIItem, form)
 		
 [STAThread]
 public def Main(argv as (string)) as void:

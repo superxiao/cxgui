@@ -65,7 +65,7 @@
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
     <Compile Include="Avisynth\VideoScriptConfig.boo" />
     <Compile Include="Exception.boo" />
-    <Compile Include="GUI\AvsConfigSection.boo" />
+    <Compile Include="GUI\AvsConfig.boo" />
     <Compile Include="GUI\ControlResetter.boo" />
     <Compile Include="GUI\MainForm.boo" />
     <Compile Include="GUI\MainForm.Designer.boo">

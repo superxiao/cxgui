@@ -23,7 +23,7 @@ enum JobEvent:
 	OneDone
 	AllDone
 	
-
+[Serializable()]
 class JobItem:
 """Description of JobItem"""
 	public def constructor():
@@ -33,7 +33,7 @@ class JobItem:
 	[Property(DestinationFile)]
 	_destinationFile as string
 	[Property(AvsConfig)]
-	_privateAvsConfigSection as AvsConfigSection
+	_AvsConfig as AvsConfig
 	[Property(WriteVideoScript)]
 	_writeVideoScript as bool
 	[Property(WriteAudioScript)]

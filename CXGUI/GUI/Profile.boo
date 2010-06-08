@@ -7,11 +7,11 @@ import CXGUI.AudioEncoding
 class Profile:
 """Description of Profile"""
 	public def constructor():
-		_avsConfig = AvsConfigSection()
+		_avsConfig = AvsConfig()
 		_videoEncConfig = X264Config()
 		_audioEncConfig = NeroAacConfig()
 	[Property(AvsConfig)]
-	_avsConfig as AvsConfigSection
+	_avsConfig as AvsConfig
 	[Property(VideoEncConfig)]
 	_videoEncConfig as X264Config
 	[Property(AudioEncConfig)]

@@ -498,7 +498,9 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.MinimumSize = System.Drawing.Size(510, 38)
 		self.Name = "MainForm"
 		self.Text = "CXGUI"
+		self.Load += self.MainFormLoad as System.EventHandler
 		self.Activated += self.MainFormActivated as System.EventHandler
+		self.FormClosed += self.MainFormFormClosed as System.Windows.Forms.FormClosedEventHandler
 		self.tabControl1.ResumeLayout(false)
 		self.inputPage.ResumeLayout(false)
 		self.listViewMenu.ResumeLayout(false)

@@ -17,74 +17,109 @@ import CXGUI.AudioEncoding
 partial class MediaSettingForm:
 """Description of MediaSettingForm."""
 
-	_defaultAvsConfigSection as AvsConfigSection
 	_videoInfo as VideoInfo
 	_audioInfo as AudioInfo
 	_resolutionCal as ResolutionCalculator
 	_resolutionCalSerialized as Stream
-	tabPage1Resetter as ControlResetter
-	tabPage2Resetter as ControlResetter
 	_videoEncConfigSerialized as Stream
 	_audioEncConfigSerialized as Stream
-	_settingProfile as Profile
+	tabPage1Resetter as ControlResetter
+	tabPage2Resetter as ControlResetter
 
 	[Property(SourceFile)]
 	_sourceFile as string
 	[Property(DestinationFile)]
 	_destinationFile as string
-	[Property(AvsConfig)]
-	_privateAvsConfigSection as AvsConfigSection
 	[Property(WriteVideoScript)]
 	_writeVideoScript as bool
 	[Property(WriteAudioScript)]
 	_writeAudioScript as bool
-	[Property(VideoEncConfig)]
+
+	AvsConfig as AvsConfig:
+		get:
+			return _avsConfig
+		set:
+			_avsConfig = value
+			InitializeTabPage1(_avsConfig)
+	_avsConfig as AvsConfig
+	
+	VideoEncConfig as VideoEncConfigBase:
+		get:
+			return _videoEncConfig
+		set:
+			_videoEncConfig = value
+			RefreshX264UI()
 	_videoEncConfig as VideoEncConfigBase
-	[Property(AudioEncConfig)]
+
+	AudioEncConfig as AudioEncConfigBase:
+		get:
+			return _audioEncConfig
+		set:
+			_audioEncConfig = value
+			RefreshNeroAac()
 	_audioEncConfig as AudioEncConfigBase
+
 	[Property(Changed)]
 	_changed as bool
 
 	public def constructor(sourceFile as string, destFile as string):
 		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
-		_sourceFile = sourceFile //TODO DEST
+		_sourceFile = sourceFile
 		_destinationFile = destFile
-
-		ReadProfile()
-		InitializeTabPage1()
+		ReadProfile("default.profile")
+		InitializeTabPage1(_avsConfig)
 		InitializeTabPage2()
 
-	private def ReadProfile():
+	private def ReadProfile(path as string):
+	"""
+	从profile文件中读取VideoEncConfig AudioEncConfig AvsConfig对象到本类的相关字段。
+	"""
 		formater = BinaryFormatter()
 		CreatNewProfile = do():
-			_settingProfile = Profile()
-			_videoEncConfig = _settingProfile.VideoEncConfig
-			_audioEncConfig = _settingProfile.AudioEncConfig
-			_defaultAvsConfigSection = _settingProfile.AvsConfig
-			_privateAvsConfigSection = _settingProfile.AvsConfig
-			stream = FileStream("default.profile", FileMode.Create)
-			formater.Serialize(stream, _settingProfile)
+			_profile = Profile()
+			_videoEncConfig = _profile.VideoEncConfig
+			_audioEncConfig = _profile.AudioEncConfig
+			_avsConfig = _profile.AvsConfig
+			stream = FileStream(path, FileMode.Create)
+			formater.Serialize(stream, _profile)
 			stream.Close()
-		if not File.Exists("default.profile"):
+		if not File.Exists(path):
 			CreatNewProfile()
 		else:
 			try:
-				stream = FileStream("default.profile", FileMode.Open)
-				_settingProfile = formater.Deserialize(stream) as Profile
-				_videoEncConfig = _settingProfile.VideoEncConfig
-				_audioEncConfig = _settingProfile.AudioEncConfig
-				_defaultAvsConfigSection = _settingProfile.AvsConfig
-				_privateAvsConfigSection = _settingProfile.AvsConfig
+				stream = FileStream(path, FileMode.Open)
+				_profile = formater.Deserialize(stream) as Profile
+				_videoEncConfig = _profile.VideoEncConfig
+				_audioEncConfig = _profile.AudioEncConfig
+				_avsConfig = _profile.AvsConfig
 				stream.Close()
 			except:
 				stream.Close()
 				CreatNewProfile()
 
+	public def constructor(sourceFile as string, destFile as string, avsConfig as AvsConfig, 
+	videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase):
+		// The InitializeComponent() call is required for Windows Forms designer support.
+		InitializeComponent()
+		_sourceFile = sourceFile
+		_destinationFile = destFile
+		self._avsConfig = avsConfig
+		self._videoEncConfig = videoEncConfig
+		self._audioEncConfig = audioEncConfig
+		InitializeTabPage1(_avsConfig)
+		InitializeTabPage2()
+		
+
 	#region TabPage1
-	private def InitializeTabPage1():
+	private def InitializeTabPage1(avsConfig as AvsConfig):
+	"""
+	从AvsConfig对象导入到UI。
+	"""
 		_videoInfo = VideoInfo(_sourceFile)
-		_resolutionCal = ResolutionCalculator()	
+		_audioInfo = AudioInfo(_sourceFile)
+		_resolutionCal = ResolutionCalculator()
+		
 		if not _videoInfo.HasVideo:
 			_writeVideoScript = false
 			self.groupBox1.Enabled = false
@@ -92,25 +127,25 @@ partial class MediaSettingForm:
 		else:
 			_writeVideoScript = true
 			//根据配置，计算和显示宽，高，宽高比，帧率
-			if _defaultAvsConfigSection.Mod not in (2, 4, 8, 16, 32):
-				_defaultAvsConfigSection.Mod = 2
-			_resolutionCal.Mod = _defaultAvsConfigSection.Mod
-			_resolutionCal.FixAspectRatio = _defaultAvsConfigSection.FixAspectRatio
-			if _defaultAvsConfigSection.AspectRatio > 0:
-				_resolutionCal.AspectRatio = _defaultAvsConfigSection.AspectRatio
+			if avsConfig.Mod not in (2, 4, 8, 16, 32):
+				avsConfig.Mod = 2
+			_resolutionCal.Mod = avsConfig.Mod
+			_resolutionCal.FixAspectRatio = avsConfig.LockAspectRatio
+			if avsConfig.AspectRatio > 0:
+				_resolutionCal.AspectRatio = avsConfig.AspectRatio
 			else:
 				_resolutionCal.AspectRatio = _videoInfo.DisplayAspectRatio
-			if _defaultAvsConfigSection.Height > 0:
-				_resolutionCal.Height = _defaultAvsConfigSection.Height
+			if avsConfig.Height > 0:
+				_resolutionCal.Height = avsConfig.Height
 			else:
 				_resolutionCal.Height = _videoInfo.Height
-			if _defaultAvsConfigSection.Width > 0:
-				_resolutionCal.Width = _defaultAvsConfigSection.Width
+			if avsConfig.Width > 0:
+				_resolutionCal.Width = avsConfig.Width
 			else:
 				_resolutionCal.Width = _videoInfo.Width
 
-			if _defaultAvsConfigSection.FrameRate > 0:
-				self.frameRateBox.Text = _defaultAvsConfigSection.FrameRate.ToString()
+			if avsConfig.FrameRate > 0:
+				self.frameRateBox.Text = avsConfig.FrameRate.ToString()
 				self.sourceFrameRateCheckBox.Checked = false
 			else:
 				self.sourceFrameRateCheckBox.Checked = true
@@ -118,42 +153,41 @@ partial class MediaSettingForm:
 				self.frameRateBox.Enabled = false
 			RefreshResolutionGroupBox(null)
 		//groupBox1的其他内容
-		if _defaultAvsConfigSection.Width == 0 and _defaultAvsConfigSection.Height == 0:
+		if avsConfig.Width == 0 and avsConfig.Height == 0:
 			self.sourceResolutionCheckBox.Checked = true
 			for control as Control in self.groupBox1.Controls:
 				control.Enabled = false
 			self.sourceResolutionCheckBox.Enabled = true
 		else:
 			self.sourceResolutionCheckBox.Checked = false
-		self.lockARCheckBox.Checked = _defaultAvsConfigSection.FixAspectRatio
-		self.resizerBox.Text = _defaultAvsConfigSection.Resizer.ToString()
+		self.lockARCheckBox.Checked = avsConfig.LockAspectRatio
+		self.resizerBox.Text = avsConfig.Resizer.ToString()
 		if self.resizerBox.SelectedIndex == -1:
 			self.resizerBox.SelectedIndex = 0
 
 		//groupBox2
-		self.videoSourceBox.Text = _defaultAvsConfigSection.VideoSource.ToString()
+		self.videoSourceBox.Text = avsConfig.VideoSource.ToString()
 		if self.videoSourceBox.SelectedIndex == -1:
 			self.videoSourceBox.SelectedIndex = 0				
-		self.convertFPSCheckBox.Checked = _defaultAvsConfigSection.ConvertFPS
+		self.convertFPSCheckBox.Checked = avsConfig.ConvertFPS
 		if sourceFrameRateCheckBox.Checked or self.videoSourceBox.Text == "DSS2":
 			self.convertFPSCheckBox.Enabled = false
 		else:
 			self.convertFPSCheckBox.Enabled = true
 
 		//groupBox3
-		_audioInfo = AudioInfo(_sourceFile)
 		if not _audioInfo.StreamsCount:
 			_writeAudioScript = false
 			self.groupBox3.Enabled = false
 		else:
 			_writeAudioScript = true
 		
-		self.audioSourceComboBox.Text = _defaultAvsConfigSection.AudioSource.ToString()
-		self.downMixBox.Checked = _defaultAvsConfigSection.DownMix
-		self.normalizeBox.Checked = _defaultAvsConfigSection.Normalize
+		self.audioSourceComboBox.Text = avsConfig.AudioSource.ToString()
+		self.downMixBox.Checked = avsConfig.DownMix
+		self.normalizeBox.Checked = avsConfig.Normalize
 		
 		//groupBox6
-		self.muxerComboBox.Text = _defaultAvsConfigSection.Muxer.ToString()
+		self.muxerComboBox.Text = avsConfig.Muxer.ToString()
 		
 		//destFile
 		self.destFileBox.Text = _destinationFile
@@ -224,7 +258,7 @@ partial class MediaSettingForm:
 			self.convertFPSCheckBox.Checked = true
 			self.convertFPSCheckBox.Enabled = false
 		else:
-			self.convertFPSCheckBox.Checked = _defaultAvsConfigSection.ConvertFPS
+			self.convertFPSCheckBox.Checked = _avsConfig.ConvertFPS
 			if not self.sourceFrameRateCheckBox.Checked:
 				self.convertFPSCheckBox.Enabled = true
 		
@@ -254,40 +288,18 @@ partial class MediaSettingForm:
 		except:
 			MessageBox.Show("无效路径或含非法字符。", "", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
-	private def SaveToSection(configSection as AvsConfigSection):
-		if _videoInfo.HasVideo:
-			if self.sourceResolutionCheckBox.Checked:
-				configSection.Width = 0
-				configSection.Height = 0
-				configSection.AspectRatio = 0
-			else:
-				//未处理可能的错误
-				configSection.Width = int.Parse(self.widthBox.Text)
-				configSection.Height = int.Parse(self.heightBox.Text)
-				configSection.AspectRatio = double.Parse(self.aspectRatioBox.Text)
-			configSection.FixAspectRatio = self.lockARCheckBox.Checked
-			configSection.Mod = int.Parse(self.modBox.Text)
-			configSection.Resizer = Enum.Parse(VideoScriptConfig.ResizeFilter, self.resizerBox.Text)
-			configSection.VideoSource = Enum.Parse(VideoScriptConfig.VideoSourceFilter, self.videoSourceBox.Text)
-			if self.sourceFrameRateCheckBox.Checked:
-				configSection.FrameRate = 0
-			else:
-				configSection.FrameRate = double.Parse(self.frameRateBox.Text)
-			configSection.ConvertFPS = self.convertFPSCheckBox.Checked
-
-		if _audioInfo.StreamsCount:
-			configSection.AudioSource = Enum.Parse(AudioScriptConfig.AudioSourceFilter, self.audioSourceComboBox.Text)
-			configSection.DownMix = self.downMixBox.Checked
-			configSection.Normalize = self.normalizeBox.Checked	
-		configSection.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)
 	#endregion
 
-	#region TabPage2
+	#region TabPage2 X264Config
+
 	private def InitializeTabPage2():
+	"""
+	从X264Config和NeroAacConfig的对象导入到UI。此后任何操作都是同步的。
+	"""
 		RefreshX264UI()
 		RefreshNeroAac()
 
-	private def RefreshX264UI():
+	private def RefreshX264UI(): 
 		x264config = _videoEncConfig as X264Config
 		settings as Hash = x264config.GetSettingsDict()
 		freezedOptions = x264config.GetFreezedOptions()
@@ -317,7 +329,7 @@ partial class MediaSettingForm:
 		elif settings["bitrate"] != null:
 			self.rateFactorBox.Text = settings["bitrate"].ToString()
 			self.label9.Text = "码率"
-			self.rateControlBox.SelectedIndex = cast(int, settings["_pass"]) + 1
+			self.rateControlBox.SelectedIndex = 2
 		
 		for control as Control in self.groupBox4.Controls:
 			control.Enabled = true
@@ -326,8 +338,7 @@ partial class MediaSettingForm:
 			try:
 				self.groupBox4.Controls[option].Enabled = false
 			except NullReferenceException:
-				pass	
-		settings.Clear()
+				pass
 
 	private def RateControlBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
 		_x264config = _videoEncConfig as X264Config
@@ -337,7 +348,7 @@ partial class MediaSettingForm:
 			_x264config.SetIntegerOption("qp", 23)
 		else:
 			_x264config.SetIntegerOption("bitrate", 700)
-			_x264config.SetIntegerOption("_pass", self.rateControlBox.SelectedIndex - 1)
+			_x264config.SetIntegerOption("_pass", 1)
 		RefreshX264UI()
 	
 	private def RateFactorBoxValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
@@ -345,7 +356,7 @@ partial class MediaSettingForm:
 			value = double.Parse(self.rateFactorBox.Text)
 		except:
 			RefreshX264UI()
-			return null
+			return
 		config = _videoEncConfig as X264Config
 		if self.rateControlBox.SelectedIndex == 0:
 			config.SetFloatOption("crf", value)
@@ -368,6 +379,9 @@ partial class MediaSettingForm:
 			name = box.Name.Replace(char('_'), char('-'))
 			(_videoEncConfig as X264Config).SelectStringOption(name, box.SelectedIndex)
 			RefreshX264UI()
+	#endregion
+	
+	#region TabPage2 NeroAacConfig
 
 	private def RefreshNeroAac():
 		neroAacConfig = _audioEncConfig as NeroAacConfig
@@ -422,6 +436,37 @@ partial class MediaSettingForm:
 		self.RefreshNeroAac()
 
 	#endregion
+	
+	
+	private def SaveToAvsConfig(avsConfig as AvsConfig):
+	"""
+	从UI导出到AvsConfig对象。
+	"""
+		if _videoInfo.HasVideo:
+			if self.sourceResolutionCheckBox.Checked:
+				avsConfig.Width = 0
+				avsConfig.Height = 0
+				avsConfig.AspectRatio = 0
+			else:
+				//未处理可能的错误
+				avsConfig.Width = int.Parse(self.widthBox.Text)
+				avsConfig.Height = int.Parse(self.heightBox.Text)
+				avsConfig.AspectRatio = double.Parse(self.aspectRatioBox.Text)
+			avsConfig.LockAspectRatio = self.lockARCheckBox.Checked
+			avsConfig.Mod = int.Parse(self.modBox.Text)
+			avsConfig.Resizer = Enum.Parse(VideoScriptConfig.ResizeFilter, self.resizerBox.Text)
+			avsConfig.VideoSource = Enum.Parse(VideoScriptConfig.VideoSourceFilter, self.videoSourceBox.Text)
+			if self.sourceFrameRateCheckBox.Checked:
+				avsConfig.FrameRate = 0
+			else:
+				avsConfig.FrameRate = double.Parse(self.frameRateBox.Text)
+			avsConfig.ConvertFPS = self.convertFPSCheckBox.Checked
+
+		if _audioInfo.StreamsCount:
+			avsConfig.AudioSource = Enum.Parse(AudioScriptConfig.AudioSourceFilter, self.audioSourceComboBox.Text)
+			avsConfig.DownMix = self.downMixBox.Checked
+			avsConfig.Normalize = self.normalizeBox.Checked	
+		avsConfig.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)
 
 	private def MediaSettingFormLoad(sender as object, e as System.EventArgs):
 		tabPage1Resetter = ControlResetter()
@@ -444,22 +489,26 @@ partial class MediaSettingForm:
 		
 		
 	private def SetDefaultButtonClick(sender as object, e as System.EventArgs):
-		SaveToSection(_defaultAvsConfigSection)
+		SaveToAvsConfig(_avsConfig)
 		stream = FileStream("default.profile", FileMode.Create)
 		formater = BinaryFormatter()
-		formater.Serialize(stream, _settingProfile)
+		_profile = Profile()
+		_profile.AvsConfig = _avsConfig
+		_profile.VideoEncConfig = self._videoEncConfig
+		_profile.AudioEncConfig = self._audioEncConfig
+		formater.Serialize(stream, _profile)
 		stream.Close()
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):
-		if tabPage1Resetter.ChangedCount() > 0:
+		if tabPage1Resetter.ChangedCount() > 0 or tabPage2Resetter.ChangedCount() > 0:
 			_changed = true
 		tabPage1Resetter.Clear()
 		tabPage2Resetter.Clear()
 		_resolutionCalSerialized.Close()
 		_videoEncConfigSerialized.Close()
 		_audioEncConfigSerialized.Close()
-		_privateAvsConfigSection = AvsConfigSection()
-		SaveToSection(_privateAvsConfigSection)
+		_avsConfig = AvsConfig()
+		SaveToAvsConfig(_avsConfig)
 		try:
 			Path.GetDirectoryName(self.destFileBox.Text)
 			self._destinationFile = self.destFileBox.Text
@@ -482,13 +531,11 @@ partial class MediaSettingForm:
 		_audioEncConfigSerialized.Seek(0, SeekOrigin.Begin)
 		_audioEncConfig = formatter.Deserialize(_audioEncConfigSerialized)
 		_audioEncConfigSerialized.Close()
-		_settingProfile.VideoEncConfig = _videoEncConfig
-		_settingProfile.AudioEncConfig = _audioEncConfig
 		self.Close()
 
 	private def MediaSettingFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
 		if e.CloseReason == System.Windows.Forms.CloseReason.UserClosing:
-			if tabPage1Resetter.ChangedCount() > 0:
+			if tabPage1Resetter.ChangedCount() > 0 or tabPage2Resetter.ChangedCount() > 0:
 				result = MessageBox.Show("保存更改吗？", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
 				if result == DialogResult.Yes:
 					self.OkButtonClick(null, null)
