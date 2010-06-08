@@ -42,6 +42,8 @@ partial class ProgramConfigForm:
 			config.Sections.Add("programConfig", configSection)
 			config.Save()
 		configSection.DestDir = self.destDirComboBox.Text
+		configSection.InputDir = self.chbInputDir.Checked
+		configSection.SilentRestart = self.chbSilentRestart.Checked
 		config.Save()
 		
 		
@@ -54,6 +56,7 @@ partial class ProgramConfigForm:
 		_resetter.ResetControls()
 		_resetter.Clear()
 		self.Close()
+
 
 
 		

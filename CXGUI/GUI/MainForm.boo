@@ -42,22 +42,30 @@ partial class MainForm(System.Windows.Forms.Form):
 				self.listView1.SelectedItems.Clear()
 				item.Selected = true
 
-	private def AddFile(fileName as string) as ListViewItem:
+	private def AddFile(filePath as string) as ListViewItem:
+		if _configForm.chbInputDir.Checked:
+			fileName = filePath
+		else:
+			fileName = Path.GetFileName(filePath)
 		item as ListViewItem
 		addFile = do:
 			if self._configForm.destDirComboBox.Text != "":
-				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+".mp4")
+				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(filePath)+".mp4")
 			else:
-				destFile = Path.ChangeExtension(fileName, "mp4")
+				destFile = Path.ChangeExtension(filePath, "mp4")
 			item = ListViewItem(array(("等待", fileName, destFile)))
 			self.listView1.Items.Add(item)
+
+			form = MediaSettingForm(filePath, destFile)
+			self._itemSettingForms.Add(item, form)
+				
 		o as IMediaDet = MediaDet()
-		errorCode as int = o.put_Filename(fileName)
+		errorCode as int = o.put_Filename(filePath)
 		try:
 			Marshal.ThrowExceptionForHR(errorCode)
 			addFile()
 		except:
-			result = MessageBox.Show(fileName + "\n在文件中找不到视频流或音频流，可能是没有安装对应的DirectShow滤镜。\n" + "仍然要添加该文件吗？", 
+			result = MessageBox.Show(filePath + "\n在文件中找不到视频流或音频流，可能是没有安装对应的DirectShow滤镜。\n" + "仍然要添加该文件吗？", 
 			"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
 			if result == DialogResult.OK:
 				addFile()
@@ -73,18 +81,19 @@ partial class MainForm(System.Windows.Forms.Form):
 		
 	private def GetWorkingJobItems() as List[of JobItem]:
 		jobItems = List[of JobItem]()
+		
 		for listItem as ListViewItem in self.listView1.Items:
 			if listItem.SubItems[0].Text == "中止":
-				result = MessageBox.Show(listItem.SubItems[1].Text + "\n该项已经中止。是否重新开始？\n", 
-				"项目中止", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
-				if result = DialogResult.OK:
+				if _configForm.chbSilentRestart.Checked:
 					listItem.SubItems[0].Text = "等待"
+				else:
+					result = MessageBox.Show(listItem.SubItems[1].Text + "\n该项已经中止。是否重新开始？\n", 
+					"项目中止", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
+					if result = DialogResult.OK:
+						listItem.SubItems[0].Text = "等待"
+						
+		for listItem as ListViewItem in self.listView1.Items:
 			if listItem.SubItems[0].Text == "等待":
-				if not self._itemSettingForms.Contains(listItem):
-					m as int = self.sourceFileColumn.Index
-					n as int = self.destinationFileColumn.Index
-					form = MediaSettingForm(listItem.SubItems[m].Text, listItem.SubItems[n].Text)
-					self._itemSettingForms.Add(listItem, form)
 				form = self._itemSettingForms[listItem] as MediaSettingForm
 				jobItem = JobItem()
 				jobItem.SourceFile = form.SourceFile
@@ -286,10 +295,17 @@ partial class MainForm(System.Windows.Forms.Form):
 		items = self.listView1.SelectedItems
 		if items.Count > 0:
 			settingForm as MediaSettingForm = _itemSettingForms[items[0]]
-			if settingForm != null and settingForm.Changed:
+			if settingForm.Changed:
 				self.listView1.SelectedItems[0].SubItems[0].Text = "等待"
 				settingForm.Changed = false
 
+		if _configForm.chbInputDir.Checked:
+			for item as ListViewItem in self.listView1.Items:
+				item.SubItems[1].Text = (_itemSettingForms[item] as MediaSettingForm).SourceFile
+		else:
+			for item as ListViewItem in self.listView1.Items:
+				item.SubItems[1].Text = Path.GetFileName((_itemSettingForms[item] as MediaSettingForm).SourceFile)
+			
 	private def ListView1ItemSelectionChanged(sender as object, e as ListViewItemSelectionChangedEventArgs):
 		if self.listView1.SelectedItems.Count == 1:
 			self.settingButton.Enabled = true
@@ -309,15 +325,7 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	private def SettingButtonClick(sender as object, e as EventArgs):
 		key as ListViewItem = self.listView1.SelectedItems[0]
-		if self._itemSettingForms[key] is not null:
-			(self._itemSettingForms[key] as MediaSettingForm).ShowDialog()
-		else:
-			index as int = self.sourceFileColumn.Index
-			num2 as int = self.destinationFileColumn.Index
-			text as string = key.SubItems[num2].Text
-			form = MediaSettingForm(key.SubItems[index].Text, text)
-			self._itemSettingForms.Add(key, form)
-			form.ShowDialog()
+		(self._itemSettingForms[key] as MediaSettingForm).ShowDialog()
 
 	private def StopButtonClick(sender as object, e as EventArgs):
 		try:

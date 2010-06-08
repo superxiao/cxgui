@@ -13,3 +13,15 @@ class ProgramConfig(System.Configuration.ConfigurationSection):
 	    	return self.Item["destDir"]
 	    set:
 	    	self.Item["destDir"] = value
+	[ConfigurationProperty("silentRestart", DefaultValue : false)]
+	public SilentRestart as bool:
+	    get:
+	    	return self.Item["silentRestart"]
+	    set:
+	    	self.Item["silentRestart"] = value
+	[ConfigurationProperty("inputDir", DefaultValue : false)]
+	public InputDir as bool:
+	    get:
+	    	return self.Item["inputDir"]
+	    set:
+	    	self.Item["inputDir"] = value

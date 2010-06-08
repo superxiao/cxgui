@@ -14,6 +14,8 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 	// not be able to load this method if it was changed manually.
 	private def InitializeComponent():
 		self.groupBox1 = System.Windows.Forms.GroupBox()
+		self.chbInputDir = System.Windows.Forms.CheckBox()
+		self.chbSilentRestart = System.Windows.Forms.CheckBox()
 		self.label1 = System.Windows.Forms.Label()
 		self.destDirComboBox = System.Windows.Forms.ComboBox()
 		self.browseButton = System.Windows.Forms.Button()
@@ -30,19 +32,39 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		# 
 		self.groupBox1.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
+		self.groupBox1.Controls.Add(self.chbInputDir)
+		self.groupBox1.Controls.Add(self.chbSilentRestart)
 		self.groupBox1.Controls.Add(self.label1)
 		self.groupBox1.Controls.Add(self.destDirComboBox)
 		self.groupBox1.Controls.Add(self.browseButton)
 		self.groupBox1.Location = System.Drawing.Point(12, 12)
 		self.groupBox1.Name = "groupBox1"
-		self.groupBox1.Size = System.Drawing.Size(289, 85)
+		self.groupBox1.Size = System.Drawing.Size(289, 202)
 		self.groupBox1.TabIndex = 0
 		self.groupBox1.TabStop = false
-		self.groupBox1.Text = "输出"
+		self.groupBox1.Text = "工作列表"
+		# 
+		# chbInputDir
+		# 
+		self.chbInputDir.Location = System.Drawing.Point(6, 79)
+		self.chbInputDir.Name = "chbInputDir"
+		self.chbInputDir.Size = System.Drawing.Size(165, 24)
+		self.chbInputDir.TabIndex = 5
+		self.chbInputDir.Text = "显示输入文件所在目录"
+		self.chbInputDir.UseVisualStyleBackColor = true
+		# 
+		# chbSilentRestart
+		# 
+		self.chbSilentRestart.Location = System.Drawing.Point(6, 49)
+		self.chbSilentRestart.Name = "chbSilentRestart"
+		self.chbSilentRestart.Size = System.Drawing.Size(165, 24)
+		self.chbSilentRestart.TabIndex = 4
+		self.chbSilentRestart.Text = "中止项重新开始时不提示"
+		self.chbSilentRestart.UseVisualStyleBackColor = true
 		# 
 		# label1
 		# 
-		self.label1.Location = System.Drawing.Point(6, 26)
+		self.label1.Location = System.Drawing.Point(6, 23)
 		self.label1.Name = "label1"
 		self.label1.Size = System.Drawing.Size(75, 23)
 		self.label1.TabIndex = 3
@@ -53,15 +75,15 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.destDirComboBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.destDirComboBox.FormattingEnabled = true
-		self.destDirComboBox.Location = System.Drawing.Point(87, 23)
+		self.destDirComboBox.Location = System.Drawing.Point(87, 20)
 		self.destDirComboBox.Name = "destDirComboBox"
-		self.destDirComboBox.Size = System.Drawing.Size(82, 20)
+		self.destDirComboBox.Size = System.Drawing.Size(115, 20)
 		self.destDirComboBox.TabIndex = 2
 		# 
 		# browseButton
 		# 
 		self.browseButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
-		self.browseButton.Location = System.Drawing.Point(188, 21)
+		self.browseButton.Location = System.Drawing.Point(208, 18)
 		self.browseButton.Name = "browseButton"
 		self.browseButton.Size = System.Drawing.Size(75, 23)
 		self.browseButton.TabIndex = 1
@@ -97,7 +119,7 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.groupBox2.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.groupBox2.Controls.Add(self.cbAudioAutoSF)
-		self.groupBox2.Location = System.Drawing.Point(12, 103)
+		self.groupBox2.Location = System.Drawing.Point(12, 220)
 		self.groupBox2.Name = "groupBox2"
 		self.groupBox2.Size = System.Drawing.Size(289, 87)
 		self.groupBox2.TabIndex = 3
@@ -133,6 +155,8 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.groupBox1.ResumeLayout(false)
 		self.groupBox2.ResumeLayout(false)
 		self.ResumeLayout(false)
+	public chbSilentRestart as System.Windows.Forms.CheckBox
+	public chbInputDir as System.Windows.Forms.CheckBox
 	public cbAudioAutoSF as System.Windows.Forms.CheckBox
 	private groupBox2 as System.Windows.Forms.GroupBox
 	private folderBrowserDialog1 as System.Windows.Forms.FolderBrowserDialog
