@@ -150,7 +150,7 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.Controls.Add(self.groupBox1)
 		self.MinimumSize = System.Drawing.Size(270, 270)
 		self.Name = "ProgramConfigForm"
-		self.Text = "ProgramConfigForm"
+		self.Text = "选项"
 		self.Load += self.ProgramConfigFormLoad as System.EventHandler
 		self.groupBox1.ResumeLayout(false)
 		self.groupBox2.ResumeLayout(false)

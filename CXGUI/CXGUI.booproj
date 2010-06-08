@@ -56,10 +56,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioEncoder\AudioEncConfigBase.boo" />
-    <Compile Include="AudioEncoder\AudioEncoderBase.boo" />
-    <Compile Include="AudioEncoder\NeroAAC.boo" />
-    <Compile Include="AudioEncoder\NeroAacConfig.boo" />
+    <Compile Include="AudioEncoding\AudioEncConfigBase.boo" />
+    <Compile Include="AudioEncoding\AudioEncoderBase.boo" />
+    <Compile Include="AudioEncoding\NeroAAC.boo" />
+    <Compile Include="AudioEncoding\NeroAacConfig.boo" />
     <Compile Include="Avisynth\AudioScriptConfig.boo" />
     <Compile Include="Avisynth\AvisynthWriter.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
@@ -88,6 +88,7 @@
     <Compile Include="MediaInfo\VideoInfo.Designer.boo">
       <DependentUpon>VideoInfo.boo</DependentUpon>
     </Compile>
+    <Compile Include="My\File.boo" />
     <Compile Include="My\IStopable.boo" />
     <Compile Include="My\Math.boo" />
     <Compile Include="StreamMuxer\MP4Box.boo" />
@@ -107,7 +108,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AudioEncoder" />
+    <Folder Include="AudioEncoding" />
     <Folder Include="Avisynth" />
     <Folder Include="GUI" />
     <Folder Include="MediaInfo" />

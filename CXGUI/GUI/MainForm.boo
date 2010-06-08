@@ -53,6 +53,8 @@ partial class MainForm(System.Windows.Forms.Form):
 				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(filePath)+".mp4")
 			else:
 				destFile = Path.ChangeExtension(filePath, "mp4")
+			if IsSameFile(filePath, destFile):
+				destFile = Path.Combine(Path.GetDirectoryName(destFile), Path.GetFileNameWithoutExtension(destFile) + '1' + Path.GetExtension(destFile))
 			item = ListViewItem(array(("等待", fileName, destFile)))
 			self.listView1.Items.Add(item)
 

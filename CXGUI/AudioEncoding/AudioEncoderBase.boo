@@ -3,6 +3,7 @@
 import System
 import System.IO
 import System.Diagnostics
+import System.Windows.Forms
 import CXGUI
 import My
 import MeGUI
@@ -40,13 +41,15 @@ public abstract class AudioEncoderBase(IStopable):
 	protected _timeUsed as timespan
 
 	protected _totalLength as double
+	
+	_avsEn as AviSynthScriptEnvironment
 
 	
 	// Methods
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
 		if not File.Exists(avisynthScriptFile):
 			raise FileNotFoundException(string.Empty, avisynthScriptFile)
-		self._scriptInfo = AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)
+		using self._scriptInfo = AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)
 		if self._scriptInfo.ChannelsCount == 0 or self._scriptInfo.SamplesCount == 0:
 			raise InvalidAudioAvisynthScriptException(avisynthScriptFile)
 		self._avisynthScriptFile = Path.GetFullPath(avisynthScriptFile)
