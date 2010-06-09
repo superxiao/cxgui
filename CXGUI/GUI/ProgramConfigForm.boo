@@ -50,7 +50,7 @@ partial class ProgramConfigForm:
 		
 	private def ProgramConfigFormLoad(sender as object, e as System.EventArgs):
 		_resetter = ControlResetter()
-		_resetter.SaveControls(array(self.groupBox1.Controls))
+		_resetter.SaveControls(self.groupBox1.Controls as IEnumerable)
 	
 	private def CacelButtonClick(sender as object, e as System.EventArgs):
 		_resetter.ResetControls()

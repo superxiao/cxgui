@@ -20,20 +20,12 @@ partial class MediaSettingForm:
 	_videoInfo as VideoInfo
 	_audioInfo as AudioInfo
 	_resolutionCal as ResolutionCalculator
-	_resolutionCalSerialized as Stream
-	_videoEncConfigSerialized as Stream
-	_audioEncConfigSerialized as Stream
-	tabPage1Resetter as ControlResetter
-	tabPage2Resetter as ControlResetter
+	_resetter as ControlResetter
 
 	[Property(SourceFile)]
 	_sourceFile as string
-	[Property(DestinationFile)]
-	_destinationFile as string
-	[Property(WriteVideoScript)]
-	_writeVideoScript as bool
-	[Property(WriteAudioScript)]
-	_writeAudioScript as bool
+	[Property(DestFile)]
+	_destFile as string
 
 	AvsConfig as AvsConfig:
 		get:
@@ -62,53 +54,19 @@ partial class MediaSettingForm:
 	[Property(Changed)]
 	_changed as bool
 
-	public def constructor(sourceFile as string, destFile as string):
-		// The InitializeComponent() call is required for Windows Forms designer support.
-		InitializeComponent()
-		_sourceFile = sourceFile
-		_destinationFile = destFile
-		ReadProfile("default.profile")
-		InitializeTabPage1(_avsConfig)
-		InitializeTabPage2()
-
-	private def ReadProfile(path as string):
-	"""
-	从profile文件中读取VideoEncConfig AudioEncConfig AvsConfig对象到本类的相关字段。
-	"""
-		formater = BinaryFormatter()
-		CreatNewProfile = do():
-			_profile = Profile()
-			_videoEncConfig = _profile.VideoEncConfig
-			_audioEncConfig = _profile.AudioEncConfig
-			_avsConfig = _profile.AvsConfig
-			stream = FileStream(path, FileMode.Create)
-			formater.Serialize(stream, _profile)
-			stream.Close()
-		if not File.Exists(path):
-			CreatNewProfile()
-		else:
-			try:
-				stream = FileStream(path, FileMode.Open)
-				_profile = formater.Deserialize(stream) as Profile
-				_videoEncConfig = _profile.VideoEncConfig
-				_audioEncConfig = _profile.AudioEncConfig
-				_avsConfig = _profile.AvsConfig
-				stream.Close()
-			except:
-				stream.Close()
-				CreatNewProfile()
-
 	public def constructor(sourceFile as string, destFile as string, avsConfig as AvsConfig, 
 	videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase):
 		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
 		_sourceFile = sourceFile
-		_destinationFile = destFile
+		_destFile = destFile
 		self._avsConfig = avsConfig
 		self._videoEncConfig = videoEncConfig
 		self._audioEncConfig = audioEncConfig
 		InitializeTabPage1(_avsConfig)
 		InitializeTabPage2()
+		
+
 		
 
 	#region TabPage1
@@ -121,11 +79,11 @@ partial class MediaSettingForm:
 		_resolutionCal = ResolutionCalculator()
 		
 		if not _videoInfo.HasVideo:
-			_writeVideoScript = false
 			self.groupBox1.Enabled = false
 			self.groupBox2.Enabled = false
 		else:
-			_writeVideoScript = true
+			self.groupBox1.Enabled = true
+			self.groupBox2.Enabled = true
 			//根据配置，计算和显示宽，高，宽高比，帧率
 			if avsConfig.Mod not in (2, 4, 8, 16, 32):
 				avsConfig.Mod = 2
@@ -177,10 +135,9 @@ partial class MediaSettingForm:
 
 		//groupBox3
 		if not _audioInfo.StreamsCount:
-			_writeAudioScript = false
 			self.groupBox3.Enabled = false
 		else:
-			_writeAudioScript = true
+			self.groupBox3.Enabled = true
 		
 		self.audioSourceComboBox.Text = avsConfig.AudioSource.ToString()
 		self.downMixBox.Checked = avsConfig.DownMix
@@ -190,7 +147,7 @@ partial class MediaSettingForm:
 		self.muxerComboBox.Text = avsConfig.Muxer.ToString()
 		
 		//destFile
-		self.destFileBox.Text = _destinationFile
+		self.destFileBox.Text = _destFile
 
 	private def RefreshResolutionGroupBox(caller as object):
 		self.heightBox.Text = _resolutionCal.Height.ToString() if caller is not self.heightBox
@@ -466,27 +423,7 @@ partial class MediaSettingForm:
 			avsConfig.AudioSource = Enum.Parse(AudioScriptConfig.AudioSourceFilter, self.audioSourceComboBox.Text)
 			avsConfig.DownMix = self.downMixBox.Checked
 			avsConfig.Normalize = self.normalizeBox.Checked	
-		avsConfig.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)
-
-	private def MediaSettingFormLoad(sender as object, e as System.EventArgs):
-		tabPage1Resetter = ControlResetter()
-		tabPage1Resetter.SaveControls(array(self.groupBox1.Controls))
-		tabPage1Resetter.SaveControls(array(self.groupBox2.Controls))
-		tabPage1Resetter.SaveControls(array(self.groupBox3.Controls))
-		tabPage1Resetter.SaveControls(array(self.tabPage1.Controls))
-		tabPage2Resetter = ControlResetter()
-		tabPage2Resetter.SaveControls(array(self.groupBox4.Controls))
-		tabPage2Resetter.SaveControls(array(self.groupBox5.Controls))
-		tabPage2Resetter.SaveControls(array(self.groupBox6.Controls))
-		
-		formatter = BinaryFormatter()
-		_resolutionCalSerialized = MemoryStream()
-		_videoEncConfigSerialized = MemoryStream()
-		_audioEncConfigSerialized = MemoryStream()
-		formatter.Serialize(_resolutionCalSerialized, _resolutionCal)
-		formatter.Serialize(_videoEncConfigSerialized, _videoEncConfig)
-		formatter.Serialize(_audioEncConfigSerialized, _audioEncConfig)
-		
+		avsConfig.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)		
 		
 	private def SetDefaultButtonClick(sender as object, e as System.EventArgs):
 		SaveToAvsConfig(_avsConfig)
@@ -500,42 +437,34 @@ partial class MediaSettingForm:
 		stream.Close()
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):
-		if tabPage1Resetter.ChangedCount() > 0 or tabPage2Resetter.ChangedCount() > 0:
+		if _resetter.Changed:
 			_changed = true
-		tabPage1Resetter.Clear()
-		tabPage2Resetter.Clear()
-		_resolutionCalSerialized.Close()
-		_videoEncConfigSerialized.Close()
-		_audioEncConfigSerialized.Close()
-		_avsConfig = AvsConfig()
 		SaveToAvsConfig(_avsConfig)
 		try:
 			Path.GetDirectoryName(self.destFileBox.Text)
-			self._destinationFile = self.destFileBox.Text
+			self._destFile = self.destFileBox.Text
 		except:
-			self.destFileBox.Text = self._destinationFile
+			self.destFileBox.Text = self._destFile
+		_resetter.Clear()
 		self.Close()
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
-		tabPage1Resetter.ResetControls()
-		tabPage2Resetter.ResetControls()
-		tabPage1Resetter.Clear()
-		tabPage2Resetter.Clear()
-		formatter = BinaryFormatter()
-		_resolutionCalSerialized.Seek(0, SeekOrigin.Begin)
-		_resolutionCal = formatter.Deserialize(_resolutionCalSerialized)
-		_resolutionCalSerialized.Close()
-		_videoEncConfigSerialized.Seek(0, SeekOrigin.Begin)
-		_videoEncConfig = formatter.Deserialize(_videoEncConfigSerialized)
-		_videoEncConfigSerialized.Close()
-		_audioEncConfigSerialized.Seek(0, SeekOrigin.Begin)
-		_audioEncConfig = formatter.Deserialize(_audioEncConfigSerialized)
-		_audioEncConfigSerialized.Close()
+		_resetter.Clear()
 		self.Close()
+
+	private def MediaSettingFormLoad(sender as object, e as System.EventArgs):
+		if _resetter == null:
+			_resetter = ControlResetter()
+		_resetter.SaveControls(self.groupBox1.Controls)
+		_resetter.SaveControls(self.groupBox2.Controls)
+		_resetter.SaveControls(self.groupBox3.Controls)
+		_resetter.SaveControls(self.groupBox4.Controls)
+		_resetter.SaveControls(self.groupBox5.Controls)
+		_resetter.SaveControls(self.groupBox6.Controls)
 
 	private def MediaSettingFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
 		if e.CloseReason == System.Windows.Forms.CloseReason.UserClosing:
-			if tabPage1Resetter.ChangedCount() > 0 or tabPage2Resetter.ChangedCount() > 0:
+			if _resetter.Changed():
 				result = MessageBox.Show("保存更改吗？", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
 				if result == DialogResult.Yes:
 					self.OkButtonClick(null, null)
@@ -553,4 +482,9 @@ partial class MediaSettingForm:
 			e.Handled = true
 		if (sender as Control).Text.Contains(".") and kc == 46:
 			e.Handled = true
+	
+	private def MediaSettingFormFormClosing(sender as object, e as System.Windows.Forms.FormClosingEventArgs):
+		pass
+	
+
 	

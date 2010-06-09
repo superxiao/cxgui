@@ -8,8 +8,6 @@ import CXGUI
 import MeGUI
 import My
 
-
-
 class VideoEncoderBase(IStopable):
 """Description of VideoEncoder"""
 	public def constructor(avisynthScriptFile as string, destinationFile as string):

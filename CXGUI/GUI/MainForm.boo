@@ -5,6 +5,7 @@ import System
 import System.IO
 import System.Threading
 import System.Runtime.InteropServices
+import System.Collections.Generic
 import System.Windows.Forms
 import System.Drawing
 import System.Runtime.Serialization.Formatters.Binary
@@ -21,11 +22,12 @@ partial class MainForm(System.Windows.Forms.Form):
 	
 	
 	_configForm as ProgramConfigForm
-	_workingProcess as IStopable 
-	_itemSettingForms = {}
-	_workingJobItem as JobItem
-	_workingJobItems as List[of JobItem]
-	thread as Threading.Thread
+	_mediaSettingForm as MediaSettingForm
+	_workingFilter as IStopable 
+	_jobItems = Dictionary[of ListViewItem, JobItem]()
+	_workingItem as JobItem
+	_workingItems as List[of JobItem]
+	_thread as Threading.Thread
 	_userStop as bool
 	_workerReporting as bool
 
@@ -37,11 +39,14 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.openFileDialog1.ShowDialog()
 
 	private def OpenFileDialog1FileOk(sender as object, e as CancelEventArgs):
+		firstAddItem as ListViewItem
 		for fileName in self.openFileDialog1.FileNames:
 			item = AddFile(fileName)
-			if item != null:
-				self.listView1.SelectedItems.Clear()
-				item.Selected = true
+			if firstAddItem == null and item != null:
+				firstAddItem = item
+		if firstAddItem != null:
+			self.listView1.SelectedItems.Clear()
+			firstAddItem.Selected = true
 
 	private def AddFile(filePath as string) as ListViewItem:
 		if _configForm.chbInputDir.Checked:
@@ -51,16 +56,16 @@ partial class MainForm(System.Windows.Forms.Form):
 		item as ListViewItem
 		addFile = do:
 			if self._configForm.destDirComboBox.Text != "":
-				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(filePath)+".mp4")
+				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+".mp4")
 			else:
 				destFile = Path.ChangeExtension(filePath, "mp4")
 			if IsSameFile(filePath, destFile):
 				destFile = Path.Combine(Path.GetDirectoryName(destFile), Path.GetFileNameWithoutExtension(destFile) + '1' + Path.GetExtension(destFile))
 			item = ListViewItem(("等待", fileName, destFile))
 			self.listView1.Items.Add(item)
-
-			form = MediaSettingForm(filePath, destFile)
-			self._itemSettingForms.Add(item, form)
+			
+			jobItem = JobItem(filePath, destFile, item)
+			self._jobItems.Add(item, jobItem)
 				
 		o as IMediaDet = MediaDet()
 		errorCode as int = o.put_Filename(filePath)
@@ -75,10 +80,8 @@ partial class MainForm(System.Windows.Forms.Form):
 		return item
 
 	private def StartButtonClick(sender as object, e as EventArgs):
-		if _workingJobItems != null:
-			_workingJobItems.Clear()
-		_workingJobItems = GetWorkingJobItems()
-		if _workingJobItems.Count > 0:
+		_workingItems = GetWorkingJobItems()
+		if _workingItems.Count > 0:
 			self.StartNewWork(null, null)
 			self.tabControl1.SelectTab(self.progressPage)
 		
@@ -88,58 +91,51 @@ partial class MainForm(System.Windows.Forms.Form):
 		for listItem as ListViewItem in self.listView1.Items:
 			if listItem.SubItems[0].Text == "中止":
 				if _configForm.chbSilentRestart.Checked:
+					self._jobItems[listItem].State = JobState.Waiting
 					listItem.SubItems[0].Text = "等待"
 				else:
 					result = MessageBox.Show(listItem.SubItems[1].Text + "\n该项已经中止。是否重新开始？\n", 
 					"项目中止", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
-					if result = DialogResult.OK:
+					if result == DialogResult.OK:
+						self._jobItems[listItem].State = JobState.Waiting
 						listItem.SubItems[0].Text = "等待"
 						
 		for listItem as ListViewItem in self.listView1.Items:
 			if listItem.SubItems[0].Text == "等待":
-				form = self._itemSettingForms[listItem] as MediaSettingForm
-				jobItem = JobItem()
-				jobItem.SourceFile = form.SourceFile
-				jobItem.DestinationFile = form.DestinationFile
-				jobItem.AvsConfig = form.AvsConfig
-				jobItem.VideoEncConfig = form.VideoEncConfig
-				jobItem.AudioEncConfig = form.AudioEncConfig
-				jobItem.WriteAudioScript = form.WriteAudioScript
-				jobItem.WriteVideoScript = form.WriteVideoScript
-				jobItem.UIItem = listItem
+				jobItem = self._jobItems[listItem]
 				jobItems.Add(jobItem)
 		return jobItems
 
 	private def StartNewWork(sender as object, e as RunWorkerCompletedEventArgs):
 		if _userStop:
-			_userStop = false //TODO
+			_userStop = false
 			return
-		for jobItem as JobItem in _workingJobItems:
-			if _workingJobItems.IndexOf(self._workingJobItem) < _workingJobItems.IndexOf(jobItem):
-				self._workingJobItem = jobItem
+		for jobItem as JobItem in _workingItems:
+			if _workingItems.IndexOf(self._workingItem) < _workingItems.IndexOf(jobItem):
+				self._workingItem = jobItem
 				self.backgroundWorker1.RunWorkerAsync()
 				break 
 		
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
-		_workingJobItem.Event = JobEvent.OneStart
-		ExclusivelyReport(_workingJobItem)
+		_workingItem.Event = JobEvent.OneStart
+		ExclusivelyReport(_workingItem)
 		destinationFile as string 
-		avsConfig as AvsConfig = _workingJobItem.AvsConfig
+		avsConfig as AvsConfig = _workingItem.AvsConfig
 		if avsConfig is null:
 			avsConfig = AvsConfig()
 
-		if _workingJobItem.WriteVideoScript and not self.backgroundWorker1.CancellationPending:
-			self.WriteVideoAvs(_workingJobItem.SourceFile, 'video.avs', avsConfig)
-			self.EncodeVideo('video.avs', _workingJobItem.DestinationFile, _workingJobItem.VideoEncConfig)
+		if _workingItem.WriteVideoScript and not self.backgroundWorker1.CancellationPending:
+			self.WriteVideoAvs(_workingItem.SourceFile, 'video.avs', avsConfig)
+			self.EncodeVideo('video.avs', _workingItem.DestFile, _workingItem.VideoEncConfig)
 
-		if _workingJobItem.WriteAudioScript and not self.backgroundWorker1.CancellationPending:
-			self.WriteAudioAvs(_workingJobItem.SourceFile, 'audio.avs', avsConfig)
-			if _workingJobItem.WriteVideoScript:
-				destAudio = Path.ChangeExtension(_workingJobItem.DestinationFile, 'm4a')
+		if _workingItem.WriteAudioScript and not self.backgroundWorker1.CancellationPending:
+			self.WriteAudioAvs(_workingItem.SourceFile, 'audio.avs', avsConfig)
+			if _workingItem.WriteVideoScript:
+				destAudio = Path.ChangeExtension(_workingItem.DestFile, 'm4a')
 			else:
-				destAudio = _workingJobItem.DestinationFile
+				destAudio = _workingItem.DestFile
 			try:
-				self.EncodeAudio('audio.avs', destAudio, _workingJobItem.AudioEncConfig)
+				self.EncodeAudio('audio.avs', destAudio, _workingItem.AudioEncConfig)
 			except InvalidAudioAvisynthScriptException:
 
 				ChangeSourceAndRetry = do:
@@ -147,33 +143,32 @@ partial class MainForm(System.Windows.Forms.Form):
 						avsConfig.AudioSource = AudioScriptConfig.AudioSourceFilter.DirectShowSource
 					else:
 						avsConfig.AudioSource = AudioScriptConfig.AudioSourceFilter.FFAudioSource
-					(_itemSettingForms[_workingJobItem.UIItem] as MediaSettingForm).AvsConfig = avsConfig
-					self.WriteAudioAvs(_workingJobItem.SourceFile, 'audio.avs', avsConfig)
+					self.WriteAudioAvs(_workingItem.SourceFile, 'audio.avs', avsConfig)
 					try:
-						self.EncodeAudio('audio.avs', destAudio, _workingJobItem.AudioEncConfig)
+						self.EncodeAudio('audio.avs', destAudio, _workingItem.AudioEncConfig)
 					except InvalidAudioAvisynthScriptException:
-						MessageBox.Show(_workingJobItem.SourceFile + "\n音频脚本无法读取。", 
+						MessageBox.Show(_workingItem.SourceFile + "\n音频脚本无法读取。", 
 				"检测失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
-						_workingJobItem.WriteAudioScript = false
+						_workingItem.WriteAudioScript = false
 
 				if self._configForm.cbAudioAutoSF.Checked:
 					ChangeSourceAndRetry()
 				else:
-					result = MessageBox.Show(_workingJobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
+					result = MessageBox.Show(_workingItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
 					"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
 					if result == DialogResult.OK:
 						ChangeSourceAndRetry()
 
-		if _workingJobItem.WriteVideoScript and _workingJobItem.WriteAudioScript and not self.backgroundWorker1.CancellationPending:
-			self.Mux(_workingJobItem.DestinationFile, destAudio, "", _workingJobItem.AvsConfig.Muxer)
+		if _workingItem.WriteVideoScript and _workingItem.WriteAudioScript and not self.backgroundWorker1.CancellationPending:
+			self.Mux(_workingItem.DestFile, destAudio, "", _workingItem.AvsConfig.Muxer)
 			File.Delete(destAudio)
 		
 		if not self.backgroundWorker1.CancellationPending:
-			self._workingJobItem.Event = JobEvent.OneDone
-			ExclusivelyReport(_workingJobItem)
-			if self._workingJobItems[-1] is self._workingJobItem:
-				self._workingJobItem.Event = JobEvent.AllDone
-				ExclusivelyReport(_workingJobItem)
+			self._workingItem.Event = JobEvent.OneDone
+			ExclusivelyReport(_workingItem)
+			if self._workingItems[-1] is self._workingItem:
+				self._workingItem.Event = JobEvent.AllDone
+				ExclusivelyReport(_workingItem)
 			
 	private def ExclusivelyReport(userData as object):
 		self._workerReporting = true
@@ -204,82 +199,87 @@ partial class MainForm(System.Windows.Forms.Form):
 		//One job starts
 		elif jobItem.Event == JobEvent.OneStart:
 			ResetProgress()
+			jobItem.State = JobState.Working
 			jobItem.UIItem.SubItems[0].Text = "工作中"
 			self.startButton.Enabled = false
-			i = self._workingJobItems.IndexOf(jobItem)
-			self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingJobItems.Count}个文件"
+			i = self._workingItems.IndexOf(jobItem)
+			self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingItems.Count}个文件"
 		//One job done
 		elif jobItem.Event == JobEvent.OneDone: 
+			jobItem.State = JobState.Done
 			jobItem.UIItem.SubItems[0].Text = "完成"
-			i = self._workingJobItems.IndexOf(jobItem)
-			self.statusLable.Text = "第${i+1}个文件处理完毕，共${self._workingJobItems.Count}个文件"
+			i = self._workingItems.IndexOf(jobItem)
+			self.statusLable.Text = "第${i+1}个文件处理完毕，共${self._workingItems.Count}个文件"
+			
 		//all done
 		elif jobItem.Event == JobEvent.AllDone: 
-			self.statusLable.Text = "${self._workingJobItems.Count}个文件处理完成"
-			self._workingJobItems.Clear()
+			self.statusLable.Text = "${self._workingItems.Count}个文件处理完成"
+			self._workingItems.Clear()
 			self.startButton.Enabled = true
 		self._workerReporting = false
+
+	private def EncodeVideo(avsFile as string, destFile as string, config as VideoEncConfigBase):
+		encoder = X264(avsFile, destFile)
+		self._workingFilter = encoder
+		encoder.Config = config as X264Config
+		_workingItem.VideoEncoder = encoder
+		_workingItem.Event = JobEvent.VideoEncoding
+		self._thread = Thread(ThreadStart(encoder.StartEncoding))
+		self._thread.Start()
+		while true:
+			Thread.Sleep(500)
+			if self.backgroundWorker1.CancellationPending:
+				break 
+			self.backgroundWorker1.ReportProgress(0, _workingItem)
+			if encoder.Progress >= 1:
+				ExclusivelyReport(_workingItem)
+				break 
+		self._thread.Join()
+		_workingItem.VideoEncoder = null
 
 	private def EncodeAudio(avsFile as string, destFile as string, config as AudioEncConfigBase):
 		
 		encoder = NeroAac(avsFile, destFile)
 		encoder.Config = config as NeroAacConfig
-		_workingJobItem.AudioEncoder = encoder
-		_workingJobItem.Event = JobEvent.AudioEncoding
-		self.thread = Thread(ThreadStart(encoder.StartEncoding))
-		self.thread.Start()
+		_workingItem.AudioEncoder = encoder
+		_workingItem.Event = JobEvent.AudioEncoding
+		self._thread = Thread(ThreadStart(encoder.StartEncoding))
+		self._thread.Start()
 		while 1 != 0:
 			Thread.Sleep(500)
 			if self.backgroundWorker1.CancellationPending:
 				break 
-			self.backgroundWorker1.ReportProgress(0, _workingJobItem)
+			self.backgroundWorker1.ReportProgress(0, _workingItem)
 			if encoder.Progress >= 1:
-				ExclusivelyReport(_workingJobItem)
+				ExclusivelyReport(_workingItem)
 				break 
-		self.thread.Join()
-
-	private def EncodeVideo(avsFile as string, destFile as string, config as VideoEncConfigBase):
-		encoder = X264(avsFile, destFile)
-		self._workingProcess = encoder
-		encoder.Config = config as X264Config
-		_workingJobItem.VideoEncoder = encoder
-		_workingJobItem.Event = JobEvent.VideoEncoding
-		self.thread = Thread(ThreadStart(encoder.StartEncoding))
-		self.thread.Start()
-		while true:
-			Thread.Sleep(500)
-			if self.backgroundWorker1.CancellationPending:
-				break 
-			self.backgroundWorker1.ReportProgress(0, _workingJobItem)
-			if encoder.Progress >= 1:
-				ExclusivelyReport(_workingJobItem)
-				break 
-		self.thread.Join()
+		self._thread.Join()
+		_workingItem.AudioEncoder = null
 
 	private def Mux(video as string, audio as string, dstFile as string, streamMuxer as Muxer):
 		box = MP4Box()
-		self._workingProcess = box
+		self._workingFilter = box
 		box.VideoFile = video
 		box.AudioFile = audio
 		box.DstFile = dstFile
-		_workingJobItem.Muxer = box
-		_workingJobItem.Event = JobEvent.Muxing
-		self.thread = Thread(ThreadStart(box.StartMuxing))
-		self.thread.Start()
+		_workingItem.Muxer = box
+		_workingItem.Event = JobEvent.Muxing
+		self._thread = Thread(ThreadStart(box.StartMuxing))
+		self._thread.Start()
 		while 1 != 0:
 			Thread.Sleep(500)
 			if self.backgroundWorker1.CancellationPending:
 				break 
-			self.backgroundWorker1.ReportProgress(0, _workingJobItem)
+			self.backgroundWorker1.ReportProgress(0, _workingItem)
 			if box.Progress >= 100:
-				ExclusivelyReport(_workingJobItem)
+				ExclusivelyReport(_workingItem)
 				break
-		self.thread.Join()
+		self._thread.Join()
+		_workingItem.Muxer = null
 
 	private def ClearButtonClick(sender as object, e as EventArgs):
 		self.listView1.Items.Clear()
-		self._itemSettingForms.Clear()
-
+		self._jobItems.Clear()
 	
 	private def ContextMenuStrip1Opening(sender as object, e as CancelEventArgs):
 		if self.listView1.SelectedItems.Count == 0:
@@ -293,22 +293,21 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def DelButtonClick(sender as object, e as EventArgs):
 		for item as ListViewItem in self.listView1.SelectedItems:
 			self.listView1.Items.Remove(item)
-			self._itemSettingForms.Remove(item)
+			self._jobItems.Remove(item)
 	
 	private def MainFormActivated(sender as object, e as System.EventArgs):
-		items = self.listView1.SelectedItems
-		if items.Count > 0:
-			settingForm as MediaSettingForm = _itemSettingForms[items[0]]
-			if settingForm.Changed:
-				self.listView1.SelectedItems[0].SubItems[0].Text = "等待"
-				settingForm.Changed = false
+		if self._mediaSettingForm != null and self._mediaSettingForm.Changed:
+			changedItem = self.listView1.SelectedItems[0]
+			self._jobItems[changedItem].State = JobState.Waiting
+			changedItem.SubItems[0].Text = "等待"
+			self._mediaSettingForm.Changed = false
 
 		if _configForm.chbInputDir.Checked:
 			for item as ListViewItem in self.listView1.Items:
-				item.SubItems[1].Text = (_itemSettingForms[item] as MediaSettingForm).SourceFile
+				item.SubItems[1].Text = self._jobItems[item].SourceFile
 		else:
 			for item as ListViewItem in self.listView1.Items:
-				item.SubItems[1].Text = Path.GetFileName((_itemSettingForms[item] as MediaSettingForm).SourceFile)
+				item.SubItems[1].Text = Path.GetFileName(self._jobItems[item].SourceFile)
 			
 	private def ListView1ItemSelectionChanged(sender as object, e as ListViewItemSelectionChangedEventArgs):
 		if self.listView1.SelectedItems.Count == 1:
@@ -328,8 +327,19 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.muxTimeUsed.Text = string.Empty
 
 	private def SettingButtonClick(sender as object, e as EventArgs):
-		key as ListViewItem = self.listView1.SelectedItems[0]
-		(self._itemSettingForms[key] as MediaSettingForm).ShowDialog()
+		item as ListViewItem = self.listView1.SelectedItems[0]
+		jobItem = self._jobItems[item]
+		if self._mediaSettingForm == null:
+			self._mediaSettingForm = MediaSettingForm(jobItem.SourceFile, jobItem.DestFile,
+			jobItem.AvsConfig, jobItem.VideoEncConfig, jobItem.AudioEncConfig)
+		else:
+			self._mediaSettingForm.SourceFile = jobItem.SourceFile
+			self._mediaSettingForm.DestFile = jobItem.DestFile
+			self._mediaSettingForm.AvsConfig = jobItem.AvsConfig
+			self._mediaSettingForm.VideoEncConfig = jobItem.VideoEncConfig
+			self._mediaSettingForm.AudioEncConfig = jobItem.AudioEncConfig
+
+		self._mediaSettingForm.ShowDialog()
 
 	private def StopButtonClick(sender as object, e as EventArgs):
 		try:
@@ -337,14 +347,20 @@ partial class MainForm(System.Windows.Forms.Form):
 		except:
 			pass
 		_userStop = true
-		self.ResetProgress() //TODO 修改状态
-		_workingJobItem.UIItem.SubItems[0].Text = "中止"
-		self._workingJobItems.Clear() //TODO 将_jobItem设为null 将开始新一轮StartWork
+		self.ResetProgress()
+		_workingItem.State = JobState.Stop
+		_workingItem.UIItem.SubItems[0].Text = "中止"
+		self._workingItem.VideoEncoder = null
+		self._workingItem.AudioEncoder = null
+		self._workingItem.Muxer = null
+		self._workingItem = null
+		self._workingItems.Clear()
 		self.startButton.Enabled = true
 		self.statusLable.Text = "中止"
+		self.tabControl1.SelectTab(self.inputPage)
 
-		if self._workingProcess is not null:
-			self._workingProcess.Stop()
+		if self._workingFilter is not null:
+			self._workingFilter.Stop()
 
 	private def WriteAudioAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfig):
 		writer = AvisynthWriter(sourceFile)
@@ -372,6 +388,7 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	private def 等待ToolStripMenuItemClick(sender as object, e as EventArgs):
 		for item as ListViewItem in self.listView1.SelectedItems:
+			self._jobItems[item].State = JobState.Waiting
 			item.SubItems[0].Text = '等待'
 
 	
@@ -395,6 +412,7 @@ partial class MainForm(System.Windows.Forms.Form):
 	
 	private def 完成ToolStripMenuItemClick(sender as object, e as EventArgs):
 		for item as ListViewItem in self.listView1.SelectedItems:
+			self._jobItems[item].State = JobState.Done
 			item.SubItems[0].Text = '完成'
 
 	
@@ -437,27 +455,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.listView1.Items.Insert(dragToIndex, item)
 			dragToIndex++
 	
-	private def MainFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
-		jobItems = List[of JobItem](self.listView1.Items.Count)
-		for listItem as ListViewItem in self.listView1.Items:
-			form = self._itemSettingForms[listItem] as MediaSettingForm
-			jobItem = JobItem()
-			jobItem.SourceFile = form.SourceFile
-			jobItem.DestinationFile = form.DestinationFile
-			jobItem.AvsConfig = form.AvsConfig
-			jobItem.VideoEncConfig = form.VideoEncConfig
-			jobItem.AudioEncConfig = form.AudioEncConfig
-			jobItem.WriteAudioScript = form.WriteAudioScript
-			jobItem.WriteVideoScript = form.WriteVideoScript
-			jobItem.UIItem = listItem
-			jobItems.Add(jobItem)
-		formater = BinaryFormatter()
-		stream = FileStream("JobItems.bin", FileMode.Create)
-		formater.Serialize(stream, jobItems)
-		stream.Close()
-	
 	private def MainFormLoad(sender as object, e as System.EventArgs):
-		jobItems as List[of JobItem]
+		jobItems as Dictionary[of ListViewItem, JobItem]
 		formater = BinaryFormatter()
 		if not File.Exists("JobItems.bin"):
 			return
@@ -469,11 +468,24 @@ partial class MainForm(System.Windows.Forms.Form):
 			stream.Close()
 			return
 		if jobItems != null:
-			for jobItem as JobItem in jobItems:
+			for jobItem as JobItem in jobItems.Values:
 				self.listView1.Items.Add(jobItem.UIItem)
-				form = MediaSettingForm(jobItem.SourceFile, jobItem.DestinationFile,
-				jobItem.AvsConfig, jobItem.VideoEncConfig, jobItem.AudioEncConfig)
-				self._itemSettingForms.Add(jobItem.UIItem, form)
+				self._jobItems.Add(jobItem.UIItem, jobItem)
+
+	
+	private def MainFormFormClosing(sender as object, e as System.Windows.Forms.FormClosingEventArgs):
+		if self._workingItem != null and self._workingItem.State == JobState.Working:
+			result = MessageBox.Show("正在工作中，是否中止并退出？", "工作中", MessageBoxButtons.YesNo, 
+			MessageBoxIcon.Information)
+			if result == DialogResult.Yes:
+				StopButtonClick(null, null)
+			else:
+				e.Cancel = true
+				return
+		formater = BinaryFormatter()
+		stream = FileStream("JobItems.bin", FileMode.Create)
+		formater.Serialize(stream, self._jobItems)
+		stream.Close()
 		
 [STAThread]
 public def Main(argv as (string)) as void:
