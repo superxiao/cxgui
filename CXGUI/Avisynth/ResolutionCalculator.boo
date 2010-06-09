@@ -61,7 +61,7 @@ class ResolutionCalculator:
 			else:
 				_height = CalculateMod(_width / _aspectRatio)
 	_aspectRatio as double
-	[Property(FixAspectRatio)]
+	[Property(LockAspectRatio)]
 	_fixAspectRatio as bool
 	"""
 	在更改Height或Width时，是否锁定AspectRatio。默认为true。

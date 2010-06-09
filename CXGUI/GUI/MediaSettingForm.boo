@@ -88,7 +88,7 @@ partial class MediaSettingForm:
 			if avsConfig.Mod not in (2, 4, 8, 16, 32):
 				avsConfig.Mod = 2
 			_resolutionCal.Mod = avsConfig.Mod
-			_resolutionCal.FixAspectRatio = avsConfig.LockAspectRatio
+			_resolutionCal.LockAspectRatio = avsConfig.LockAspectRatio
 			if avsConfig.AspectRatio > 0:
 				_resolutionCal.AspectRatio = avsConfig.AspectRatio
 			else:
@@ -102,14 +102,16 @@ partial class MediaSettingForm:
 			else:
 				_resolutionCal.Width = _videoInfo.Width
 
+			RefreshResolution(null)
+
 			if avsConfig.FrameRate > 0:
 				self.frameRateBox.Text = avsConfig.FrameRate.ToString()
 				self.sourceFrameRateCheckBox.Checked = false
+				self.frameRateBox.Enabled = true
 			else:
-				self.sourceFrameRateCheckBox.Checked = true
 				self.frameRateBox.Text = _videoInfo.FrameRate.ToString()
+				self.sourceFrameRateCheckBox.Checked = true
 				self.frameRateBox.Enabled = false
-			RefreshResolutionGroupBox(null)
 		//groupBox1的其他内容
 		if avsConfig.Width == 0 and avsConfig.Height == 0:
 			self.sourceResolutionCheckBox.Checked = true
@@ -118,6 +120,8 @@ partial class MediaSettingForm:
 			self.sourceResolutionCheckBox.Enabled = true
 		else:
 			self.sourceResolutionCheckBox.Checked = false
+			for control as Control in self.groupBox1.Controls:
+				control.Enabled = true
 		self.lockARCheckBox.Checked = avsConfig.LockAspectRatio
 		self.resizerBox.Text = avsConfig.Resizer.ToString()
 		if self.resizerBox.SelectedIndex == -1:
@@ -149,7 +153,7 @@ partial class MediaSettingForm:
 		//destFile
 		self.destFileBox.Text = _destFile
 
-	private def RefreshResolutionGroupBox(caller as object):
+	private def RefreshResolution(caller as object):
 		self.heightBox.Text = _resolutionCal.Height.ToString() if caller is not self.heightBox
 		self.widthBox.Text = _resolutionCal.Width.ToString() if caller is not self.widthBox
 		self.aspectRatioBox.Text = _resolutionCal.AspectRatio.ToString() if caller is not self.aspectRatioBox
@@ -164,7 +168,7 @@ partial class MediaSettingForm:
 			if _resolutionCal.Height > 1080:
 				_resolutionCal.Width = temp
 			else:
-				RefreshResolutionGroupBox(widthBox)
+				RefreshResolution(widthBox)
 
 	//UI设置与AvisynthWriter对象同步
 	private def HeightBoxKeyUp(sender as object, e as System.Windows.Forms.KeyEventArgs):
@@ -176,7 +180,7 @@ partial class MediaSettingForm:
 			if _resolutionCal.Width > 1920:
 				_resolutionCal.Height = temp
 			else:
-				RefreshResolutionGroupBox(heightBox)
+				RefreshResolution(heightBox)
 
 	private def AspectRatioBoxKeyUp(sender as object, e as System.Windows.Forms.KeyEventArgs):
 		ar as double
@@ -185,20 +189,20 @@ partial class MediaSettingForm:
 			temp = _resolutionCal.AspectRatio
 			_resolutionCal.AspectRatio = ar
 			if _resolutionCal.Width <= 1920 and _resolutionCal.Height <= 1080:
-				RefreshResolutionGroupBox(self.aspectRatioBox)
+				RefreshResolution(self.aspectRatioBox)
 			else:
 				_resolutionCal.AspectRatio = temp
 	
 	private def ResolutionValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
-		RefreshResolutionGroupBox(null)
+		RefreshResolution(null)
 
 	private def ModBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
 		if _videoInfo.HasVideo:
 			_resolutionCal.Mod = int.Parse(modBox.Text)
-			RefreshResolutionGroupBox(modBox)
+			RefreshResolution(modBox)
 	
 	private def LockARCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
-		_resolutionCal.FixAspectRatio = lockARCheckBox.Checked
+		_resolutionCal.LockAspectRatio = lockARCheckBox.Checked
 	
 	private def SourceFrameRateCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
 		if sourceFrameRateCheckBox.Checked:
@@ -221,12 +225,12 @@ partial class MediaSettingForm:
 		
 	private def SourceResolutionCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
 		if self.sourceResolutionCheckBox.Checked == true:
-			_resolutionCal.Mod = 2
-			_resolutionCal.AspectRatio = _videoInfo.DisplayAspectRatio
-			_resolutionCal.Height = _videoInfo.Height
-			_resolutionCal.Width = _videoInfo.Width
 			if _videoInfo.HasVideo:
-				RefreshResolutionGroupBox(null)
+				_resolutionCal.Mod = 2
+				_resolutionCal.AspectRatio = _videoInfo.DisplayAspectRatio
+				_resolutionCal.Height = _videoInfo.Height
+				_resolutionCal.Width = _videoInfo.Width
+				RefreshResolution(null)
 			for control as Control in self.groupBox1.Controls:
 				control.Enabled = false
 			self.sourceResolutionCheckBox.Enabled = true
@@ -482,9 +486,6 @@ partial class MediaSettingForm:
 			e.Handled = true
 		if (sender as Control).Text.Contains(".") and kc == 46:
 			e.Handled = true
-	
-	private def MediaSettingFormFormClosing(sender as object, e as System.Windows.Forms.FormClosingEventArgs):
-		pass
 	
 
 	

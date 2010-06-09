@@ -662,7 +662,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.Text = "设置"
 		self.Load += self.MediaSettingFormLoad as System.EventHandler
 		self.FormClosed += self.MediaSettingFormFormClosed as System.Windows.Forms.FormClosedEventHandler
-		self.FormClosing += self.MediaSettingFormFormClosing as System.Windows.Forms.FormClosingEventHandler
 		self.tabControl1.ResumeLayout(false)
 		self.tabPage1.ResumeLayout(false)
 		self.tabPage1.PerformLayout()
