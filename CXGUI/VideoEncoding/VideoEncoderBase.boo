@@ -8,7 +8,7 @@ import CXGUI
 import MeGUI
 import My
 
-class VideoEncoderBase(IStopable):
+class VideoEncoderBase(IEncoder):
 """Description of VideoEncoder"""
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
 		if not File.Exists(avisynthScriptFile):
@@ -22,9 +22,9 @@ class VideoEncoderBase(IStopable):
 		_totalLength = cast(double, _scriptInfo.num_frames) / _scriptFrameRate
 		_totalFrame = _scriptInfo.num_frames
 		
-	abstract def StartEncoding():
+	abstract def Start():
 		pass	
-	abstract def StopEncoding():
+	abstract def Stop():
 		pass
 	
 
@@ -47,7 +47,7 @@ class VideoEncoderBase(IStopable):
 				raise FileNotFoundException(value)
 	_encoderPath as string
 	[Getter(CurrentPosition)]
-	_currentPosition as int //TODO时间数据
+	_currentPosition as int
 	[Getter(TotalLength)]
 	_totalLength as double
 	[Getter(CurrentFrame)]
@@ -67,7 +67,7 @@ class VideoEncoderBase(IStopable):
 	[Getter(TimeLeft)]
 	_timeLeft as timespan
 	[Getter(Progress)]
-	_progress as single
+	_progress as int
 	[Getter(Log)]
 	_log as string
 

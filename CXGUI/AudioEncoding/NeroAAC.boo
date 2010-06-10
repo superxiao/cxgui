@@ -17,7 +17,7 @@ class NeroAac(AudioEncoderBase):
 			_encoderPath = "neroAacEnc.exe"
 			_encodingProcess.StartInfo.FileName = _encoderPath
 			
-	def StartEncoding():
+	def Start():
 		_encodingProcess.StartInfo.Arguments = "${_config.GetSettings()} -if - -of \"${_destinationFile}\""
 		_encodingProcess.Start()
 		target = _encodingProcess.StandardInput.BaseStream
@@ -45,10 +45,10 @@ class NeroAac(AudioEncoderBase):
 	def UpdateProgress(currentSample as int):
 		_currentPosition = currentSample / _scriptInfo.AudioSampleRate //s
 		_currentFileSize = currentSample * _scriptInfo.BytesPerSample //bytes
-		_progress = cast(double, currentSample) / _scriptInfo.SamplesCount //per
-		_estimatedFileSize = _currentFileSize / _progress if _progress != 0  //bytes
+		_progress = cast(double, currentSample) / _scriptInfo.SamplesCount * 100 //per
+		_estimatedFileSize = cast(double, _currentFileSize) * 100 / _progress if _progress != 0  //bytes
 		_timeUsed = date.Now - _startTime
-		_timeLeft = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds / _progress - _timeUsed.TotalSeconds)) if _progress != 0 //s 
+		_timeLeft = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds * (100.0-_progress) / _progress)) if _progress != 0 //s 
 		_timeUsed = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds))
 	def Stop():	
 		try:
@@ -63,7 +63,7 @@ class NeroAac(AudioEncoderBase):
 
 def aebtest():
 	t = NeroAac("""C:\Users\clinky\Documents\SharpDevelop Projects\CXGUI\CXGUI\bin\Debug\audio.avs""", "c:\\test.mp4")
-	t.StartEncoding()
+	t.Start()
 #	using w = StreamWriter("test.txt"):
 #		w.WriteLine("Hello there!")
 #		a = 1

@@ -58,9 +58,3 @@ partial class ProgramConfigForm:
 		self.Close()
 
 
-
-		
-		
-		
-		// TODO: Add constructor code after the InitializeComponent() call.
-

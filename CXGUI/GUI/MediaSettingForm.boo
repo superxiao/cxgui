@@ -1,6 +1,4 @@
-﻿//TODO 剥离AvisynthWriter类
-
-namespace CXGUI.GUI
+﻿namespace CXGUI.GUI
 
 import System
 import System.Collections

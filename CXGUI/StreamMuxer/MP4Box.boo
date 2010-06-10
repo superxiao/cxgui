@@ -11,7 +11,7 @@ class MP4Box(MuxerBase):
 	
 	_startTime as date
 	
-	def StartMuxing():
+	def Start():
 		_process.StartInfo.Arguments = "-add \"${_audioFile}\"#1 \"${_videoFile}\""
 		_process.StartInfo.UseShellExecute = false
 		_process.StartInfo.RedirectStandardOutput = true
@@ -56,4 +56,4 @@ def test():
 	a = MP4Box()
 	a.VideoFile = "c:\\12.mp4"
 	a.AudioFile = "c:\\test.mp4"
-	a.StartMuxing()
+	a.Start()

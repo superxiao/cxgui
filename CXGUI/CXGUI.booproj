@@ -59,7 +59,9 @@
     <Compile Include="AudioEncoding\AudioEncConfigBase.boo" />
     <Compile Include="AudioEncoding\AudioEncoderBase.boo" />
     <Compile Include="AudioEncoding\NeroAAC.boo" />
-    <Compile Include="AudioEncoding\NeroAacConfig.boo" />
+    <Compile Include="AudioEncoding\NeroAacConfig.boo">
+      <DependentUpon>NeroAAC.boo</DependentUpon>
+    </Compile>
     <Compile Include="Avisynth\AudioScriptConfig.boo" />
     <Compile Include="Avisynth\AvisynthWriter.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
@@ -89,14 +91,16 @@
       <DependentUpon>VideoInfo.boo</DependentUpon>
     </Compile>
     <Compile Include="My\File.boo" />
-    <Compile Include="My\IStopable.boo" />
+    <Compile Include="My\IEncoder.boo" />
     <Compile Include="My\Math.boo" />
     <Compile Include="StreamMuxer\MP4Box.boo" />
     <Compile Include="StreamMuxer\MuxerBase.boo" />
     <Compile Include="VideoEncoding\VideoEncConfigBase.boo" />
     <Compile Include="VideoEncoding\VideoEncoderBase.boo" />
     <Compile Include="VideoEncoding\X264.boo" />
-    <Compile Include="VideoEncoding\X264Config.boo" />
+    <Compile Include="VideoEncoding\X264Config.boo">
+      <DependentUpon>X264.boo</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.boo</DependentUpon>
     </EmbeddedResource>

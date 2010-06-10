@@ -29,10 +29,10 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.listViewMenu = System.Windows.Forms.ContextMenuStrip(self.components)
 		self.设置ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self.等待ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
-		self.完成ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self.添加ToolStripMenuItem1 = System.Windows.Forms.ToolStripMenuItem()
 		self.删除ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self.清空ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+		self.打开目录ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self.settingButton = System.Windows.Forms.Button()
 		self.progressPage = System.Windows.Forms.TabPage()
 		self.statusStrip = System.Windows.Forms.StatusStrip()
@@ -181,52 +181,52 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		# listViewMenu
 		# 
-		self.listViewMenu.Items.AddRange((of System.Windows.Forms.ToolStripItem: self.设置ToolStripMenuItem, self.等待ToolStripMenuItem, self.完成ToolStripMenuItem, self.添加ToolStripMenuItem1, self.删除ToolStripMenuItem, self.清空ToolStripMenuItem))
+		self.listViewMenu.Items.AddRange((of System.Windows.Forms.ToolStripItem: self.设置ToolStripMenuItem, self.等待ToolStripMenuItem, self.添加ToolStripMenuItem1, self.删除ToolStripMenuItem, self.清空ToolStripMenuItem, self.打开目录ToolStripMenuItem))
 		self.listViewMenu.Name = "contextMenuStrip1"
-		self.listViewMenu.Size = System.Drawing.Size(101, 136)
+		self.listViewMenu.Size = System.Drawing.Size(153, 158)
 		self.listViewMenu.Opening += self.ContextMenuStrip1Opening as System.ComponentModel.CancelEventHandler
 		# 
 		# 设置ToolStripMenuItem
 		# 
 		self.设置ToolStripMenuItem.Name = "设置ToolStripMenuItem"
-		self.设置ToolStripMenuItem.Size = System.Drawing.Size(100, 22)
+		self.设置ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
 		self.设置ToolStripMenuItem.Text = "设置"
 		self.设置ToolStripMenuItem.Click += self.设置ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 等待ToolStripMenuItem
 		# 
 		self.等待ToolStripMenuItem.Name = "等待ToolStripMenuItem"
-		self.等待ToolStripMenuItem.Size = System.Drawing.Size(100, 22)
+		self.等待ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
 		self.等待ToolStripMenuItem.Text = "等待"
 		self.等待ToolStripMenuItem.Click += self.等待ToolStripMenuItemClick as System.EventHandler
-		# 
-		# 完成ToolStripMenuItem
-		# 
-		self.完成ToolStripMenuItem.Name = "完成ToolStripMenuItem"
-		self.完成ToolStripMenuItem.Size = System.Drawing.Size(100, 22)
-		self.完成ToolStripMenuItem.Text = "完成"
-		self.完成ToolStripMenuItem.Click += self.完成ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 添加ToolStripMenuItem1
 		# 
 		self.添加ToolStripMenuItem1.Name = "添加ToolStripMenuItem1"
-		self.添加ToolStripMenuItem1.Size = System.Drawing.Size(100, 22)
+		self.添加ToolStripMenuItem1.Size = System.Drawing.Size(152, 22)
 		self.添加ToolStripMenuItem1.Text = "添加"
 		self.添加ToolStripMenuItem1.Click += self.添加ToolStripMenuItem1Click as System.EventHandler
 		# 
 		# 删除ToolStripMenuItem
 		# 
 		self.删除ToolStripMenuItem.Name = "删除ToolStripMenuItem"
-		self.删除ToolStripMenuItem.Size = System.Drawing.Size(100, 22)
+		self.删除ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
 		self.删除ToolStripMenuItem.Text = "删除"
 		self.删除ToolStripMenuItem.Click += self.删除ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 清空ToolStripMenuItem
 		# 
 		self.清空ToolStripMenuItem.Name = "清空ToolStripMenuItem"
-		self.清空ToolStripMenuItem.Size = System.Drawing.Size(100, 22)
+		self.清空ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
 		self.清空ToolStripMenuItem.Text = "清空"
 		self.清空ToolStripMenuItem.Click += self.清空ToolStripMenuItemClick as System.EventHandler
+		# 
+		# 打开目录ToolStripMenuItem
+		# 
+		self.打开目录ToolStripMenuItem.Name = "打开目录ToolStripMenuItem"
+		self.打开目录ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+		self.打开目录ToolStripMenuItem.Text = "打开目录"
+		self.打开目录ToolStripMenuItem.Click += self.打开目录ToolStripMenuItemClick as System.EventHandler
 		# 
 		# settingButton
 		# 
@@ -484,7 +484,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.backgroundWorker1.WorkerReportsProgress = true
 		self.backgroundWorker1.WorkerSupportsCancellation = true
 		self.backgroundWorker1.DoWork += self.BackgroundWorker1DoWork as System.ComponentModel.DoWorkEventHandler
-		self.backgroundWorker1.RunWorkerCompleted += self.StartNewWork as System.ComponentModel.RunWorkerCompletedEventHandler
+		self.backgroundWorker1.RunWorkerCompleted += self.NextJob as System.ComponentModel.RunWorkerCompletedEventHandler
 		self.backgroundWorker1.ProgressChanged += self.BackgroundWorker1ProgressChanged as System.ComponentModel.ProgressChangedEventHandler
 		# 
 		# MainForm
@@ -512,13 +512,13 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.menuStrip1.PerformLayout()
 		self.ResumeLayout(false)
 		self.PerformLayout()
+	private 打开目录ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private statusLable as System.Windows.Forms.ToolStripStatusLabel
 	private statusStrip as System.Windows.Forms.StatusStrip
 	private 添加ToolStripMenuItem1 as System.Windows.Forms.ToolStripMenuItem
 	private 清空ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private 删除ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private 设置ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
-	private 完成ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private 等待ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private listViewMenu as System.Windows.Forms.ContextMenuStrip
 	private backgroundWorker1 as System.ComponentModel.BackgroundWorker

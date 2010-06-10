@@ -8,7 +8,7 @@ enum Muxer:
 	MP4
 	MKV
 
-class MuxerBase(IStopable):
+class MuxerBase(IEncoder):
 """Description of Class1"""
 	public def constructor():
 		pass
@@ -23,12 +23,12 @@ class MuxerBase(IStopable):
 	[Getter(TimeLeft)]
 	_timeLeft as timespan
 	[Getter(Progress)]
-	_progress as single
+	_progress as int
 	
 	_process = Process()
 	
 	
-	private abstract def StartMuxing():
+	abstract def Start():
 		pass
 
 	abstract def Stop():

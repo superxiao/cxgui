@@ -14,7 +14,7 @@ class X264(VideoEncoderBase):
 		super(avisynthScriptFile, destinationFile)
 		_encoderPath = "x264.exe"
 		_encodingProcess.StartInfo.FileName = _encoderPath
-	def StartEncoding():
+	def Start():
 		_encodingProcess.StartInfo.Arguments = "${_config.GetSettings()} --output \"${_destinationFile}\" \"${_avisynthScriptFile}\""
 		IO.File.WriteAllText("C:\\TEST.TXT", _encodingProcess.StartInfo.Arguments)
 		_encodingProcess.StartInfo.UseShellExecute = false
@@ -30,8 +30,8 @@ class X264(VideoEncoderBase):
 		else:
 			count = 0
 			while true:
-				if _progress >= 0.99:
-					_progress = 1
+				if _progress >= 99:
+					_progress = 100
 					_timeLeft = timespan(0)
 					readThread.Abort()
 					break
@@ -58,7 +58,7 @@ class X264(VideoEncoderBase):
 		info = line.Split(char(','))
 		frame = info[0]
 		_currentFrame = int.Parse(frame[frame.IndexOf("]")+1:frame.IndexOf("/")])
-		_progress = double.Parse(frame[frame.IndexOf("[")+1:frame.IndexOf("%")]) / 100
+		_progress = double.Parse(frame[frame.IndexOf("[")+1:frame.IndexOf("%")])
 		bitRate = info[2]
 		_currentPosition = cast(double, _currentFrame) / _scriptFrameRate
 		double.TryParse(bitRate[:bitRate.IndexOf("k")], _avgBitRate)
@@ -84,5 +84,5 @@ class X264(VideoEncoderBase):
 	
 public def vetest():
 	t = X264("""C:\Users\Public\Videos\Sample Videos\Wildlife.avs""", """c:\.mp4""")
-	t.StartEncoding()
+	t.Start()
 

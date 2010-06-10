@@ -25,6 +25,7 @@ enum JobEvent:
 	OneStart
 	OneDone
 	AllDone
+	Stop
 	
 [Serializable()]
 class JobItem:
@@ -35,9 +36,9 @@ class JobItem:
 	_destFile as string
 	[Property(AvsConfig)]
 	_avsConfig as AvsConfig
-	[Property(WriteVideoScript)]
+	[Property(DoVideo)]
 	_writeVideoScript as bool
-	[Property(WriteAudioScript)]
+	[Property(DoAudio)]
 	_writeAudioScript as bool
 	[Property(VideoEncConfig)]
 	_videoEncConfig as VideoEncConfigBase

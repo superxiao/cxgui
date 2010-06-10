@@ -9,7 +9,7 @@ import My
 import MeGUI
 
 
-public abstract class AudioEncoderBase(IStopable):
+public abstract class AudioEncoderBase(IEncoder):
 	
 	// Fields
 	protected _avisynthScriptFile as string
@@ -28,7 +28,7 @@ public abstract class AudioEncoderBase(IStopable):
 
 	protected _log as string
 
-	protected _progress as single
+	protected _progress as int
 
 	protected _scriptFrameRate as double
 
@@ -60,7 +60,7 @@ public abstract class AudioEncoderBase(IStopable):
 		self._encodingProcess.StartInfo.CreateNoWindow = true
 
 	
-	public abstract def StartEncoding():
+	public abstract def Start():
 		pass
 
 	public abstract def Stop():
@@ -109,7 +109,7 @@ public abstract class AudioEncoderBase(IStopable):
 			return self._log
 
 	
-	public Progress as single:
+	public Progress as int:
 		get:
 			return self._progress
 
