@@ -79,7 +79,7 @@ class X264(VideoEncoderBase):
 			pass
 	//Properties
 	[Property(Config)]
-	_config = X264Config()
+	_config as X264Config
 	
 	
 public def vetest():

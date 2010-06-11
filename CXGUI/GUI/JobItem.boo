@@ -27,19 +27,27 @@ enum JobEvent:
 	AllDone
 	Stop
 	
+enum JobMode:
+	Normal
+	Video
+	Audio
+	
 [Serializable()]
 class JobItem:
 """Description of JobItem"""
 	[Getter(SourceFile)]
 	_sourceFile as string
-	[Getter(DestFile)]
+	[Property(DestFile)]
 	_destFile as string
-	[Property(AvsConfig)]
+	AvsConfig as AvsConfig:
+		get:
+			return _avsConfig
+		set:
+			if (not _videoInfo.AudioStreamsCount and not value.Mode == JobMode.Video)\
+				or (not _videoInfo.HasVideo and not value.Mode == JobMode.Audio):
+					raise ArgumentException("Incorrect JobMode.")
+			_avsConfig = value
 	_avsConfig as AvsConfig
-	[Property(DoVideo)]
-	_writeVideoScript as bool
-	[Property(DoAudio)]
-	_writeAudioScript as bool
 	[Property(VideoEncConfig)]
 	_videoEncConfig as VideoEncConfigBase
 	[Property(AudioEncConfig)]
@@ -56,11 +64,35 @@ class JobItem:
 	_event as JobEvent
 	[Property(UIItem)]
 	_uiItem as ListViewItem
+	[Property(KeepingCfg)]
+	_KeepingCfg as bool
 	
-	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem):
+	_readAvsCfg as bool
+	_readVideoCfg as bool
+	_readAudioCfg as bool
+	_videoInfo as VideoInfo
+	
+	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem, readProfile as bool):
 		self._sourceFile = sourceFile
 		self._destFile = destFile
 		self._uiItem = uiItem
+		_videoInfo = VideoInfo(sourceFile)
+		if readProfile:
+			_readAvsCfg = true
+			_readVideoCfg = true
+			_readAudioCfg = true
+			ReadProfile("default.profile")
+	
+	public def ReadAvsConfig():
+		_readAvsCfg = true
+		ReadProfile("default.profile")
+		
+	public def ReadVideoEncConfig():
+		_readVideoCfg = true
+		ReadProfile("default.profile")
+		
+	public def ReadAudioEncConfig():
+		_readAudioCfg = true
 		ReadProfile("default.profile")
 	
 	private def ReadProfile(path as string):
@@ -68,14 +100,14 @@ class JobItem:
 	从profile文件中读取VideoEncConfig AudioEncConfig AvsConfig对象到本类的相关属性。
 	"""
 		formater = BinaryFormatter()
-		CreatNewProfile = do():
+		CreatProfile = do():
 			profile = Profile()
 			ReadProfile(profile)
 			stream = FileStream(path, FileMode.Create)
 			formater.Serialize(stream, profile)
 			stream.Close()
 		if not File.Exists(path):
-			CreatNewProfile()
+			CreatProfile()
 		else:
 			try:
 				stream = FileStream(path, FileMode.Open)
@@ -84,14 +116,25 @@ class JobItem:
 				stream.Close()
 			except:
 				stream.Close()
-				CreatNewProfile()
+				CreatProfile()
 
 	private def ReadProfile(profile as Profile):
-			_videoEncConfig = profile.VideoEncConfig
-			_audioEncConfig = profile.AudioEncConfig
+		if self._readAvsCfg:
 			_avsConfig = profile.AvsConfig
-			videoInfo = VideoInfo(_sourceFile)
-			if videoInfo.HasVideo:
-				self._writeVideoScript = true
-			if videoInfo.AudioStreamsCount:
-				self._writeAudioScript = true
+			_readAvsCfg = false
+		if self._readVideoCfg:
+			_videoEncConfig = profile.VideoEncConfig
+			_readVideoCfg = false
+		if self._readAudioCfg:
+			_audioEncConfig = profile.AudioEncConfig
+			_readAudioCfg = false
+	
+	public def Clear():
+	"""
+	清理内部存储设置数据的对象。
+	如果KeepingCfg属性设置为true, 则不执行任何操作。
+	"""
+		if not self._KeepingCfg:
+			self._avsConfig = null
+			self._audioEncConfig = null
+			self.VideoEncConfig = null

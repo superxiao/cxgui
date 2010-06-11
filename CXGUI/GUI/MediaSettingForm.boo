@@ -75,13 +75,18 @@ partial class MediaSettingForm:
 		_videoInfo = VideoInfo(_sourceFile)
 		_audioInfo = AudioInfo(_sourceFile)
 		_resolutionCal = ResolutionCalculator()
-		
-		if not _videoInfo.HasVideo:
-			self.groupBox1.Enabled = false
-			self.groupBox2.Enabled = false
+		if _videoInfo.HasVideo and _videoInfo.AudioStreamsCount:
+			self.cbMode.Enabled = true
+			self.cbMode.SelectedIndex = cast(int, avsConfig.Mode)
 		else:
-			self.groupBox1.Enabled = true
-			self.groupBox2.Enabled = true
+			self.cbMode.Enabled = false
+		if not _videoInfo.HasVideo:
+			self.gbResolution.Enabled = false
+			self.gbVideoSource.Enabled = false
+			self.cbMode.SelectedIndex = 2
+		else:
+			self.gbResolution.Enabled = true
+			self.gbVideoSource.Enabled = true
 			//根据配置，计算和显示宽，高，宽高比，帧率
 			if avsConfig.Mod not in (2, 4, 8, 16, 32):
 				avsConfig.Mod = 2
@@ -113,12 +118,12 @@ partial class MediaSettingForm:
 		//groupBox1的其他内容
 		if avsConfig.Width == 0 and avsConfig.Height == 0:
 			self.sourceResolutionCheckBox.Checked = true
-			for control as Control in self.groupBox1.Controls:
+			for control as Control in self.gbResolution.Controls:
 				control.Enabled = false
 			self.sourceResolutionCheckBox.Enabled = true
 		else:
 			self.sourceResolutionCheckBox.Checked = false
-			for control as Control in self.groupBox1.Controls:
+			for control as Control in self.gbResolution.Controls:
 				control.Enabled = true
 		self.lockARCheckBox.Checked = avsConfig.LockAspectRatio
 		self.resizerBox.Text = avsConfig.Resizer.ToString()
@@ -137,9 +142,10 @@ partial class MediaSettingForm:
 
 		//groupBox3
 		if not _audioInfo.StreamsCount:
-			self.groupBox3.Enabled = false
+			self.gbAudioAvs.Enabled = false
+			self.cbMode.SelectedIndex = 1
 		else:
-			self.groupBox3.Enabled = true
+			self.gbAudioAvs.Enabled = true
 		
 		self.audioSourceComboBox.Text = avsConfig.AudioSource.ToString()
 		self.downMixBox.Checked = avsConfig.DownMix
@@ -229,11 +235,11 @@ partial class MediaSettingForm:
 				_resolutionCal.Height = _videoInfo.Height
 				_resolutionCal.Width = _videoInfo.Width
 				RefreshResolution(null)
-			for control as Control in self.groupBox1.Controls:
+			for control as Control in self.gbResolution.Controls:
 				control.Enabled = false
 			self.sourceResolutionCheckBox.Enabled = true
 		else:
-			for control as Control in self.groupBox1.Controls:
+			for control as Control in self.gbResolution.Controls:
 				control.Enabled = true
 	
 	private def BrowseButtonClick(sender as object, e as System.EventArgs):
@@ -401,6 +407,7 @@ partial class MediaSettingForm:
 	"""
 	从UI导出到AvsConfig对象。
 	"""
+		avsConfig.Mode = cast(JobMode, self.cbMode.SelectedIndex)
 		if _videoInfo.HasVideo:
 			if self.sourceResolutionCheckBox.Checked:
 				avsConfig.Width = 0
@@ -448,21 +455,24 @@ partial class MediaSettingForm:
 		except:
 			self.destFileBox.Text = self._destFile
 		_resetter.Clear()
+		self.DialogResult = DialogResult.OK
 		self.Close()
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
 		_resetter.Clear()
+		self.DialogResult = DialogResult.Cancel
 		self.Close()
 
 	private def MediaSettingFormLoad(sender as object, e as System.EventArgs):
 		if _resetter == null:
 			_resetter = ControlResetter()
-		_resetter.SaveControls(self.groupBox1.Controls)
-		_resetter.SaveControls(self.groupBox2.Controls)
-		_resetter.SaveControls(self.groupBox3.Controls)
+		_resetter.SaveControls(self.gbResolution.Controls)
+		_resetter.SaveControls(self.gbVideoSource.Controls)
+		_resetter.SaveControls(self.gbAudioAvs.Controls)
 		_resetter.SaveControls(self.groupBox4.Controls)
 		_resetter.SaveControls(self.groupBox5.Controls)
 		_resetter.SaveControls(self.groupBox6.Controls)
+		_resetter.SaveControls(self.tabPage1.Controls)
 
 	private def MediaSettingFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
 		if e.CloseReason == System.Windows.Forms.CloseReason.UserClosing:
@@ -485,5 +495,30 @@ partial class MediaSettingForm:
 		if (sender as Control).Text.Contains(".") and kc == 46:
 			e.Handled = true
 	
-
+	public def Clear ():
+		self._avsConfig = null
+		self._videoEncConfig = null
+		self._audioEncConfig = null
+		self._videoInfo = null
+		self._audioInfo = null
+		self._resolutionCal = null
+		self._sourceFile = ""
+		self._destFile = ""
 	
+	private def CbModeSelectedIndexChanged(sender as object, e as System.EventArgs):
+		if self.cbMode.SelectedIndex == 0:
+			if self._videoInfo.HasVideo:
+				self.gbResolution.Enabled = true
+				self.gbVideoSource.Enabled = true
+			if self._videoInfo.AudioStreamsCount:
+				self.gbAudioAvs.Enabled = true
+		elif self.cbMode.SelectedIndex == 1:
+			if self._videoInfo.HasVideo:
+				self.gbResolution.Enabled = true
+				self.gbVideoSource.Enabled = true
+			self.gbAudioAvs.Enabled = false
+		elif self.cbMode.SelectedIndex == 2:
+			self.gbResolution.Enabled = false
+			self.gbVideoSource.Enabled = false
+			if self._videoInfo.AudioStreamsCount:
+				self.gbAudioAvs.Enabled = true

@@ -57,7 +57,7 @@ class NeroAac(AudioEncoderBase):
 			pass
 	//Properties	
 	[Property(Config)]
-	_config = NeroAacConfig()
+	_config as NeroAacConfig
 
 
 

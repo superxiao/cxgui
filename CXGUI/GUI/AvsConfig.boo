@@ -41,6 +41,8 @@ public class AvsConfig():
 	_normalize as bool
 	[Property(Muxer)]
 	_muxer as Muxer
+	[Property(Mode)]
+	_mode as JobMode
 	
 def cfgtest():
 	pass
