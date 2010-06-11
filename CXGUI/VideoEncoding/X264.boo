@@ -16,7 +16,6 @@ class X264(VideoEncoderBase):
 		_encodingProcess.StartInfo.FileName = _encoderPath
 	def Start():
 		_encodingProcess.StartInfo.Arguments = "${_config.GetSettings()} --output \"${_destinationFile}\" \"${_avisynthScriptFile}\""
-		IO.File.WriteAllText("C:\\TEST.TXT", _encodingProcess.StartInfo.Arguments)
 		_encodingProcess.StartInfo.UseShellExecute = false
 		_encodingProcess.StartInfo.RedirectStandardError = true
 		_encodingProcess.StartInfo.CreateNoWindow = true
@@ -52,6 +51,7 @@ class X264(VideoEncoderBase):
 			if _line.StartsWith("["):
 				UpdateProgress(_line)
 			elif _line.Contains("error"):
+				File.WriteAllText("c:\\test.txt", _line)
 				_errOccured = true
 			
 	def UpdateProgress(line as string):

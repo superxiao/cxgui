@@ -15,12 +15,15 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private def InitializeComponent():
 		self.tabControl1 = System.Windows.Forms.TabControl()
 		self.tabPage1 = System.Windows.Forms.TabPage()
+		self.destFileBox = System.Windows.Forms.ComboBox()
 		self.cbMode = System.Windows.Forms.ComboBox()
 		self.label15 = System.Windows.Forms.Label()
 		self.label6 = System.Windows.Forms.Label()
-		self.browseButton = System.Windows.Forms.Button()
-		self.destFileBox = System.Windows.Forms.TextBox()
+		self.btOutBrowse = System.Windows.Forms.Button()
 		self.gbAudioAvs = System.Windows.Forms.GroupBox()
+		self.tbSepAudio = System.Windows.Forms.TextBox()
+		self.btSepAudio = System.Windows.Forms.Button()
+		self.chbSepAudio = System.Windows.Forms.CheckBox()
 		self.audioSourceComboBox = System.Windows.Forms.ComboBox()
 		self.downMixBox = System.Windows.Forms.CheckBox()
 		self.normalizeBox = System.Windows.Forms.CheckBox()
@@ -68,6 +71,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.cancelButton = System.Windows.Forms.Button()
 		self.okButton = System.Windows.Forms.Button()
 		self.saveFileDialog1 = System.Windows.Forms.SaveFileDialog()
+		self.openFileDialog1 = System.Windows.Forms.OpenFileDialog()
 		self.tabControl1.SuspendLayout()
 		self.tabPage1.SuspendLayout()
 		self.gbAudioAvs.SuspendLayout()
@@ -94,11 +98,11 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tabPage1
 		# 
+		self.tabPage1.Controls.Add(self.destFileBox)
 		self.tabPage1.Controls.Add(self.cbMode)
 		self.tabPage1.Controls.Add(self.label15)
 		self.tabPage1.Controls.Add(self.label6)
-		self.tabPage1.Controls.Add(self.browseButton)
-		self.tabPage1.Controls.Add(self.destFileBox)
+		self.tabPage1.Controls.Add(self.btOutBrowse)
 		self.tabPage1.Controls.Add(self.gbAudioAvs)
 		self.tabPage1.Controls.Add(self.gbVideoSource)
 		self.tabPage1.Controls.Add(self.gbResolution)
@@ -109,6 +113,14 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage1.TabIndex = 0
 		self.tabPage1.Text = "编辑"
 		self.tabPage1.UseVisualStyleBackColor = true
+		# 
+		# destFileBox
+		# 
+		self.destFileBox.FormattingEnabled = true
+		self.destFileBox.Location = System.Drawing.Point(74, 427)
+		self.destFileBox.Name = "destFileBox"
+		self.destFileBox.Size = System.Drawing.Size(266, 20)
+		self.destFileBox.TabIndex = 11
 		# 
 		# cbMode
 		# 
@@ -139,30 +151,24 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label6.Text = "输出文件："
 		self.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 		# 
-		# browseButton
+		# btOutBrowse
 		# 
-		self.browseButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
-		self.browseButton.Location = System.Drawing.Point(346, 425)
-		self.browseButton.Name = "browseButton"
-		self.browseButton.Size = System.Drawing.Size(75, 23)
-		self.browseButton.TabIndex = 7
-		self.browseButton.Text = "浏览"
-		self.browseButton.UseVisualStyleBackColor = true
-		self.browseButton.Click += self.BrowseButtonClick as System.EventHandler
-		# 
-		# destFileBox
-		# 
-		self.destFileBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-						| System.Windows.Forms.AnchorStyles.Right))
-		self.destFileBox.Location = System.Drawing.Point(86, 425)
-		self.destFileBox.Name = "destFileBox"
-		self.destFileBox.Size = System.Drawing.Size(254, 21)
-		self.destFileBox.TabIndex = 6
+		self.btOutBrowse.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
+		self.btOutBrowse.Location = System.Drawing.Point(346, 425)
+		self.btOutBrowse.Name = "btOutBrowse"
+		self.btOutBrowse.Size = System.Drawing.Size(75, 23)
+		self.btOutBrowse.TabIndex = 7
+		self.btOutBrowse.Text = "浏览"
+		self.btOutBrowse.UseVisualStyleBackColor = true
+		self.btOutBrowse.Click += self.BtOutBrowseClick as System.EventHandler
 		# 
 		# gbAudioAvs
 		# 
 		self.gbAudioAvs.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
+		self.gbAudioAvs.Controls.Add(self.tbSepAudio)
+		self.gbAudioAvs.Controls.Add(self.btSepAudio)
+		self.gbAudioAvs.Controls.Add(self.chbSepAudio)
 		self.gbAudioAvs.Controls.Add(self.audioSourceComboBox)
 		self.gbAudioAvs.Controls.Add(self.downMixBox)
 		self.gbAudioAvs.Controls.Add(self.normalizeBox)
@@ -172,6 +178,37 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.gbAudioAvs.TabIndex = 5
 		self.gbAudioAvs.TabStop = false
 		self.gbAudioAvs.Text = "音频"
+		# 
+		# tbSepAudio
+		# 
+		self.tbSepAudio.Enabled = false
+		self.tbSepAudio.Location = System.Drawing.Point(85, 67)
+		self.tbSepAudio.Name = "tbSepAudio"
+		self.tbSepAudio.ReadOnly = true
+		self.tbSepAudio.Size = System.Drawing.Size(249, 21)
+		self.tbSepAudio.TabIndex = 13
+		# 
+		# btSepAudio
+		# 
+		self.btSepAudio.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
+		self.btSepAudio.Enabled = false
+		self.btSepAudio.Location = System.Drawing.Point(340, 67)
+		self.btSepAudio.Name = "btSepAudio"
+		self.btSepAudio.Size = System.Drawing.Size(63, 23)
+		self.btSepAudio.TabIndex = 12
+		self.btSepAudio.Text = "浏览"
+		self.btSepAudio.UseVisualStyleBackColor = true
+		self.btSepAudio.Click += self.BtSepAudioClick as System.EventHandler
+		# 
+		# chbSepAudio
+		# 
+		self.chbSepAudio.Location = System.Drawing.Point(6, 65)
+		self.chbSepAudio.Name = "chbSepAudio"
+		self.chbSepAudio.Size = System.Drawing.Size(91, 24)
+		self.chbSepAudio.TabIndex = 3
+		self.chbSepAudio.Text = "独立音轨："
+		self.chbSepAudio.UseVisualStyleBackColor = true
+		self.chbSepAudio.CheckedChanged += self.ChbSepAudioCheckedChanged as System.EventHandler
 		# 
 		# audioSourceComboBox
 		# 
@@ -185,8 +222,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# downMixBox
 		# 
-		self.downMixBox.Checked = true
-		self.downMixBox.CheckState = System.Windows.Forms.CheckState.Checked
 		self.downMixBox.Location = System.Drawing.Point(143, 20)
 		self.downMixBox.Name = "downMixBox"
 		self.downMixBox.Size = System.Drawing.Size(104, 24)
@@ -230,8 +265,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# sourceFrameRateCheckBox
 		# 
-		self.sourceFrameRateCheckBox.Checked = true
-		self.sourceFrameRateCheckBox.CheckState = System.Windows.Forms.CheckState.Checked
 		self.sourceFrameRateCheckBox.Location = System.Drawing.Point(166, 44)
 		self.sourceFrameRateCheckBox.Name = "sourceFrameRateCheckBox"
 		self.sourceFrameRateCheckBox.Size = System.Drawing.Size(103, 24)
@@ -252,7 +285,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		self.frameRateBox.FormattingEnabled = true
 		self.frameRateBox.Items.AddRange((of object: "23.976", "25", "29.970", "30"))
-		self.frameRateBox.Location = System.Drawing.Point(80, 48)
+		self.frameRateBox.Location = System.Drawing.Point(85, 48)
 		self.frameRateBox.Name = "frameRateBox"
 		self.frameRateBox.Size = System.Drawing.Size(67, 20)
 		self.frameRateBox.TabIndex = 1
@@ -293,8 +326,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# sourceResolutionCheckBox
 		# 
-		self.sourceResolutionCheckBox.Checked = true
-		self.sourceResolutionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked
 		self.sourceResolutionCheckBox.Location = System.Drawing.Point(165, 18)
 		self.sourceResolutionCheckBox.Name = "sourceResolutionCheckBox"
 		self.sourceResolutionCheckBox.Size = System.Drawing.Size(104, 24)
@@ -308,9 +339,9 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.modBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		self.modBox.FormattingEnabled = true
 		self.modBox.Items.AddRange((of object: "2", "4", "8", "16", "32"))
-		self.modBox.Location = System.Drawing.Point(337, 21)
+		self.modBox.Location = System.Drawing.Point(340, 21)
 		self.modBox.Name = "modBox"
-		self.modBox.Size = System.Drawing.Size(63, 20)
+		self.modBox.Size = System.Drawing.Size(60, 20)
 		self.modBox.TabIndex = 8
 		self.modBox.SelectedIndexChanged += self.ModBoxSelectedIndexChanged as System.EventHandler
 		# 
@@ -344,8 +375,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# lockARCheckBox
 		# 
-		self.lockARCheckBox.Checked = true
-		self.lockARCheckBox.CheckState = System.Windows.Forms.CheckState.Checked
 		self.lockARCheckBox.Location = System.Drawing.Point(180, 55)
 		self.lockARCheckBox.Name = "lockARCheckBox"
 		self.lockARCheckBox.Size = System.Drawing.Size(89, 24)
@@ -414,7 +443,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage2.Location = System.Drawing.Point(4, 22)
 		self.tabPage2.Name = "tabPage2"
 		self.tabPage2.Padding = System.Windows.Forms.Padding(3)
-		self.tabPage2.Size = System.Drawing.Size(459, 497)
+		self.tabPage2.Size = System.Drawing.Size(432, 463)
 		self.tabPage2.TabIndex = 1
 		self.tabPage2.Text = "编码器"
 		self.tabPage2.UseVisualStyleBackColor = true
@@ -448,7 +477,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox5.Controls.Add(self.label13)
 		self.groupBox5.Location = System.Drawing.Point(6, 168)
 		self.groupBox5.Name = "groupBox5"
-		self.groupBox5.Size = System.Drawing.Size(447, 83)
+		self.groupBox5.Size = System.Drawing.Size(420, 83)
 		self.groupBox5.TabIndex = 1
 		self.groupBox5.TabStop = false
 		self.groupBox5.Text = "NeroAac"
@@ -508,7 +537,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox4.Controls.Add(self.rateControlBox)
 		self.groupBox4.Location = System.Drawing.Point(6, 6)
 		self.groupBox4.Name = "groupBox4"
-		self.groupBox4.Size = System.Drawing.Size(447, 156)
+		self.groupBox4.Size = System.Drawing.Size(420, 156)
 		self.groupBox4.TabIndex = 0
 		self.groupBox4.TabStop = false
 		self.groupBox4.Text = "x264"
@@ -670,6 +699,10 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.okButton.UseVisualStyleBackColor = true
 		self.okButton.Click += self.OkButtonClick as System.EventHandler
 		# 
+		# openFileDialog1
+		# 
+		self.openFileDialog1.FileName = "openFileDialog1"
+		# 
 		# MediaSettingForm
 		# 
 		self.AcceptButton = self.okButton
@@ -688,8 +721,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.FormClosed += self.MediaSettingFormFormClosed as System.Windows.Forms.FormClosedEventHandler
 		self.tabControl1.ResumeLayout(false)
 		self.tabPage1.ResumeLayout(false)
-		self.tabPage1.PerformLayout()
 		self.gbAudioAvs.ResumeLayout(false)
+		self.gbAudioAvs.PerformLayout()
 		self.gbVideoSource.ResumeLayout(false)
 		self.gbResolution.ResumeLayout(false)
 		self.gbResolution.PerformLayout()
@@ -698,6 +731,11 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private tbSepAudio as System.Windows.Forms.TextBox
+	private openFileDialog1 as System.Windows.Forms.OpenFileDialog
+	private btSepAudio as System.Windows.Forms.Button
+	private chbSepAudio as System.Windows.Forms.CheckBox
+	private btOutBrowse as System.Windows.Forms.Button
 	private gbVideoSource as System.Windows.Forms.GroupBox
 	private gbAudioAvs as System.Windows.Forms.GroupBox
 	private gbResolution as System.Windows.Forms.GroupBox
@@ -726,9 +764,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private groupBox4 as System.Windows.Forms.GroupBox
 	private groupBox5 as System.Windows.Forms.GroupBox
 	private label6 as System.Windows.Forms.Label
-	private destFileBox as System.Windows.Forms.TextBox
+	private destFileBox as System.Windows.Forms.ComboBox
 	private saveFileDialog1 as System.Windows.Forms.SaveFileDialog
-	private browseButton as System.Windows.Forms.Button
 	private normalizeBox as System.Windows.Forms.CheckBox
 	private downMixBox as System.Windows.Forms.CheckBox
 	private sourceResolutionCheckBox as System.Windows.Forms.CheckBox

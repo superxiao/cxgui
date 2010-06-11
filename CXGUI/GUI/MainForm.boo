@@ -117,38 +117,42 @@ partial class MainForm(System.Windows.Forms.Form):
 		SyncReport(jobItem)
 		avsConfig = jobItem.AvsConfig
 
-		if not avsConfig.Mode == JobMode.Audio:
+		if avsConfig.Mode != JobMode.Audio:
 			self.WriteVideoAvs(jobItem.SourceFile, 'video.avs', avsConfig)
 			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
-		if not avsConfig.Mode == JobMode.Video:
-			self.WriteAudioAvs(jobItem.SourceFile, 'audio.avs', avsConfig)
-			if avsConfig.Mode == JobMode.Audio:
+		if avsConfig.Mode != JobMode.Video:
+			if avsConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
+				sourceAudio = jobItem.SeparateAudio
+			else:
+				sourceAudio = jobItem.SourceFile
+			self.WriteAudioAvs(sourceAudio, 'audio.avs', avsConfig)
+			if avsConfig.Mode != JobMode.Audio:
 				destAudio = Path.ChangeExtension(jobItem.DestFile, 'm4a')
 			else:
 				destAudio = jobItem.DestFile
+
 			try:
 				self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
 			except InvalidAudioAvisynthScriptException:
-
 				ChangeSourceAndRetry = do:
-					if avsConfig.AudioSource == AudioScriptConfig.AudioSourceFilter.FFAudioSource:
-						avsConfig.AudioSource = AudioScriptConfig.AudioSourceFilter.DirectShowSource
-					else:
-						avsConfig.AudioSource = AudioScriptConfig.AudioSourceFilter.FFAudioSource
+					source = avsConfig.AudioSource
+					source = source + 1 if source == 0
+					source = source - 1 if source == 1 
 					self.WriteAudioAvs(jobItem.SourceFile, 'audio.avs', avsConfig)
 					try:
 						self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
 					except InvalidAudioAvisynthScriptException:
 						MessageBox.Show(jobItem.SourceFile + "\n音频脚本无法读取。", 
 				"检测失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
-
 				if self._configForm.cbAudioAutoSF.Checked:
 					ChangeSourceAndRetry()
 				else:
 					result = MessageBox.Show(jobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
 					"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
+					avsConfig.Mode = JobMode.Video if avsConfig.Mode == JobMode.Normal
 					if result == DialogResult.OK:
 						ChangeSourceAndRetry()
+
 		if avsConfig.Mode == JobMode.Normal:
 			self.Mux(jobItem.DestFile, destAudio, "", jobItem.AvsConfig.Muxer, e)
 			File.Delete(destAudio)
@@ -327,8 +331,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		jobItem = self._jobItems[item]
 		SetUpItems((jobItem,))
 		if self._mediaSettingForm == null:
-			self._mediaSettingForm = MediaSettingForm(jobItem.SourceFile, jobItem.DestFile,
-			jobItem.AvsConfig, jobItem.VideoEncConfig, jobItem.AudioEncConfig)
+			self._mediaSettingForm = MediaSettingForm(jobItem)
 		else:
 			self._mediaSettingForm.SourceFile = jobItem.SourceFile
 			self._mediaSettingForm.DestFile = jobItem.DestFile
@@ -345,6 +348,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.VideoEncConfig = self._mediaSettingForm.VideoEncConfig
 			jobItem.AudioEncConfig = self._mediaSettingForm.AudioEncConfig
 			jobItem.KeepingCfg = true
+			if jobItem.AvsConfig.UseSeparateAudio:
+				jobItem.SeparateAudio = self._mediaSettingForm.SepAudio
 		else:
 			jobItem.Clear()
 
@@ -476,6 +481,9 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def 打开目录ToolStripMenuItemClick(sender as object, e as System.EventArgs):
 		jobItem = self._jobItems[self.listView1.SelectedItems[0]]
 		System.Diagnostics.Process.Start("explorer.exe", "/select, " + jobItem.SourceFile)
+	
+	private def ListView1DoubleClick(sender as object, e as System.EventArgs):
+		self.settingButton.PerformClick()
 
 		
 [STAThread]

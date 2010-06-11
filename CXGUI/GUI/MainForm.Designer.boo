@@ -160,6 +160,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.listView1.TabIndex = 3
 		self.listView1.UseCompatibleStateImageBehavior = false
 		self.listView1.View = System.Windows.Forms.View.Details
+		self.listView1.DoubleClick += self.ListView1DoubleClick as System.EventHandler
 		self.listView1.DragDrop += self.ListView1DragDrop as System.Windows.Forms.DragEventHandler
 		self.listView1.ItemSelectionChanged += self.ListView1ItemSelectionChanged as System.Windows.Forms.ListViewItemSelectionChangedEventHandler
 		self.listView1.DragEnter += self.ListView1DragEnter as System.Windows.Forms.DragEventHandler
@@ -183,48 +184,48 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		self.listViewMenu.Items.AddRange((of System.Windows.Forms.ToolStripItem: self.设置ToolStripMenuItem, self.等待ToolStripMenuItem, self.添加ToolStripMenuItem1, self.删除ToolStripMenuItem, self.清空ToolStripMenuItem, self.打开目录ToolStripMenuItem))
 		self.listViewMenu.Name = "contextMenuStrip1"
-		self.listViewMenu.Size = System.Drawing.Size(153, 158)
+		self.listViewMenu.Size = System.Drawing.Size(125, 136)
 		self.listViewMenu.Opening += self.ContextMenuStrip1Opening as System.ComponentModel.CancelEventHandler
 		# 
 		# 设置ToolStripMenuItem
 		# 
 		self.设置ToolStripMenuItem.Name = "设置ToolStripMenuItem"
-		self.设置ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+		self.设置ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
 		self.设置ToolStripMenuItem.Text = "设置"
 		self.设置ToolStripMenuItem.Click += self.设置ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 等待ToolStripMenuItem
 		# 
 		self.等待ToolStripMenuItem.Name = "等待ToolStripMenuItem"
-		self.等待ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+		self.等待ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
 		self.等待ToolStripMenuItem.Text = "等待"
 		self.等待ToolStripMenuItem.Click += self.等待ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 添加ToolStripMenuItem1
 		# 
 		self.添加ToolStripMenuItem1.Name = "添加ToolStripMenuItem1"
-		self.添加ToolStripMenuItem1.Size = System.Drawing.Size(152, 22)
+		self.添加ToolStripMenuItem1.Size = System.Drawing.Size(124, 22)
 		self.添加ToolStripMenuItem1.Text = "添加"
 		self.添加ToolStripMenuItem1.Click += self.添加ToolStripMenuItem1Click as System.EventHandler
 		# 
 		# 删除ToolStripMenuItem
 		# 
 		self.删除ToolStripMenuItem.Name = "删除ToolStripMenuItem"
-		self.删除ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+		self.删除ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
 		self.删除ToolStripMenuItem.Text = "删除"
 		self.删除ToolStripMenuItem.Click += self.删除ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 清空ToolStripMenuItem
 		# 
 		self.清空ToolStripMenuItem.Name = "清空ToolStripMenuItem"
-		self.清空ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+		self.清空ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
 		self.清空ToolStripMenuItem.Text = "清空"
 		self.清空ToolStripMenuItem.Click += self.清空ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 打开目录ToolStripMenuItem
 		# 
 		self.打开目录ToolStripMenuItem.Name = "打开目录ToolStripMenuItem"
-		self.打开目录ToolStripMenuItem.Size = System.Drawing.Size(152, 22)
+		self.打开目录ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
 		self.打开目录ToolStripMenuItem.Text = "打开目录"
 		self.打开目录ToolStripMenuItem.Click += self.打开目录ToolStripMenuItemClick as System.EventHandler
 		# 

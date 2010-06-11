@@ -43,6 +43,8 @@ public class AvsConfig():
 	_muxer as Muxer
 	[Property(Mode)]
 	_mode as JobMode
+	[Property(UseSeparateAudio)]
+	_sepAudio as bool
 	
 def cfgtest():
 	pass

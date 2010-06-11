@@ -66,7 +66,9 @@ class JobItem:
 	_uiItem as ListViewItem
 	[Property(KeepingCfg)]
 	_KeepingCfg as bool
-	
+	[Property(SeparateAudio)]
+	_separateAudio as string
+
 	_readAvsCfg as bool
 	_readVideoCfg as bool
 	_readAudioCfg as bool
