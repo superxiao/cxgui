@@ -15,9 +15,11 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private def InitializeComponent():
 		self.tabControl1 = System.Windows.Forms.TabControl()
 		self.tabPage1 = System.Windows.Forms.TabPage()
+		self.cbAudioMode = System.Windows.Forms.ComboBox()
+		self.cbVideoMode = System.Windows.Forms.ComboBox()
+		self.label17 = System.Windows.Forms.Label()
+		self.label16 = System.Windows.Forms.Label()
 		self.destFileBox = System.Windows.Forms.ComboBox()
-		self.cbMode = System.Windows.Forms.ComboBox()
-		self.label15 = System.Windows.Forms.Label()
 		self.label6 = System.Windows.Forms.Label()
 		self.btOutBrowse = System.Windows.Forms.Button()
 		self.gbAudioAvs = System.Windows.Forms.GroupBox()
@@ -98,9 +100,11 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tabPage1
 		# 
+		self.tabPage1.Controls.Add(self.cbAudioMode)
+		self.tabPage1.Controls.Add(self.cbVideoMode)
+		self.tabPage1.Controls.Add(self.label17)
+		self.tabPage1.Controls.Add(self.label16)
 		self.tabPage1.Controls.Add(self.destFileBox)
-		self.tabPage1.Controls.Add(self.cbMode)
-		self.tabPage1.Controls.Add(self.label15)
 		self.tabPage1.Controls.Add(self.label6)
 		self.tabPage1.Controls.Add(self.btOutBrowse)
 		self.tabPage1.Controls.Add(self.gbAudioAvs)
@@ -114,6 +118,46 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage1.Text = "编辑"
 		self.tabPage1.UseVisualStyleBackColor = true
 		# 
+		# cbAudioMode
+		# 
+		self.cbAudioMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		self.cbAudioMode.FormattingEnabled = true
+		self.cbAudioMode.Items.AddRange((of object: "编码", "复制", "无"))
+		self.cbAudioMode.Location = System.Drawing.Point(281, 24)
+		self.cbAudioMode.Name = "cbAudioMode"
+		self.cbAudioMode.Size = System.Drawing.Size(121, 20)
+		self.cbAudioMode.TabIndex = 15
+		self.cbAudioMode.SelectedIndexChanged += self.CbAudioModeSelectedIndexChanged as System.EventHandler
+		# 
+		# cbVideoMode
+		# 
+		self.cbVideoMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		self.cbVideoMode.FormattingEnabled = true
+		self.cbVideoMode.Items.AddRange((of object: "编码", "复制", "无"))
+		self.cbVideoMode.Location = System.Drawing.Point(74, 24)
+		self.cbVideoMode.Name = "cbVideoMode"
+		self.cbVideoMode.Size = System.Drawing.Size(121, 20)
+		self.cbVideoMode.TabIndex = 14
+		self.cbVideoMode.SelectedIndexChanged += self.CbVideoModeSelectedIndexChanged as System.EventHandler
+		# 
+		# label17
+		# 
+		self.label17.Location = System.Drawing.Point(214, 24)
+		self.label17.Name = "label17"
+		self.label17.Size = System.Drawing.Size(61, 23)
+		self.label17.TabIndex = 13
+		self.label17.Text = "音频模式"
+		self.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+		# 
+		# label16
+		# 
+		self.label16.Location = System.Drawing.Point(13, 24)
+		self.label16.Name = "label16"
+		self.label16.Size = System.Drawing.Size(55, 23)
+		self.label16.TabIndex = 12
+		self.label16.Text = "视频模式"
+		self.label16.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+		# 
 		# destFileBox
 		# 
 		self.destFileBox.FormattingEnabled = true
@@ -121,26 +165,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.destFileBox.Name = "destFileBox"
 		self.destFileBox.Size = System.Drawing.Size(266, 20)
 		self.destFileBox.TabIndex = 11
-		# 
-		# cbMode
-		# 
-		self.cbMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		self.cbMode.FormattingEnabled = true
-		self.cbMode.Items.AddRange((of object: "正常", "只编码视频", "只编码音频"))
-		self.cbMode.Location = System.Drawing.Point(62, 21)
-		self.cbMode.Name = "cbMode"
-		self.cbMode.Size = System.Drawing.Size(121, 20)
-		self.cbMode.TabIndex = 10
-		self.cbMode.SelectedIndexChanged += self.CbModeSelectedIndexChanged as System.EventHandler
-		# 
-		# label15
-		# 
-		self.label15.Location = System.Drawing.Point(6, 21)
-		self.label15.Name = "label15"
-		self.label15.Size = System.Drawing.Size(63, 23)
-		self.label15.TabIndex = 9
-		self.label15.Text = "模式"
-		self.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		# 
 		# label6
 		# 
@@ -450,10 +474,12 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# groupBox6
 		# 
+		self.groupBox6.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
 		self.groupBox6.Controls.Add(self.muxerComboBox)
 		self.groupBox6.Location = System.Drawing.Point(6, 257)
 		self.groupBox6.Name = "groupBox6"
-		self.groupBox6.Size = System.Drawing.Size(311, 108)
+		self.groupBox6.Size = System.Drawing.Size(420, 200)
 		self.groupBox6.TabIndex = 2
 		self.groupBox6.TabStop = false
 		self.groupBox6.Text = "容器"
@@ -731,6 +757,10 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private label16 as System.Windows.Forms.Label
+	private label17 as System.Windows.Forms.Label
+	private cbVideoMode as System.Windows.Forms.ComboBox
+	private cbAudioMode as System.Windows.Forms.ComboBox
 	private tbSepAudio as System.Windows.Forms.TextBox
 	private openFileDialog1 as System.Windows.Forms.OpenFileDialog
 	private btSepAudio as System.Windows.Forms.Button
@@ -739,8 +769,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private gbVideoSource as System.Windows.Forms.GroupBox
 	private gbAudioAvs as System.Windows.Forms.GroupBox
 	private gbResolution as System.Windows.Forms.GroupBox
-	private label15 as System.Windows.Forms.Label
-	private cbMode as System.Windows.Forms.ComboBox
 	private audioSourceComboBox as System.Windows.Forms.ComboBox
 	private muxerComboBox as System.Windows.Forms.ComboBox
 	private groupBox6 as System.Windows.Forms.GroupBox

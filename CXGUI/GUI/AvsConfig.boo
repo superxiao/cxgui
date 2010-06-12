@@ -8,7 +8,7 @@ import CXGUI.StreamMuxer
 
 #	[StringValidator(InvalidCharacters: ' ~!@#$%^&*()[]{}/;\'"|\\', MinLength: 1, MaxLength: 60)]
 
-public class AvsConfig():
+public class AvisynthConfig():
 
 	public def constructor():
 		_lockAspectRatio = true
@@ -39,12 +39,6 @@ public class AvsConfig():
 	_downMix as bool
 	[Property(Normalize)]
 	_normalize as bool
-	[Property(Muxer)]
-	_muxer as Muxer
-	[Property(Mode)]
-	_mode as JobMode
-	[Property(UseSeparateAudio)]
-	_sepAudio as bool
 	
 def cfgtest():
 	pass

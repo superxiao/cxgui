@@ -27,51 +27,63 @@ enum JobEvent:
 	AllDone
 	Stop
 	
-enum JobMode:
-	Normal
-	Video
-	Audio
-	
 [Serializable()]
 class JobItem:
 """Description of JobItem"""
+
 	[Getter(SourceFile)]
 	_sourceFile as string
+
 	[Property(DestFile)]
 	_destFile as string
-	AvsConfig as AvsConfig:
-		get:
-			return _avsConfig
-		set:
-			if (not _videoInfo.AudioStreamsCount and not value.Mode == JobMode.Video)\
-				or (not _videoInfo.HasVideo and not value.Mode == JobMode.Audio):
-					raise ArgumentException("Incorrect JobMode.")
-			_avsConfig = value
-	_avsConfig as AvsConfig
+
+	[Property(AvsConfig)]
+	_avsConfig as AvisynthConfig
+
 	[Property(VideoEncConfig)]
 	_videoEncConfig as VideoEncConfigBase
+
 	[Property(AudioEncConfig)]
 	_audioEncConfig as AudioEncConfigBase
+
+	JobConfig as JobItemConfig:
+		get:
+			return _jobConfig
+		set:
+			if (not _videoInfo.AudioStreamsCount and not value.AudioMode == JobMode.None)\
+				or (not _videoInfo.HasVideo and not value.VideoMode == JobMode.None):
+					raise ArgumentException("Incorrect JobMode.")
+			_jobConfig = value
+	_jobConfig as JobItemConfig
+
 	[Property(VideoEncoder)]
 	_videoEncoder as VideoEncoderBase
+
 	[Property(AudioEncoder)]
 	_audioEncoder as AudioEncoderBase
+
 	[Property(Muxer)]
 	_muxer as MuxerBase
+
 	[Property(State)]
 	_state as JobState
+
 	[Property(Event)]
 	_event as JobEvent
+
 	[Property(UIItem)]
 	_uiItem as ListViewItem
+
 	[Property(KeepingCfg)]
 	_KeepingCfg as bool
+
 	[Property(SeparateAudio)]
 	_separateAudio as string
 
 	_readAvsCfg as bool
 	_readVideoCfg as bool
 	_readAudioCfg as bool
+	_readJobCfg as bool
 	_videoInfo as VideoInfo
 	
 	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem, readProfile as bool):
@@ -83,6 +95,7 @@ class JobItem:
 			_readAvsCfg = true
 			_readVideoCfg = true
 			_readAudioCfg = true
+			_readJobCfg = true
 			ReadProfile("default.profile")
 	
 	public def ReadAvsConfig():
@@ -96,7 +109,11 @@ class JobItem:
 	public def ReadAudioEncConfig():
 		_readAudioCfg = true
 		ReadProfile("default.profile")
-	
+		
+	public def ReadJobConfig():
+		_readJobCfg = true
+		ReadProfile("default.profile")
+
 	private def ReadProfile(path as string):
 	"""
 	从profile文件中读取VideoEncConfig AudioEncConfig AvsConfig对象到本类的相关属性。
@@ -108,6 +125,7 @@ class JobItem:
 			stream = FileStream(path, FileMode.Create)
 			formater.Serialize(stream, profile)
 			stream.Close()
+			ReadProfile(profile)
 		if not File.Exists(path):
 			CreatProfile()
 		else:
@@ -130,6 +148,9 @@ class JobItem:
 		if self._readAudioCfg:
 			_audioEncConfig = profile.AudioEncConfig
 			_readAudioCfg = false
+		if self._readJobCfg:
+			_jobConfig = profile.JobConfig
+			_readJobCfg = false
 	
 	public def Clear():
 	"""
@@ -139,4 +160,5 @@ class JobItem:
 		if not self._KeepingCfg:
 			self._avsConfig = null
 			self._audioEncConfig = null
-			self.VideoEncConfig = null
+			self._videoEncConfig = null
+			self._jobConfig = null

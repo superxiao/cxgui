@@ -23,114 +23,111 @@ partial class MediaSettingForm:
 
 	[Property(SourceFile)]
 	_sourceFile as string
+	
 	[Property(DestFile)]
 	_destFile as string
+	
 	[Property(SepAudio)]
 	_sepAudio as string
-
-	AvsConfig as AvsConfig:
-		get:
-			return _avsConfig
-		set:
-			_avsConfig = value
-			InitializeTabPage1(_avsConfig)
-	_avsConfig as AvsConfig
 	
-	VideoEncConfig as VideoEncConfigBase:
-		get:
-			return _videoEncConfig
-		set:
-			_videoEncConfig = value
-			RefreshX264UI()
+	[Property(AvsConfig)]
+	_avsConfig as AvisynthConfig
+	
+	[Property(VideoEncConfig)]
 	_videoEncConfig as VideoEncConfigBase
-
-	AudioEncConfig as AudioEncConfigBase:
-		get:
-			return _audioEncConfig
-		set:
-			_audioEncConfig = value
-			RefreshNeroAac()
+	
+	[Property(AudioEncConfig)]
 	_audioEncConfig as AudioEncConfigBase
+
+	[Property(JobConfig)]
+	_jobConfig as JobItemConfig
 
 	[Property(Changed)]
 	_changed as bool
 
 
 	public def constructor(jobItem as JobItem):
-		_sepAudio = jobItem.SeparateAudio
-		self(jobItem.SourceFile, jobItem.DestFile,
-			jobItem.AvsConfig, jobItem.VideoEncConfig, jobItem.AudioEncConfig)
-
-	public def constructor(sourceFile as string, destFile as string, avsConfig as AvsConfig, 
-	videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase):
-		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
-		_sourceFile = sourceFile
-		_destFile = destFile
-		self._avsConfig = avsConfig
-		self._videoEncConfig = videoEncConfig
-		self._audioEncConfig = audioEncConfig
-		InitializeTabPage1(_avsConfig)
-		InitializeTabPage2()
+		SetUpForItem(jobItem)
 		
+	public def SetUpForItem(jobItem as JobItem):
+		_sourceFile = jobItem.SourceFile
+		_destFile = jobItem.DestFile
+		self.destFileBox.Text = _destFile
+		_sepAudio = jobItem.SeparateAudio
+		self.tbSepAudio.Text = _sepAudio
+		self._jobConfig = jobItem.JobConfig
+		self._avsConfig = jobItem.AvsConfig
+		self._videoEncConfig = jobItem.VideoEncConfig
+		self._audioEncConfig = jobItem.AudioEncConfig
+		_videoInfo = VideoInfo(_sourceFile)
+		_audioInfo = AudioInfo(_sourceFile)
+		InitializeJobConfig(_jobConfig)
+		InitializeAvsConfig(_avsConfig)
+		InitializeEncConfig()
+
+	private def InitializeJobConfig(jobConfig as JobItemConfig):
+		if self._videoInfo.HasVideo:
+			self.cbVideoMode.Enabled = true
+			self.cbVideoMode.SelectedIndex = cast(int, jobConfig.VideoMode)
+		else:
+			self.cbVideoMode.Enabled = false
+			self.cbVideoMode.SelectedIndex = -1
+		
+		if not self.cbVideoMode.SelectedIndex == -1:
+			self.chbSepAudio.Enabled = true
+			self.chbSepAudio.Checked = jobConfig.UseSeparateAudio
+		else:
+			self.chbSepAudio.Enabled = false
+			self.chbSepAudio.Checked = false
+
+		if self.chbSepAudio.Enabled and self.chbSepAudio.Checked and self.tbSepAudio.Text != "":
+			self._usingSepAudio = true
+		else:
+			self._usingSepAudio = false
+
+		if self._usingSepAudio or _audioInfo.StreamsCount:
+			self.cbAudioMode.Enabled = true
+			self.cbAudioMode.SelectedIndex = cast(int, jobConfig.AudioMode)
+		else:
+			self.cbAudioMode.Enabled = false
+			self.cbAudioMode.SelectedIndex = -1
+		
+		SettleAudioControls()
+		
+		if self.cbVideoMode.SelectedIndex != 0:
+			self.gbResolution.Enabled = false
+			self.gbVideoSource.Enabled = false
+		else:
+			self.gbResolution.Enabled = true
+			self.gbVideoSource.Enabled = true
+		
+		self.muxerComboBox.Text = jobConfig.Muxer.ToString()
 
 		
 
 	#region TabPage1
-	private def InitializeTabPage1(avsConfig as AvsConfig):
+	private def InitializeAvsConfig(avsConfig as AvisynthConfig):
 	"""
 	从AvsConfig对象导入到UI。
 	"""
-		_videoInfo = VideoInfo(_sourceFile)
-		_audioInfo = AudioInfo(_sourceFile)
 		_resolutionCal = ResolutionCalculator()
-
-
-		if _videoInfo.HasVideo and _videoInfo.AudioStreamsCount:
-			self.cbMode.Enabled = true
-			self.cbMode.SelectedIndex = cast(int, avsConfig.Mode)
-			self.chbSepAudio.Enabled = true
-			self.chbSepAudio.Checked = avsConfig.UseSeparateAudio
-			self.gbResolution.Enabled = true
-			self.gbVideoSource.Enabled = true
-			InitializeResolution(avsConfig, _videoInfo)
-			InitializeFrameRate(avsConfig, _videoInfo)
-			self.CbModeSelectedIndexChanged(null, null)
-
-		elif not _videoInfo.HasVideo:
-			self.cbMode.Enabled = false
-			if _videoInfo.AudioStreamsCount:
-				self.cbMode.SelectedIndex = 2
-			self.chbSepAudio.Enabled = false
-			self.chbSepAudio.Checked = false
-			self.gbResolution.Enabled = false
-			self.gbVideoSource.Enabled = false
-		elif not _videoInfo.AudioStreamsCount:
-			self.cbMode.Enabled = false
-			if _videoInfo.HasVideo:
-				self.cbMode.SelectedIndex = 1
-				self.gbResolution.Enabled = true
-				self.gbVideoSource.Enabled = true
-				InitializeResolution(avsConfig, _videoInfo)
-				InitializeFrameRate(avsConfig, _videoInfo)
-			self.chbSepAudio.Enabled = true
-			self.chbSepAudio.Checked = avsConfig.UseSeparateAudio
 
 		InitializeResolutionCfg(avsConfig)
 		InitializeFrameRateCfg(avsConfig)
+		
+		if _videoInfo.HasVideo:
+			InitializeResolution(avsConfig, _videoInfo)
+			InitializeFrameRate(avsConfig, _videoInfo)
 
 		//Audio
-		SettleAudioControls()
 		self.audioSourceComboBox.Text = avsConfig.AudioSource.ToString()
 		self.downMixBox.Checked = avsConfig.DownMix
 		self.normalizeBox.Checked = avsConfig.Normalize
 
-		self.muxerComboBox.Text = avsConfig.Muxer.ToString()
+		 //TODO
 
-		self.destFileBox.Text = _destFile
-		self.tbSepAudio.Text = _sepAudio
-
-	private def InitializeResolutionCfg(avsConfig as AvsConfig):
+	private def InitializeResolutionCfg(avsConfig as AvisynthConfig):
 		if avsConfig.Width == 0 and avsConfig.Height == 0:
 			self.sourceResolutionCheckBox.Checked = true
 			for control as Control in self.gbResolution.Controls:
@@ -145,7 +142,7 @@ partial class MediaSettingForm:
 		if self.resizerBox.SelectedIndex == -1:
 			self.resizerBox.SelectedIndex = 0
 
-	private def InitializeResolution(avsConfig as AvsConfig, videoInfo as VideoInfo):
+	private def InitializeResolution(avsConfig as AvisynthConfig, videoInfo as VideoInfo):
 		if avsConfig.Mod not in (2, 4, 8, 16, 32):
 			avsConfig.Mod = 2
 		_resolutionCal.Mod = avsConfig.Mod
@@ -164,7 +161,7 @@ partial class MediaSettingForm:
 			_resolutionCal.Width = videoInfo.Width
 		RefreshResolution(null)
 
-	private def InitializeFrameRateCfg(avsConfig as AvsConfig):
+	private def InitializeFrameRateCfg(avsConfig as AvisynthConfig):
 		self.videoSourceBox.Text = avsConfig.VideoSource.ToString()
 		if self.videoSourceBox.SelectedIndex == -1:
 			self.videoSourceBox.SelectedIndex = 0				
@@ -175,7 +172,7 @@ partial class MediaSettingForm:
 		else:
 			self.convertFPSCheckBox.Enabled = true
 	
-	private def InitializeFrameRate(avsConfig as AvsConfig, videoInfo as VideoInfo):
+	private def InitializeFrameRate(avsConfig as AvisynthConfig, videoInfo as VideoInfo):
 		if avsConfig.FrameRate > 0:
 			self.frameRateBox.Text = avsConfig.FrameRate.ToString()
 			self.sourceFrameRateCheckBox.Checked = false
@@ -285,7 +282,7 @@ partial class MediaSettingForm:
 
 	#region TabPage2 X264Config
 
-	private def InitializeTabPage2():
+	private def InitializeEncConfig():
 	"""
 	从X264Config和NeroAacConfig的对象导入到UI。此后任何操作都是同步的。
 	"""
@@ -431,11 +428,10 @@ partial class MediaSettingForm:
 	#endregion
 	
 	
-	private def SaveToAvsConfig(avsConfig as AvsConfig):
+	private def SaveToAvsConfig(avsConfig as AvisynthConfig):
 	"""
 	从UI导出到AvsConfig对象。
 	"""
-		avsConfig.Mode = cast(JobMode, self.cbMode.SelectedIndex)
 		if _videoInfo.HasVideo:
 			if self.sourceResolutionCheckBox.Checked:
 				avsConfig.Width = 0
@@ -460,23 +456,31 @@ partial class MediaSettingForm:
 			avsConfig.AudioSource = Enum.Parse(AudioScriptConfig.AudioSourceFilter, self.audioSourceComboBox.Text)
 			avsConfig.DownMix = self.downMixBox.Checked
 			avsConfig.Normalize = self.normalizeBox.Checked	
-		avsConfig.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)
-		avsConfig.UseSeparateAudio = self.chbSepAudio.Checked
+		
+	private def SaveToJobConfig(jobConfig as JobItemConfig):
+		jobConfig.UseSeparateAudio = self.chbSepAudio.Checked
+		jobConfig.VideoMode = cast(JobMode, self.cbVideoMode.SelectedIndex)
+		jobConfig.AudioMode = cast(JobMode, self.cbAudioMode.SelectedIndex)
+		jobConfig.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)
 		
 	private def SetDefaultButtonClick(sender as object, e as System.EventArgs):
 		SaveToAvsConfig(_avsConfig)
+		SaveToJobConfig(_jobConfig)
 		stream = FileStream("default.profile", FileMode.Create)
 		formater = BinaryFormatter()
 		_profile = Profile()
 		_profile.AvsConfig = _avsConfig
 		_profile.VideoEncConfig = self._videoEncConfig
 		_profile.AudioEncConfig = self._audioEncConfig
+		_profile.JobConfig = self._jobConfig
 		formater.Serialize(stream, _profile)
 		stream.Close()
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):
 		if self.chbSepAudio.Checked:
-			if self.tbSepAudio.Text == "":
+			if self.tbSepAudio.Text != "":
+				self._sepAudio = self.tbSepAudio.Text
+			else:
 				result = MessageBox.Show("未指定外挂音轨。确定退出吗？", "", MessageBoxButtons.YesNo,
 				MessageBoxIcon.Information)
 				if result == DialogResult.No:
@@ -486,6 +490,7 @@ partial class MediaSettingForm:
 		if _resetter.Changed:
 			_changed = true
 		SaveToAvsConfig(_avsConfig)
+		SaveToJobConfig(_jobConfig)
 		try:
 			Path.GetDirectoryName(self.destFileBox.Text)
 			self._destFile = self.destFileBox.Text
@@ -536,32 +541,59 @@ partial class MediaSettingForm:
 		self._avsConfig = null
 		self._videoEncConfig = null
 		self._audioEncConfig = null
+		self._jobConfig = null
 		self._videoInfo = null
 		self._audioInfo = null
 		self._resolutionCal = null
 		self._sourceFile = ""
 		self._destFile = ""
+		self._sepAudio = ""
+		self.widthBox.Text = ""
+		self.heightBox.Text = ""
+		self.aspectRatioBox.Text = ""
+		self.frameRateBox.Text = ""
 	
-	private def CbModeSelectedIndexChanged(sender as object, e as System.EventArgs):
-		if self.cbMode.SelectedIndex == 0:
-			if self._videoInfo.HasVideo:
-				self.gbResolution.Enabled = true
-				self.gbVideoSource.Enabled = true
-		elif self.cbMode.SelectedIndex == 1:
-			if self._videoInfo.HasVideo:
-				self.gbResolution.Enabled = true
-				self.gbVideoSource.Enabled = true
-		elif self.cbMode.SelectedIndex == 2:
-			self.gbResolution.Enabled = false
-			self.gbVideoSource.Enabled = false
+	private def CbVideoModeSelectedIndexChanged(sender as object, e as System.EventArgs):
+		if self.cbVideoMode.SelectedIndex == 0:
+			self.gbResolution.Enabled = true
+			self.gbVideoSource.Enabled = true
+		elif self.cbVideoMode.SelectedIndex == 1:
+#			self.gbResolution.Enabled = false
+#			self.gbVideoSource.Enabled = false
+			MessageBox.Show("复制模式目前不可用。", "", MessageBoxButtons.OK)
+			self.cbVideoMode.SelectedIndex = 0
+		elif self.cbVideoMode.SelectedIndex == 2:
+			if self.cbAudioMode.SelectedIndex in (-1, 2):
+				MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+				self.cbVideoMode.SelectedIndex = 0
+			else:
+				self.gbResolution.Enabled = false
+				self.gbVideoSource.Enabled = false
+
+	private def CbAudioModeSelectedIndexChanged(sender as object, e as System.EventArgs):
+		if self.cbAudioMode.SelectedIndex == 1:
+			MessageBox.Show("复制模式目前不可用。", "", MessageBoxButtons.OK)
+			self.cbAudioMode.SelectedIndex = 0
+		if self.cbAudioMode.SelectedIndex == 2:
+			if self.cbVideoMode.SelectedIndex in (-1, 2):
+				MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+				self.cbAudioMode.SelectedIndex = 0
 		SettleAudioControls()
-	
+			
+
 	private def SettleAudioControls():
 	"""
 	设置有关音频的控件的Enable属性，及其必然后果。
 		
 	"""
-		if (self._audioInfo.StreamsCount or self._usingSepAudio) and self.cbMode.SelectedIndex != 1:
+	
+		if self._audioInfo.StreamsCount or self._usingSepAudio:
+			self.cbAudioMode.Enabled = true
+		else:
+			self.cbAudioMode.Enabled = false
+			self.cbAudioMode.SelectedIndex = -1
+			
+		if (self._audioInfo.StreamsCount or self._usingSepAudio) and self.cbAudioMode.SelectedIndex == 0:
 			self.audioSourceComboBox.Enabled = true
 			self.downMixBox.Enabled = true
 			self.normalizeBox.Enabled = true
@@ -569,14 +601,6 @@ partial class MediaSettingForm:
 			self.audioSourceComboBox.Enabled = false
 			self.downMixBox.Enabled = false
 			self.normalizeBox.Enabled = false
-		if _videoInfo.HasVideo and (_videoInfo.AudioStreamsCount or _usingSepAudio):
-			self.cbMode.Enabled = true
-		else:
-			self.cbMode.Enabled = false
-			if _videoInfo.HasVideo:
-				self.cbMode.SelectedIndex = 1
-			elif _videoInfo.AudioStreamsCount:
-				self.cbMode.SelectedIndex = 2
 
 	private def ChbSepAudioCheckedChanged(sender as object, e as System.EventArgs):
 		if self.chbSepAudio.Checked:
@@ -584,7 +608,11 @@ partial class MediaSettingForm:
 			self.btSepAudio.Enabled = true
 			if self.tbSepAudio.Text != "":
 				self._usingSepAudio = true
-				self.cbMode.SelectedIndex = 0
+				if self.cbAudioMode.SelectedIndex in (-1, 2):
+					self.cbAudioMode.SelectedIndex = 0
+		elif self.cbVideoMode.SelectedIndex in (-1, 2):
+			MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+			self.chbSepAudio.Checked = true
 		else:
 			self.tbSepAudio.Enabled = false
 			self.btSepAudio.Enabled = false
@@ -600,6 +628,9 @@ partial class MediaSettingForm:
 		else:
 			self._usingSepAudio = true
 			self.tbSepAudio.Text = self.openFileDialog1.FileName
-			self.cbMode.SelectedIndex = 0
+			self.cbAudioMode.SelectedIndex = 0
 		SettleAudioControls()
+	
+
+
 

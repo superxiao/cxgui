@@ -65,6 +65,7 @@
     <Compile Include="Exception.boo" />
     <Compile Include="GUI\AvsConfig.boo" />
     <Compile Include="GUI\ControlResetter.boo" />
+    <Compile Include="GUI\JobItemConfig.boo" />
     <Compile Include="GUI\MainForm.boo" />
     <Compile Include="GUI\MainForm.Designer.boo">
       <DependentUpon>MainForm.boo</DependentUpon>

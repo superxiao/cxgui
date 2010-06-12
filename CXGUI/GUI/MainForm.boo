@@ -110,23 +110,29 @@ partial class MainForm(System.Windows.Forms.Form):
 				item.ReadVideoEncConfig()
 			if item.AudioEncConfig == null:
 				item.ReadAudioEncConfig()
-		
+			if item.JobConfig == null:
+				item.ReadJobConfig()
+
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
 		jobItem as JobItem = e.Argument
 		jobItem.Event = JobEvent.OneStart
 		SyncReport(jobItem)
 		avsConfig = jobItem.AvsConfig
+		jobConfig = jobItem.JobConfig
 
-		if avsConfig.Mode != JobMode.Audio:
+		if jobConfig.VideoMode == JobMode.Encode:
 			self.WriteVideoAvs(jobItem.SourceFile, 'video.avs', avsConfig)
 			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
-		if avsConfig.Mode != JobMode.Video:
-			if avsConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
+		
+		return if IsCancelled(e)
+
+		if jobConfig.AudioMode == JobMode.Encode:
+			if jobConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
 				sourceAudio = jobItem.SeparateAudio
 			else:
 				sourceAudio = jobItem.SourceFile
 			self.WriteAudioAvs(sourceAudio, 'audio.avs', avsConfig)
-			if avsConfig.Mode != JobMode.Audio:
+			if jobConfig.VideoMode != JobMode.None:
 				destAudio = Path.ChangeExtension(jobItem.DestFile, 'm4a')
 			else:
 				destAudio = jobItem.DestFile
@@ -149,14 +155,17 @@ partial class MainForm(System.Windows.Forms.Form):
 				else:
 					result = MessageBox.Show(jobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
 					"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
-					avsConfig.Mode = JobMode.Video if avsConfig.Mode == JobMode.Normal
+					jobConfig.AudioMode = JobMode.None
 					if result == DialogResult.OK:
 						ChangeSourceAndRetry()
 
-		if avsConfig.Mode == JobMode.Normal:
-			self.Mux(jobItem.DestFile, destAudio, "", jobItem.AvsConfig.Muxer, e)
+		return if IsCancelled(e)
+		
+		if jobConfig.AudioMode != JobMode.None and jobConfig.VideoMode != JobMode.None:
+			self.Mux(jobItem.DestFile, destAudio, "", jobItem.JobConfig.Muxer, e)
 			File.Delete(destAudio)
 
+		return if IsCancelled(e)
 		jobItem.Event = JobEvent.OneDone
 		SyncReport(jobItem)
 		if self._workingItems[-1] is jobItem:
@@ -166,6 +175,13 @@ partial class MainForm(System.Windows.Forms.Form):
 			index = self._workingItems.IndexOf(jobItem)
 			e.Result = self._workingItems[index+1]
 			
+	private def IsCancelled(e as DoWorkEventArgs):
+		if self.backgroundWorker1.CancellationPending:
+			e.Cancel = true
+			return true
+		else:
+			return false
+	
 	private def SyncReport(jobItem as JobItem):
 		self._workerReporting = true
 		self.backgroundWorker1.ReportProgress(0, jobItem)
@@ -333,11 +349,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		if self._mediaSettingForm == null:
 			self._mediaSettingForm = MediaSettingForm(jobItem)
 		else:
-			self._mediaSettingForm.SourceFile = jobItem.SourceFile
-			self._mediaSettingForm.DestFile = jobItem.DestFile
-			self._mediaSettingForm.AvsConfig = jobItem.AvsConfig
-			self._mediaSettingForm.VideoEncConfig = jobItem.VideoEncConfig
-			self._mediaSettingForm.AudioEncConfig = jobItem.AudioEncConfig
+			self._mediaSettingForm.SetUpForItem(jobItem)
 		result = self._mediaSettingForm.ShowDialog()
 		if result == DialogResult.OK and self._mediaSettingForm.Changed:
 			jobItem.State = JobState.Waiting
@@ -347,11 +359,13 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.AvsConfig = self._mediaSettingForm.AvsConfig
 			jobItem.VideoEncConfig = self._mediaSettingForm.VideoEncConfig
 			jobItem.AudioEncConfig = self._mediaSettingForm.AudioEncConfig
+			jobItem.JobConfig = self._mediaSettingForm.JobConfig
 			jobItem.KeepingCfg = true
-			if jobItem.AvsConfig.UseSeparateAudio:
+			if jobItem.JobConfig.UseSeparateAudio:
 				jobItem.SeparateAudio = self._mediaSettingForm.SepAudio
 		else:
 			jobItem.Clear()
+		self._mediaSettingForm.Clear()
 
 	private def StopButtonClick(sender as object, e as EventArgs):
 		try:
@@ -359,7 +373,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		except:
 			pass
 
-	private def WriteAudioAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfig):
+	private def WriteAudioAvs(sourceFile as string, avsFile as string, avsConfig as AvisynthConfig):
 		writer = AvisynthWriter(sourceFile)
 		audioConfig as AudioScriptConfig = writer.AudioConfig
 		audioConfig.DownMix = avsConfig.DownMix
@@ -368,7 +382,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		audioConfig.SourceFilter = avsConfig.AudioSource
 		writer.WriteAudioScript()
 
-	private def WriteVideoAvs(sourceFile as string, avsFile as string, avsConfig as AvsConfig):
+	private def WriteVideoAvs(sourceFile as string, avsFile as string, avsConfig as AvisynthConfig):
 		writer = AvisynthWriter(sourceFile)
 		videoConfig as VideoScriptConfig = writer.VideoConfig
 		if avsConfig.Width > 0:

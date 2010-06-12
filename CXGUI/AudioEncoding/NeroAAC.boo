@@ -28,17 +28,19 @@ class NeroAac(AudioEncoderBase):
 		handle = GCHandle.Alloc(buffer, GCHandleType.Pinned)
 		address as IntPtr = handle.AddrOfPinnedObject()
 		_startTime = date.Now
-		using self._scriptInfo = AviSynthScriptEnvironment().OpenScriptFile(self._avisynthScriptFile):
-			while true:
-				samplesAmount = Math.Min(cast(int, (_scriptInfo.SamplesCount - currentSample)), 4096)
-				_scriptInfo.ReadAudio(address, currentSample, samplesAmount)
-				target.Write(buffer, 0, samplesAmount * _scriptInfo.ChannelsCount * _scriptInfo.BytesPerSample)
-				target.Flush()
-				currentSample += samplesAmount
-				UpdateProgress(currentSample)
-				if currentSample == _scriptInfo.SamplesCount:
-					break
-			target.Write(buffer, 0, 10)
+		try:
+			using self._scriptInfo = AviSynthScriptEnvironment().OpenScriptFile(self._avisynthScriptFile):
+				while true:
+					samplesAmount = Math.Min(cast(int, (_scriptInfo.SamplesCount - currentSample)), 4096)
+					_scriptInfo.ReadAudio(address, currentSample, samplesAmount)
+					target.Write(buffer, 0, samplesAmount * _scriptInfo.ChannelsCount * _scriptInfo.BytesPerSample)
+					target.Flush()
+					currentSample += samplesAmount
+					UpdateProgress(currentSample)
+					if currentSample == _scriptInfo.SamplesCount:
+						break
+				target.Write(buffer, 0, 10)
+		ensure:
 			handle.Free()
 		_encodingProcess.WaitForExit()
 
