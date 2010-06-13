@@ -14,14 +14,25 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 	获取音频信息。
 	"""
 		InitializeProperties(path, 0)
-	private def InitializeProperties(path as string, streamNumber as int):
-		_currentStream = streamNumber
-		MI = MediaInfoLib.MediaInfo()
-		MI.Open(path)
+
+	private def InitializeProperties(path as string, streamNum as int):
+		info = MediaInfoLib.MediaInfo()
+		info.Open(path)
 		_filePath = path
-		_format = MI.Get(StreamKind.Audio, _currentStream, "Format")
-		_streamsCount = MI.Count_Get(StreamKind.Audio)
-		MI.Close()
+		_format = info.Get(StreamKind.Audio, streamNum, "Format")
+
+		audioID = info.Get(StreamKind.Audio, 0, "ID")
+		videoID = info.Get(StreamKind.Video, 0, "ID")
+		if audioID == "0" or videoID == "0":
+			firstID = 0
+		elif audioID == "1" or videoID == "1":
+			firstID = 1
+		int.TryParse(info.Get(StreamKind.Audio, streamNum, "ID"), _id)
+		_id = _id - firstID if _id > 0
+		double.TryParse(info.Get(StreamKind.Audio, streamNum, "Duration"), _length)
+		_length = _length / 1000
+		_streamsCount = info.Count_Get(StreamKind.Audio)
+		info.Close()
 
 	//Methods
 	public static def GetAudioInfo(path as string, streamNumber as int, audioParameter as string) as string:
@@ -71,3 +82,7 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 	[Getter(Format)]
 	_format as string
 	"""音频格式。"""
+	[Getter(ID)]
+	_id as int
+	[Getter(Length)]
+	_length as double

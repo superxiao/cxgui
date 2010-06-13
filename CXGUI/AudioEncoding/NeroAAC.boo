@@ -44,7 +44,7 @@ class NeroAac(AudioEncoderBase):
 			handle.Free()
 		_encodingProcess.WaitForExit()
 
-	def UpdateProgress(currentSample as int):
+	private def UpdateProgress(currentSample as int):
 		_currentPosition = currentSample / _scriptInfo.AudioSampleRate //s
 		_currentFileSize = currentSample * _scriptInfo.BytesPerSample //bytes
 		_progress = cast(double, currentSample) / _scriptInfo.SamplesCount * 100 //per

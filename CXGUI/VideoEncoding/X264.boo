@@ -42,7 +42,7 @@ class X264(VideoEncoderBase):
 					_timeLeft = timespan(0)
 					break
 
-	def ReadStdErr():
+	private def ReadStdErr():
 		sr = _encodingProcess.StandardError
 		_line = ""
 		while true:
@@ -51,10 +51,9 @@ class X264(VideoEncoderBase):
 			if _line.StartsWith("["):
 				UpdateProgress(_line)
 			elif _line.Contains("error"):
-				File.WriteAllText("c:\\test.txt", _line)
 				_errOccured = true
 			
-	def UpdateProgress(line as string):
+	private def UpdateProgress(line as string):
 		info = line.Split(char(','))
 		frame = info[0]
 		_currentFrame = int.Parse(frame[frame.IndexOf("]")+1:frame.IndexOf("/")])

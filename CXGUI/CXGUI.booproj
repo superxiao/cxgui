@@ -58,6 +58,7 @@
     <Compile Include="AudioEncoding\NeroAacConfig.boo">
       <DependentUpon>NeroAAC.boo</DependentUpon>
     </Compile>
+    <Compile Include="AudioEncoding\TEST.boo" />
     <Compile Include="Avisynth\AudioScriptConfig.boo" />
     <Compile Include="Avisynth\AvisynthWriter.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
@@ -84,12 +85,10 @@
     <Compile Include="MediaInfo\AudioInfo.boo" />
     <Compile Include="MediaInfo\DirectShowInfo.boo" />
     <Compile Include="MediaInfo\VideoInfo.boo" />
-    <Compile Include="MediaInfo\VideoInfo.Designer.boo">
-      <DependentUpon>VideoInfo.boo</DependentUpon>
-    </Compile>
     <Compile Include="My\File.boo" />
     <Compile Include="My\IEncoder.boo" />
     <Compile Include="My\Math.boo" />
+    <Compile Include="StreamMuxer\FFMP4.boo" />
     <Compile Include="StreamMuxer\MP4Box.boo" />
     <Compile Include="StreamMuxer\MuxerBase.boo" />
     <Compile Include="VideoEncoding\VideoEncConfigBase.boo" />

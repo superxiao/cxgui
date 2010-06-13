@@ -11,6 +11,7 @@ import System.Drawing
 import System.Runtime.Serialization.Formatters.Binary
 import DirectShowLib
 import System.ComponentModel
+import CXGUI
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
@@ -158,12 +159,28 @@ partial class MainForm(System.Windows.Forms.Form):
 					jobConfig.AudioMode = JobMode.None
 					if result == DialogResult.OK:
 						ChangeSourceAndRetry()
+			
 
 		return if IsCancelled(e)
-		
-		if jobConfig.AudioMode != JobMode.None and jobConfig.VideoMode != JobMode.None:
-			self.Mux(jobItem.DestFile, destAudio, "", jobItem.JobConfig.Muxer, e)
-			File.Delete(destAudio)
+
+		if jobConfig.Muxer != Muxer.None:
+			if jobConfig.AudioMode == JobMode.Encode:
+				muxAudio = destAudio
+			elif jobConfig.AudioMode == JobMode.Copy:
+				if jobConfig.UseSeparateAudio and jobItem.SeparateAudio != "":
+					muxAudio = jobItem.SeparateAudio
+				else:
+					muxAudio = jobItem.SourceFile
+			else:
+				muxAudio = ""
+					
+			if jobConfig.VideoMode == JobMode.Encode:
+				muxVideo = jobItem.DestFile
+			elif jobConfig.VideoMode == JobMode.Copy:
+				muxVideo = jobItem.SourceFile
+			else:
+				muxVideo = ""
+			self.Mux(muxVideo, muxAudio, jobItem.DestFile, e)
 
 		return if IsCancelled(e)
 		jobItem.Event = JobEvent.OneDone
@@ -251,7 +268,10 @@ partial class MainForm(System.Windows.Forms.Form):
 		encoder.Config = config as X264Config
 		jobItem.VideoEncoder = encoder
 		jobItem.Event = JobEvent.VideoEncoding
-		EncodeAndReport(jobItem, encoder, e)
+		result = EncodingReport.BeginInvoke(jobItem, encoder, e)
+		if not self.backgroundWorker1.CancellationPending:
+			encoder.Start()
+		result.AsyncWaitHandle.WaitOne()
 		jobItem.VideoEncoder = null
 
 	private def EncodeAudio(avsFile as string, destFile as string, config as AudioEncConfigBase, e as DoWorkEventArgs):
@@ -260,36 +280,59 @@ partial class MainForm(System.Windows.Forms.Form):
 		encoder.Config = config as NeroAacConfig
 		jobItem.AudioEncoder = encoder
 		jobItem.Event = JobEvent.AudioEncoding
-		EncodeAndReport(jobItem, encoder, e)
+		result = EncodingReport.BeginInvoke(jobItem, encoder, e)
+		if not self.backgroundWorker1.CancellationPending:
+			encoder.Start()
+		result.AsyncWaitHandle.WaitOne()
 		jobItem.AudioEncoder = null
 
-	private def Mux(video as string, audio as string, dstFile as string, streamMuxer as Muxer, e as DoWorkEventArgs):
+	private def Mux(video as string, audio as string, dstFile as string, e as DoWorkEventArgs):
 		jobItem = cast(JobItem, e.Argument)
-		box = MP4Box()
-		box.VideoFile = video
-		box.AudioFile = audio
-		box.DstFile = dstFile
-		jobItem.Muxer = box
-		jobItem.Event = JobEvent.Muxing
-		EncodeAndReport(jobItem, box, e)
-		jobItem.Muxer = null
 		
-	private def EncodeAndReport(jobItem as JobItem, encoder as IEncoder, e as DoWorkEventArgs):
-		thread = Thread(ThreadStart(encoder.Start))
-		thread.Start()
+		muxer as MuxerBase
+		if jobItem.JobConfig.Muxer == Muxer.MP4Box:
+			muxer = MP4Box()
+		elif jobItem.JobConfig.Muxer == Muxer.FFMP4:
+			muxer = FFMP4()
+
+		if muxer != null:
+			muxer.VideoFile = video
+			muxer.AudioFile = audio
+			muxer.DstFile = dstFile
+			jobItem.Muxer = muxer
+			jobItem.Event = JobEvent.Muxing
+			result = EncodingReport.BeginInvoke(jobItem, muxer, e)
+			if not self.backgroundWorker1.CancellationPending:
+				try:
+					muxer.Start()
+				except exc as FormatNotSupportedException:
+					MessageBox.Show("合成MP4失败。可能源媒体流中有不支持的格式。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+					self.backgroundWorker1.CancelAsync()
+				except exc as FFmpegBugException:
+					MessageBox.Show("合成MP4失败。这是由于FFmpeg的一些Bug, 对某些流无法使用复制。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+					self.backgroundWorker1.CancelAsync()
+			result.AsyncWaitHandle.WaitOne()
+			jobItem.Muxer = null
+			if jobItem.JobConfig.AudioMode == JobMode.Encode:
+				File.Delete(audio)
+		
+	private def EncodingReport(jobItem as JobItem, encoder as IEncoder, e as DoWorkEventArgs):
 		while true:
 			Thread.Sleep(500)
 			if self.backgroundWorker1.CancellationPending:
-				e.Cancel = true
-				encoder.Stop()
-				jobItem.Event = JobEvent.Stop
-				SyncReport(jobItem)
+				StopWorker(encoder, e)
 				break
-			if encoder.Progress >= 100:
+			if encoder.Progress == 100:
 				SyncReport(jobItem)
 				break
 			SyncReport(jobItem)
-		thread.Join()
+	
+	private def StopWorker(encoder as IEncoder, e as DoWorkEventArgs):
+			jobItem = cast(JobItem, e.Argument)
+			e.Cancel = true
+			encoder.Stop()
+			jobItem.Event = JobEvent.Stop
+			SyncReport(jobItem)
 
 	private def NextJob(sender as object, e as RunWorkerCompletedEventArgs):
 		if e.Cancelled or e.Result == null:
@@ -487,6 +530,10 @@ partial class MainForm(System.Windows.Forms.Form):
 			else:
 				e.Cancel = true
 				return
+		for item in self._jobItems.Values:
+			item.VideoEncoder = null
+			item.AudioEncoder = null
+			item.Muxer = null
 		formater = BinaryFormatter()
 		stream = FileStream("JobItems.bin", FileMode.Create)
 		formater.Serialize(stream, self._jobItems)
@@ -509,4 +556,4 @@ public def Main(argv as (string)) as void:
 	//CXGUI.AudioEncoding.aebtest()
 	//CXGUI.GUI.cfgtest()
 	//test()
-#	CXGUI.StreamMuxer.test()
+	//CXGUI.StreamMuxer.fftest()

@@ -6,10 +6,11 @@ import System.Windows.Forms
 
 class MP4Box(MuxerBase):
 """Description of MP4Box"""
+	_startTime as date
+
 	public def constructor():
 		_process.StartInfo.FileName = "MP4box.exe"
 	
-	_startTime as date
 	
 	def Start():
 		_process.StartInfo.Arguments = "-add \"${_audioFile}\"#1 \"${_videoFile}\""
@@ -29,7 +30,7 @@ class MP4Box(MuxerBase):
 		readThread.Abort()
 		_process.WaitForExit()
 	
-	def ReadStdErr():
+	private def ReadStdErr():
 		sr = _process.StandardOutput
 		line = ""
 		while true:
@@ -38,14 +39,14 @@ class MP4Box(MuxerBase):
 			UpdateProgress(line)
 				
 			
-	def UpdateProgress(line as string):
-		_timeUsed = date.Now - _startTime
-		_timeLeft = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds * (100-_progress) / 100))
-		_timeUsed = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds))
+	private def UpdateProgress(line as string):
 		if line.Contains("Writing"):
 			m = line.LastIndexOf(char('('))
 			n = line.LastIndexOf(char('/'))
 			_progress = int.Parse(line[m+1:n])
+		_timeUsed = date.Now - _startTime
+		_timeLeft = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds * (100-_progress) / _progress)) if _progress != 0
+		_timeUsed = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds))
 
 	def Stop():
 		try:

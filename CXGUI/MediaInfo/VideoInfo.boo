@@ -1,6 +1,7 @@
 ﻿namespace CXGUI
 
 import System
+import System.Windows.Forms
 import MediaInfoLib
 
 
@@ -24,6 +25,9 @@ public class VideoInfo:
 
 	protected _width as int
 
+	protected _id as int
+	
+	protected _frameCount as int
 	
 	// Methods
 	public def constructor(path as string):
@@ -54,13 +58,23 @@ public class VideoInfo:
 		info = MediaInfoLib.MediaInfo()
 		info.Open(path)
 		self._filePath = path
-		if info.Count_Get(StreamKind.Video) != 0:
+		if info.Count_Get(StreamKind.Video) > 0:
 			self._hasVideo = true
-		if self._hasVideo:
 			self._format = info.Get(StreamKind.Video, 0, 'Format')
+			audioID = info.Get(StreamKind.Audio, 0, "ID")
+			videoID = info.Get(StreamKind.Video, 0, "ID")
+			if audioID == "0" or videoID == "0":
+				firstID = 0
+			elif audioID == "1" or videoID == "1":
+				firstID = 1
+			double.TryParse(info.Get(StreamKind.Video, 0, "Duration"), _length)
+			_length = _length / 1000
+			int.TryParse(info.Get(StreamKind.Video, 0, 'ID', InfoKind.Text), self._id)
+			_id = _id - firstID if _id > 0
 			int.TryParse(info.Get(StreamKind.Video, 0, 'Width', InfoKind.Text), self._width)
 			int.TryParse(info.Get(StreamKind.Video, 0, 'Height', InfoKind.Text), self._height)
 			double.TryParse(info.Get(StreamKind.Video, 0, 'FrameRate', InfoKind.Text), self._frameRate)
+			int.TryParse(info.Get(StreamKind.Video, 0, 'FrameCount', InfoKind.Text), self._frameCount)
 			s as string = info.Get(StreamKind.Video, 0, 'DisplayAspectRatio/String', InfoKind.Text)
 			if s.IndexOf(':') != -1:
 				self._displayAspectRatio = (double.Parse(s.Split(char(':'))[0]) / (double.Parse(s.Split(char(':'))[1])))
@@ -108,8 +122,15 @@ public class VideoInfo:
 	
 	public Width as int:
 		get:
-			return self._width
+			return self._width	
 
+	public ID as int:
+		get:
+			return self._id
 
+	public FrameCount as int:
+		get:
+			return self._frameCount
 
-
+	[Getter(Length)]
+	_length as double

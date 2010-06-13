@@ -25,3 +25,11 @@ class InvalidAudioAvisynthScriptException(Exception):
 			" you don't have needed filters installed.\n${path}")
 		else:
 			super("Not an avisynth script:\n${path}")
+			
+class FormatNotSupportedException(Exception):
+	public def constructor():
+		pass
+		
+class FFmpegBugException(Exception):
+	public def constructor():
+		pass	

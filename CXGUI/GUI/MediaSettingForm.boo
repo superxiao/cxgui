@@ -11,6 +11,7 @@ import CXGUI
 import CXGUI.Avisynth
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
+import CXGUI.StreamMuxer
 
 partial class MediaSettingForm:
 """Description of MediaSettingForm."""
@@ -67,6 +68,8 @@ partial class MediaSettingForm:
 		InitializeEncConfig()
 
 	private def InitializeJobConfig(jobConfig as JobItemConfig):
+		self.cbVideoMode.SelectedIndex = 1
+		self.cbAudioMode.SelectedIndex = 1
 		if self._videoInfo.HasVideo:
 			self.cbVideoMode.Enabled = true
 			self.cbVideoMode.SelectedIndex = cast(int, jobConfig.VideoMode)
@@ -101,9 +104,10 @@ partial class MediaSettingForm:
 		else:
 			self.gbResolution.Enabled = true
 			self.gbVideoSource.Enabled = true
-		
-		self.muxerComboBox.Text = jobConfig.Muxer.ToString()
-
+		if jobConfig.Muxer == Muxer.MKV:
+			self.muxerComboBox.Text = "MKV"
+		else:
+			self.muxerComboBox.Text = "MP4"
 		
 
 	#region TabPage1
@@ -461,7 +465,13 @@ partial class MediaSettingForm:
 		jobConfig.UseSeparateAudio = self.chbSepAudio.Checked
 		jobConfig.VideoMode = cast(JobMode, self.cbVideoMode.SelectedIndex)
 		jobConfig.AudioMode = cast(JobMode, self.cbAudioMode.SelectedIndex)
-		jobConfig.Muxer = Enum.Parse(StreamMuxer.Muxer, self.muxerComboBox.Text)
+		if self.muxerComboBox.Text == "MP4" and (jobConfig.VideoMode == JobMode.Copy or jobConfig.AudioMode == JobMode.Copy):
+			jobConfig.Muxer = Muxer.FFMP4
+		elif self.muxerComboBox.Text == "MP4" and (jobConfig.VideoMode == JobMode.Encode or jobConfig.AudioMode == JobMode.Encode):
+			jobConfig.Muxer = Muxer.MP4Box
+		else:
+			jobConfig.Muxer = Muxer.None
+			
 		
 	private def SetDefaultButtonClick(sender as object, e as System.EventArgs):
 		SaveToAvsConfig(_avsConfig)
@@ -558,10 +568,8 @@ partial class MediaSettingForm:
 			self.gbResolution.Enabled = true
 			self.gbVideoSource.Enabled = true
 		elif self.cbVideoMode.SelectedIndex == 1:
-#			self.gbResolution.Enabled = false
-#			self.gbVideoSource.Enabled = false
-			MessageBox.Show("复制模式目前不可用。", "", MessageBoxButtons.OK)
-			self.cbVideoMode.SelectedIndex = 0
+			self.gbResolution.Enabled = false
+			self.gbVideoSource.Enabled = false
 		elif self.cbVideoMode.SelectedIndex == 2:
 			if self.cbAudioMode.SelectedIndex in (-1, 2):
 				MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -571,9 +579,6 @@ partial class MediaSettingForm:
 				self.gbVideoSource.Enabled = false
 
 	private def CbAudioModeSelectedIndexChanged(sender as object, e as System.EventArgs):
-		if self.cbAudioMode.SelectedIndex == 1:
-			MessageBox.Show("复制模式目前不可用。", "", MessageBoxButtons.OK)
-			self.cbAudioMode.SelectedIndex = 0
 		if self.cbAudioMode.SelectedIndex == 2:
 			if self.cbVideoMode.SelectedIndex in (-1, 2):
 				MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Warning)

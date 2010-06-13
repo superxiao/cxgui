@@ -5,8 +5,10 @@ import  System.Diagnostics
 import My
 
 enum Muxer:
-	MP4
 	MKV
+	MP4Box
+	FFMP4
+	None
 
 class MuxerBase(IEncoder):
 """Description of Class1"""
@@ -25,8 +27,10 @@ class MuxerBase(IEncoder):
 	[Getter(Progress)]
 	_progress as int
 	
-	_process = Process()
+	_process as Process = Process()
 	
+	[Property(ErrorOccured)]
+	_errOccured as bool	
 	
 	abstract def Start():
 		pass

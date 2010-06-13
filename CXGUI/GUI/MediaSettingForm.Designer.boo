@@ -486,6 +486,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# muxerComboBox
 		# 
+		self.muxerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		self.muxerComboBox.FormattingEnabled = true
 		self.muxerComboBox.Items.AddRange((of object: "MP4"))
 		self.muxerComboBox.Location = System.Drawing.Point(6, 20)
