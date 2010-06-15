@@ -80,65 +80,46 @@ class JobItem:
 	[Property(SeparateAudio)]
 	_separateAudio as string
 
+	[Property(ProfileName)]
+	_profileName as string
+
+	[Property(UsingCustomCfgInsteadOfProfile)]
+	_usingCustomCfgInsteadOfProfile as bool
+
 	_readAvsCfg as bool
 	_readVideoCfg as bool
 	_readAudioCfg as bool
 	_readJobCfg as bool
 	_videoInfo as VideoInfo
 	
-	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem, readProfile as bool):
+	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem, profileName as string):
 		self._sourceFile = sourceFile
 		self._destFile = destFile
 		self._uiItem = uiItem
+		self._profileName = profileName
 		_videoInfo = VideoInfo(sourceFile)
-		if readProfile:
-			_readAvsCfg = true
-			_readVideoCfg = true
-			_readAudioCfg = true
-			_readJobCfg = true
-			ReadProfile("default.profile")
 	
-	public def ReadAvsConfig():
-		_readAvsCfg = true
-		ReadProfile("default.profile")
-		
-	public def ReadVideoEncConfig():
-		_readVideoCfg = true
-		ReadProfile("default.profile")
-		
-	public def ReadAudioEncConfig():
-		_readAudioCfg = true
-		ReadProfile("default.profile")
-		
-	public def ReadJobConfig():
-		_readJobCfg = true
-		ReadProfile("default.profile")
+	public def SetUp():
+	"""
+	根据JobItem对象的ProfileName属性为其读取各设置实例。
+	如对应Profile文件不存在，则报错。
+	"""
+		if self._avsConfig == null:
+			_readAvsCfg = true
+		if self._videoEncConfig == null:
+			_readVideoCfg = true
+		if self._audioEncConfig == null:
+			_readAudioCfg = true
+		if self.JobConfig == null:
+			_readJobCfg = true
+		ReadProfile(self._profileName)
 
-	private def ReadProfile(path as string):
+	private def ReadProfile(profileName as string):
 	"""
 	从profile文件中读取VideoEncConfig AudioEncConfig AvsConfig对象到本类的相关属性。
 	"""
-		formater = BinaryFormatter()
-		CreatProfile = do():
-			profile = Profile()
-			ReadProfile(profile)
-			stream = FileStream(path, FileMode.Create)
-			formater.Serialize(stream, profile)
-			stream.Close()
-			ReadProfile(profile)
-		if not File.Exists(path):
-			CreatProfile()
-		else:
-			try:
-				stream = FileStream(path, FileMode.Open)
-				profile = formater.Deserialize(stream) as Profile
-				ReadProfile(profile)
-				stream.Close()
-			except:
-				stream.Close()
-				CreatProfile()
-
-	private def ReadProfile(profile as Profile):
+		if _readAvsCfg or _readVideoCfg or _readAudioCfg or _readJobCfg:
+			profile = Profile(profileName)
 		if self._readAvsCfg:
 			_avsConfig = profile.AvsConfig
 			_readAvsCfg = false
@@ -151,6 +132,7 @@ class JobItem:
 		if self._readJobCfg:
 			_jobConfig = profile.JobConfig
 			_readJobCfg = false
+
 	
 	public def Clear():
 	"""

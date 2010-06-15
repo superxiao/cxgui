@@ -22,6 +22,8 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.clearButton = System.Windows.Forms.Button()
 		self.tabControl1 = System.Windows.Forms.TabControl()
 		self.inputPage = System.Windows.Forms.TabPage()
+		self.label10 = System.Windows.Forms.Label()
+		self.profileBox = System.Windows.Forms.ComboBox()
 		self.listView1 = System.Windows.Forms.ListView()
 		self.stateColumn = System.Windows.Forms.ColumnHeader()
 		self.sourceFileColumn = System.Windows.Forms.ColumnHeader()
@@ -74,7 +76,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# addButton
 		# 
 		self.addButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
-		self.addButton.Location = System.Drawing.Point(8, 365)
+		self.addButton.Location = System.Drawing.Point(8, 356)
 		self.addButton.Name = "addButton"
 		self.addButton.Size = System.Drawing.Size(75, 30)
 		self.addButton.TabIndex = 3
@@ -85,7 +87,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# delButton
 		# 
 		self.delButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
-		self.delButton.Location = System.Drawing.Point(170, 365)
+		self.delButton.Location = System.Drawing.Point(170, 356)
 		self.delButton.Name = "delButton"
 		self.delButton.Size = System.Drawing.Size(75, 30)
 		self.delButton.TabIndex = 4
@@ -96,7 +98,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# startButton
 		# 
 		self.startButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
-		self.startButton.Location = System.Drawing.Point(368, 365)
+		self.startButton.Location = System.Drawing.Point(370, 363)
 		self.startButton.Name = "startButton"
 		self.startButton.Size = System.Drawing.Size(137, 49)
 		self.startButton.TabIndex = 5
@@ -107,7 +109,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# clearButton
 		# 
 		self.clearButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
-		self.clearButton.Location = System.Drawing.Point(251, 365)
+		self.clearButton.Location = System.Drawing.Point(251, 356)
 		self.clearButton.Name = "clearButton"
 		self.clearButton.Size = System.Drawing.Size(75, 30)
 		self.clearButton.TabIndex = 6
@@ -125,11 +127,13 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.tabControl1.Location = System.Drawing.Point(0, 28)
 		self.tabControl1.Name = "tabControl1"
 		self.tabControl1.SelectedIndex = 0
-		self.tabControl1.Size = System.Drawing.Size(521, 447)
+		self.tabControl1.Size = System.Drawing.Size(521, 460)
 		self.tabControl1.TabIndex = 7
 		# 
 		# inputPage
 		# 
+		self.inputPage.Controls.Add(self.label10)
+		self.inputPage.Controls.Add(self.profileBox)
 		self.inputPage.Controls.Add(self.listView1)
 		self.inputPage.Controls.Add(self.settingButton)
 		self.inputPage.Controls.Add(self.startButton)
@@ -139,9 +143,31 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.inputPage.Location = System.Drawing.Point(4, 22)
 		self.inputPage.Name = "inputPage"
 		self.inputPage.Padding = System.Windows.Forms.Padding(3)
-		self.inputPage.Size = System.Drawing.Size(513, 421)
+		self.inputPage.Size = System.Drawing.Size(513, 434)
 		self.inputPage.TabIndex = 0
 		self.inputPage.Text = "输入"
+		# 
+		# label10
+		# 
+		self.label10.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
+		self.label10.Location = System.Drawing.Point(8, 389)
+		self.label10.Name = "label10"
+		self.label10.Size = System.Drawing.Size(59, 23)
+		self.label10.TabIndex = 9
+		self.label10.Text = "预设"
+		self.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+		# 
+		# profileBox
+		# 
+		self.profileBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.profileBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		self.profileBox.FormattingEnabled = true
+		self.profileBox.Location = System.Drawing.Point(89, 392)
+		self.profileBox.Name = "profileBox"
+		self.profileBox.Size = System.Drawing.Size(237, 20)
+		self.profileBox.TabIndex = 8
+		self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged as System.EventHandler
 		# 
 		# listView1
 		# 
@@ -156,7 +182,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.listView1.FullRowSelect = true
 		self.listView1.Location = System.Drawing.Point(8, 26)
 		self.listView1.Name = "listView1"
-		self.listView1.Size = System.Drawing.Size(499, 333)
+		self.listView1.Size = System.Drawing.Size(499, 324)
 		self.listView1.TabIndex = 3
 		self.listView1.UseCompatibleStateImageBehavior = false
 		self.listView1.View = System.Windows.Forms.View.Details
@@ -233,7 +259,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		self.settingButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
 		self.settingButton.Enabled = false
-		self.settingButton.Location = System.Drawing.Point(89, 365)
+		self.settingButton.Location = System.Drawing.Point(89, 356)
 		self.settingButton.Name = "settingButton"
 		self.settingButton.Size = System.Drawing.Size(75, 30)
 		self.settingButton.TabIndex = 7
@@ -266,14 +292,14 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.progressPage.Location = System.Drawing.Point(4, 22)
 		self.progressPage.Name = "progressPage"
 		self.progressPage.Padding = System.Windows.Forms.Padding(3)
-		self.progressPage.Size = System.Drawing.Size(513, 421)
+		self.progressPage.Size = System.Drawing.Size(513, 434)
 		self.progressPage.TabIndex = 1
 		self.progressPage.Text = "进度"
 		# 
 		# statusStrip
 		# 
 		self.statusStrip.Items.AddRange((of System.Windows.Forms.ToolStripItem: self.statusLable))
-		self.statusStrip.Location = System.Drawing.Point(3, 396)
+		self.statusStrip.Location = System.Drawing.Point(3, 409)
 		self.statusStrip.Name = "statusStrip"
 		self.statusStrip.Size = System.Drawing.Size(507, 22)
 		self.statusStrip.TabIndex = 19
@@ -492,7 +518,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		self.AutoScaleDimensions = System.Drawing.SizeF(6, 12)
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		self.ClientSize = System.Drawing.Size(521, 476)
+		self.ClientSize = System.Drawing.Size(521, 489)
 		self.Controls.Add(self.tabControl1)
 		self.Controls.Add(self.menuStrip1)
 		self.MainMenuStrip = self.menuStrip1
@@ -513,6 +539,8 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.menuStrip1.PerformLayout()
 		self.ResumeLayout(false)
 		self.PerformLayout()
+	private profileBox as System.Windows.Forms.ComboBox
+	private label10 as System.Windows.Forms.Label
 	private 打开目录ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private statusLable as System.Windows.Forms.ToolStripStatusLabel
 	private statusStrip as System.Windows.Forms.StatusStrip

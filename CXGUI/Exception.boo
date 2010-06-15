@@ -33,3 +33,7 @@ class FormatNotSupportedException(Exception):
 class FFmpegBugException(Exception):
 	public def constructor():
 		pass	
+
+class ProfileNotFoundException(Exception):
+	public def constructor(message as string):
+		super(message)

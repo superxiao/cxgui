@@ -11,16 +11,12 @@ partial class ProgramConfigForm:
 	
 	_resetter as ControlResetter
 	
-	public def constructor():
+	public def constructor(configSection as ProgramConfig):
 		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
-		config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-		configSection as ProgramConfig = config.Sections["programConfig"]
-		if configSection == null:
-			configSection = ProgramConfig()
-			config.Sections.Add("programConfig", configSection)
-			config.Save()
 		self.destDirComboBox.Text = configSection.DestDir
+		self.chbInputDir.Checked = configSection.InputDir
+		self.chbSilentRestart.Checked = configSection.SilentRestart
 
 	private def BrowseButtonClick(sender as object, e as System.EventArgs):
 		self.folderBrowserDialog1.ShowDialog()

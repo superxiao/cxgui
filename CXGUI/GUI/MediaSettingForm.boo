@@ -45,13 +45,17 @@ partial class MediaSettingForm:
 
 	[Property(Changed)]
 	_changed as bool
+	
+	[Property(UsingProfile)]
+	_usingProfile as string
 
 
-	public def constructor(jobItem as JobItem):
+	public def constructor():
 		InitializeComponent()
-		SetUpForItem(jobItem)
 		
 	public def SetUpForItem(jobItem as JobItem):
+		
+		_usingProfile = jobItem.ProfileName
 		_sourceFile = jobItem.SourceFile
 		_destFile = jobItem.DestFile
 		self.destFileBox.Text = _destFile
@@ -471,20 +475,7 @@ partial class MediaSettingForm:
 			jobConfig.Muxer = Muxer.MP4Box
 		else:
 			jobConfig.Muxer = Muxer.None
-			
-		
-	private def SetDefaultButtonClick(sender as object, e as System.EventArgs):
-		SaveToAvsConfig(_avsConfig)
-		SaveToJobConfig(_jobConfig)
-		stream = FileStream("default.profile", FileMode.Create)
-		formater = BinaryFormatter()
-		_profile = Profile()
-		_profile.AvsConfig = _avsConfig
-		_profile.VideoEncConfig = self._videoEncConfig
-		_profile.AudioEncConfig = self._audioEncConfig
-		_profile.JobConfig = self._jobConfig
-		formater.Serialize(stream, _profile)
-		stream.Close()
+
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):
 		if self.chbSepAudio.Checked:
@@ -525,6 +516,7 @@ partial class MediaSettingForm:
 		_resetter.SaveControls(self.groupBox5.Controls)
 		_resetter.SaveControls(self.groupBox6.Controls)
 		_resetter.SaveControls(self.tabPage1.Controls)
+		_resetter.SaveControls(self.Controls)
 
 	private def MediaSettingFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
 		if e.CloseReason == System.Windows.Forms.CloseReason.UserClosing:
@@ -635,6 +627,56 @@ partial class MediaSettingForm:
 			self.tbSepAudio.Text = self.openFileDialog1.FileName
 			self.cbAudioMode.SelectedIndex = 0
 		SettleAudioControls()
+	
+	private def ProfileBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
+		//TODO 这里的profile列表变更后，主界面也要跟着变
+		try:
+			_profile = Profile(self.profileBox.Text)
+		except as ProfileNotFoundException:
+			MessageBox.Show("预设文件不存在或已损坏。将刷新预设列表。", "预设读取失败", 
+				MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+			self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
+			self.profileBox.Items.Clear()
+			self.profileBox.Items.AddRange(Profile.GetProfileNames())
+			if not self.profileBox.Items.Contains("Default"):
+				Profile.RebuildDefault("Default")
+				self.profileBox.Items.Add("Default")
+			if self.profileBox.Items.Contains(self._usingProfile):
+				self.profileBox.SelectedItem = self._usingProfile
+				_profile = Profile(self._usingProfile)
+			else:
+				self.profileBox.SelectedItem = "Default"
+				_profile = Profile("Default")
+			self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged
+		
+		self._usingProfile = self.profileBox.Text
+		self.AvsConfig = _profile.AvsConfig
+		self.VideoEncConfig = _profile.VideoEncConfig
+		self.AudioEncConfig = _profile.AudioEncConfig
+		self.JobConfig = _profile.JobConfig
+		InitializeJobConfig(_jobConfig)
+		InitializeAvsConfig(_avsConfig)
+		InitializeEncConfig()
+	
+	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
+		SaveToAvsConfig(_avsConfig)
+		SaveToJobConfig(_jobConfig)
+		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig)
+		self.profileBox.Items.Add(self.profileBox.Text)
+		self._usingProfile = self.profileBox.Text
+		
+	public def ImportProfiles(profileNames as (string), selectedProfile as string):
+		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
+		self.profileBox.Items.Clear()
+		self.profileBox.Items.AddRange(profileNames)
+		self.profileBox.SelectedItem = selectedProfile
+		self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged
+		
+	public def GetProfiles() as (string):
+		return array(string, self.profileBox.Items)
+		
+
 	
 
 

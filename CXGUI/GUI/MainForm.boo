@@ -5,10 +5,12 @@ import System
 import System.IO
 import System.Threading
 import System.Runtime.InteropServices
+import System.Collections
 import System.Collections.Generic
 import System.Windows.Forms
 import System.Drawing
 import System.Runtime.Serialization.Formatters.Binary
+import System.Configuration
 import DirectShowLib
 import System.ComponentModel
 import CXGUI
@@ -23,6 +25,7 @@ partial class MainForm(System.Windows.Forms.Form):
 	
 	_configForm as ProgramConfigForm
 	_mediaSettingForm as MediaSettingForm
+	_programConfig as ProgramConfig
 	_jobItems = Dictionary[of ListViewItem, JobItem]()
 	_workingItem as JobItem 
 	_workingItems as Boo.Lang.List[of JobItem]
@@ -30,7 +33,14 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	public def constructor():
 		self.InitializeComponent()
-		self._configForm = ProgramConfigForm()
+
+		config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+		_programConfig = config.Sections["programConfig"]
+		if _programConfig == null:
+			_programConfig = ProgramConfig()
+			config.Sections.Add("programConfig", _programConfig)
+			config.Save()
+		self._configForm = ProgramConfigForm(_programConfig)
 
 	private def AddButtonClick(sender as object, e as EventArgs):
 		self.openFileDialog1.ShowDialog()
@@ -60,7 +70,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				destFile = Path.Combine(Path.GetDirectoryName(destFile), Path.GetFileNameWithoutExtension(destFile) + '1' + Path.GetExtension(destFile))
 			item = ListViewItem(("等待", fileName, destFile))
 			self.listView1.Items.Add(item)
-			jobItem = JobItem(filePath, destFile, item, false)
+			jobItem = JobItem(filePath, destFile, item, self.profileBox.Text)
 			self._jobItems.Add(item, jobItem)
 				
 		o as IMediaDet = MediaDet()
@@ -75,9 +85,25 @@ partial class MainForm(System.Windows.Forms.Form):
 				addFile()
 		return item
 
+
+	private def SetUpItems(items as (JobItem)):
+	"""
+	根据JobItem对象的ProfileName属性为其读取各设置实例。
+	如对应Profile文件不存在，则显示警告信息，并决定是否刷新预设列表。
+	如刷新预设列表后预设数为0，则自动重建Default预设。
+	"""
+	
+		for item in items:
+			try:
+				item.SetUp()
+			except as ProfileNotFoundException:
+				self.UpdateProfileBox(Profile.GetProfileNames(), self.profileBox.Text)
+				item.ProfileName = self.profileBox.Text
+				item.SetUp()
+				
 	private def StartButtonClick(sender as object, e as EventArgs):
 		_workingItems = GetWorkingJobItems()
-		SetUpItems(_workingItems)
+		SetUpItems(_workingItems.ToArray())
 		if _workingItems.Count > 0:
 			self.backgroundWorker1.RunWorkerAsync(_workingItems[0])
 			self.tabControl1.SelectTab(self.progressPage)
@@ -102,17 +128,6 @@ partial class MainForm(System.Windows.Forms.Form):
 				jobItem = self._jobItems[listItem]
 				jobItems.Add(jobItem)
 		return jobItems
-	
-	private def SetUpItems(jobItems as IEnumerable[of JobItem]):
-		for item in jobItems:
-			if item.AvsConfig == null:
-				item.ReadAvsConfig()
-			if item.VideoEncConfig == null:
-				item.ReadVideoEncConfig()
-			if item.AudioEncConfig == null:
-				item.ReadAudioEncConfig()
-			if item.JobConfig == null:
-				item.ReadJobConfig()
 
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
 		jobItem as JobItem = e.Argument
@@ -390,25 +405,44 @@ partial class MainForm(System.Windows.Forms.Form):
 		jobItem = self._jobItems[item]
 		SetUpItems((jobItem,))
 		if self._mediaSettingForm == null:
-			self._mediaSettingForm = MediaSettingForm(jobItem)
-		else:
-			self._mediaSettingForm.SetUpForItem(jobItem)
+			self._mediaSettingForm = MediaSettingForm()
+		self._mediaSettingForm.ImportProfiles(array(string, self.profileBox.Items), jobItem.ProfileName)
+		self._mediaSettingForm.SetUpForItem(jobItem)
 		result = self._mediaSettingForm.ShowDialog()
 		if result == DialogResult.OK and self._mediaSettingForm.Changed:
+			self._mediaSettingForm.Changed = false
 			jobItem.State = JobState.Waiting
 			jobItem.UIItem.Text = "等待"
-			self._mediaSettingForm.Changed = false
 			jobItem.DestFile = self._mediaSettingForm.DestFile
 			jobItem.AvsConfig = self._mediaSettingForm.AvsConfig
 			jobItem.VideoEncConfig = self._mediaSettingForm.VideoEncConfig
 			jobItem.AudioEncConfig = self._mediaSettingForm.AudioEncConfig
 			jobItem.JobConfig = self._mediaSettingForm.JobConfig
+			jobItem.ProfileName = self._mediaSettingForm.UsingProfile //TODO 因为可能在SettingForm里更改了profile,无论如何这里要重导入settingForm的列表，并先保存选定项，而后决定选择哪个
 			jobItem.KeepingCfg = true
 			if jobItem.JobConfig.UseSeparateAudio:
 				jobItem.SeparateAudio = self._mediaSettingForm.SepAudio
 		else:
 			jobItem.Clear()
+
+		
+		UpdateProfileBox(self._mediaSettingForm.GetProfiles(), self.profileBox.Text)
+
 		self._mediaSettingForm.Clear()
+		
+	private def UpdateProfileBox(profileNames as (string), selectedProfile as string):
+		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
+		self.profileBox.Items.Clear()
+		self.profileBox.Items.AddRange(profileNames)
+		if not self.profileBox.Items.Contains("Default"):
+			Profile.RebuildDefault("Default")
+			self.profileBox.Items.Add("Default")
+		if self.profileBox.Items.Contains(selectedProfile):
+			self.profileBox.SelectedItem = selectedProfile
+		else:
+			self.profileBox.SelectedItem = "Default"
+		self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged
+		
 
 	private def StopButtonClick(sender as object, e as EventArgs):
 		try:
@@ -519,8 +553,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			for jobItem as JobItem in jobItems.Values:
 				self.listView1.Items.Add(jobItem.UIItem)
 				self._jobItems.Add(jobItem.UIItem, jobItem)
-
-	
+		self.UpdateProfileBox(Profile.GetProfileNames(), _programConfig.ProfileName)
+			
 	private def MainFormFormClosing(sender as object, e as System.Windows.Forms.FormClosingEventArgs):
 		if self._workingItem != null and self._workingItem.State == JobState.Working:
 			result = MessageBox.Show("正在工作中，是否中止并退出？", "工作中", MessageBoxButtons.YesNo, 
@@ -538,6 +572,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		stream = FileStream("JobItems.bin", FileMode.Create)
 		formater.Serialize(stream, self._jobItems)
 		stream.Close()
+		SaveConfig()
 	
 	private def 打开目录ToolStripMenuItemClick(sender as object, e as System.EventArgs):
 		jobItem = self._jobItems[self.listView1.SelectedItems[0]]
@@ -546,7 +581,21 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def ListView1DoubleClick(sender as object, e as System.EventArgs):
 		self.settingButton.PerformClick()
 
-		
+	private def SaveConfig():
+		config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+		configSection as ProgramConfig = config.Sections["programConfig"]
+		if configSection == null:
+			configSection = ProgramConfig()
+			config.Sections.Add("programConfig", configSection)
+			config.Save()
+		configSection.ProfileName = self.profileBox.Text
+		config.Save()
+	
+	private def ProfileBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
+		result = MessageBox.Show("是否应用更改到所有项目？", "预设更改", MessageBoxButtons.YesNo, MessageBoxIcon.Information)
+		if result == DialogResult.Yes:
+			for item in self._jobItems.Values:
+				item.ProfileName = self.profileBox.Text
 [STAThread]
 public def Main(argv as (string)) as void:
 	Application.EnableVisualStyles()

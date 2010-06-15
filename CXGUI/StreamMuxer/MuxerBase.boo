@@ -5,9 +5,9 @@ import  System.Diagnostics
 import My
 
 enum Muxer:
-	MKV
 	MP4Box
 	FFMP4
+	MKV
 	None
 
 class MuxerBase(IEncoder):

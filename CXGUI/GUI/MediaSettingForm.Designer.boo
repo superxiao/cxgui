@@ -69,11 +69,13 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label8 = System.Windows.Forms.Label()
 		self.label7 = System.Windows.Forms.Label()
 		self.rateControlBox = System.Windows.Forms.ComboBox()
-		self.setDefaultButton = System.Windows.Forms.Button()
+		self.saveProfileButton = System.Windows.Forms.Button()
 		self.cancelButton = System.Windows.Forms.Button()
 		self.okButton = System.Windows.Forms.Button()
 		self.saveFileDialog1 = System.Windows.Forms.SaveFileDialog()
 		self.openFileDialog1 = System.Windows.Forms.OpenFileDialog()
+		self.profileBox = System.Windows.Forms.ComboBox()
+		self.label15 = System.Windows.Forms.Label()
 		self.tabControl1.SuspendLayout()
 		self.tabPage1.SuspendLayout()
 		self.gbAudioAvs.SuspendLayout()
@@ -692,16 +694,16 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.rateControlBox.TabIndex = 0
 		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged as System.EventHandler
 		# 
-		# setDefaultButton
+		# saveProfileButton
 		# 
-		self.setDefaultButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
-		self.setDefaultButton.Location = System.Drawing.Point(12, 507)
-		self.setDefaultButton.Name = "setDefaultButton"
-		self.setDefaultButton.Size = System.Drawing.Size(75, 23)
-		self.setDefaultButton.TabIndex = 4
-		self.setDefaultButton.Text = "设为默认"
-		self.setDefaultButton.UseVisualStyleBackColor = true
-		self.setDefaultButton.Click += self.SetDefaultButtonClick as System.EventHandler
+		self.saveProfileButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
+		self.saveProfileButton.Location = System.Drawing.Point(194, 507)
+		self.saveProfileButton.Name = "saveProfileButton"
+		self.saveProfileButton.Size = System.Drawing.Size(75, 23)
+		self.saveProfileButton.TabIndex = 4
+		self.saveProfileButton.Text = "保存"
+		self.saveProfileButton.UseVisualStyleBackColor = true
+		self.saveProfileButton.Click += self.SaveProfileButtonClick as System.EventHandler
 		# 
 		# cancelButton
 		# 
@@ -730,6 +732,24 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		self.openFileDialog1.FileName = "openFileDialog1"
 		# 
+		# profileBox
+		# 
+		self.profileBox.FormattingEnabled = true
+		self.profileBox.Location = System.Drawing.Point(67, 509)
+		self.profileBox.Name = "profileBox"
+		self.profileBox.Size = System.Drawing.Size(121, 20)
+		self.profileBox.TabIndex = 5
+		self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged as System.EventHandler
+		# 
+		# label15
+		# 
+		self.label15.Location = System.Drawing.Point(12, 507)
+		self.label15.Name = "label15"
+		self.label15.Size = System.Drawing.Size(48, 23)
+		self.label15.TabIndex = 6
+		self.label15.Text = "预设"
+		self.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+		# 
 		# MediaSettingForm
 		# 
 		self.AcceptButton = self.okButton
@@ -737,8 +757,10 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.CancelButton = self.cancelButton
 		self.ClientSize = System.Drawing.Size(464, 542)
+		self.Controls.Add(self.label15)
+		self.Controls.Add(self.profileBox)
 		self.Controls.Add(self.tabControl1)
-		self.Controls.Add(self.setDefaultButton)
+		self.Controls.Add(self.saveProfileButton)
 		self.Controls.Add(self.okButton)
 		self.Controls.Add(self.cancelButton)
 		self.MinimumSize = System.Drawing.Size(480, 580)
@@ -758,6 +780,9 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private saveProfileButton as System.Windows.Forms.Button
+	private label15 as System.Windows.Forms.Label
+	private profileBox as System.Windows.Forms.ComboBox
 	private label16 as System.Windows.Forms.Label
 	private label17 as System.Windows.Forms.Label
 	private cbVideoMode as System.Windows.Forms.ComboBox
@@ -798,7 +823,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private normalizeBox as System.Windows.Forms.CheckBox
 	private downMixBox as System.Windows.Forms.CheckBox
 	private sourceResolutionCheckBox as System.Windows.Forms.CheckBox
-	private setDefaultButton as System.Windows.Forms.Button
 	private cancelButton as System.Windows.Forms.Button
 	private okButton as System.Windows.Forms.Button
 	private convertFPSCheckBox as System.Windows.Forms.CheckBox

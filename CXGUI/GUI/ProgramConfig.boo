@@ -25,3 +25,9 @@ class ProgramConfig(System.Configuration.ConfigurationSection):
 	    	return self.Item["inputDir"]
 	    set:
 	    	self.Item["inputDir"] = value
+	[ConfigurationProperty("profileName", DefaultValue : "")]
+	public ProfileName as string:
+	    get:
+	    	return self.Item["profileName"]
+	    set:
+	    	self.Item["profileName"] = value
