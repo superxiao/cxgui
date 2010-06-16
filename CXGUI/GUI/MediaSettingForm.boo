@@ -21,6 +21,8 @@ partial class MediaSettingForm:
 	_resolutionCal as ResolutionCalculator
 	_resetter as ControlResetter
 	_usingSepAudio as bool
+	
+	_cmdLineBox as CommandLineBox
 
 	[Property(SourceFile)]
 	_sourceFile as string
@@ -182,6 +184,7 @@ partial class MediaSettingForm:
 	
 	private def InitializeFrameRate(avsConfig as AvisynthConfig, videoInfo as VideoInfo):
 		if avsConfig.FrameRate > 0:
+#			MessageBox.Show("avsConfig.FrameRate > 0")
 			self.frameRateBox.Text = avsConfig.FrameRate.ToString()
 			self.sourceFrameRateCheckBox.Checked = false
 			self.frameRateBox.Enabled = true
@@ -282,6 +285,8 @@ partial class MediaSettingForm:
 			self.saveFileDialog1.InitialDirectory = Path.GetDirectoryName(self.destFileBox.Text)
 			self.saveFileDialog1.FileName = self.destFileBox.Text
 			self.saveFileDialog1.ShowDialog()
+			if not saveFileDialog1.FileName.ToLower().EndsWith(".mp4"):
+				saveFileDialog1.FileName += ".mp4"
 			self.destFileBox.Text = saveFileDialog1.FileName
 		except:
 			MessageBox.Show("无效路径或含非法字符。", "", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -298,6 +303,7 @@ partial class MediaSettingForm:
 		RefreshNeroAac()
 
 	private def RefreshX264UI(): 
+	
 		x264config = _videoEncConfig as X264Config
 		settings as Hash = x264config.GetSettingsDict()
 		freezedOptions = x264config.GetFreezedOptions()
@@ -337,6 +343,10 @@ partial class MediaSettingForm:
 				self.groupBox4.Controls[option].Enabled = false
 			except NullReferenceException:
 				pass
+
+		self.useCustomCmdBox.Checked = _videoEncConfig.UsingCustomCmd
+		UseCustomCmdBoxCheckedChanged(null, null)
+			
 
 	private def RateControlBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
 		_x264config = _videoEncConfig as X264Config
@@ -492,9 +502,20 @@ partial class MediaSettingForm:
 			_changed = true
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
+	
 		try:
-			Path.GetDirectoryName(self.destFileBox.Text)
-			self._destFile = self.destFileBox.Text
+			dir = Path.GetDirectoryName(self.destFileBox.Text)
+			if dir == "" or dir == null:
+				self.destFileBox.Text = self._destFile
+			elif Directory.Exists(dir):
+				self._destFile = self.destFileBox.Text
+			else:
+				result = MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
+				if result == DialogResult.OK:
+					Directory.CreateDirectory(Path.GetDirectoryName(self.destFileBox.Text))
+					self._destFile = self.destFileBox.Text
+				else:
+					self.destFileBox.Text = self._destFile
 		except:
 			self.destFileBox.Text = self._destFile
 		_resetter.Clear()
@@ -675,6 +696,35 @@ partial class MediaSettingForm:
 		
 	public def GetProfiles() as (string):
 		return array(string, self.profileBox.Items)
+	
+	private def CheckBox1CheckedChanged(sender as object, e as System.EventArgs): 
+		pass
+	
+	private def UseCustomCmdBoxCheckedChanged(sender as object, e as System.EventArgs):
+		//TODO 选项导入导出
+		if self._cmdLineBox == null:
+			self._cmdLineBox = CommandLineBox()
+		if self.useCustomCmdBox.Checked:
+			for control as Control in self.groupBox4.Controls:
+				control.Enabled = false
+			self.useCustomCmdBox.Enabled = true
+			self.editCmdButton.Enabled = true
+			self._cmdLineBox.CmdLine = self.VideoEncConfig.GetSettings()
+			self._videoEncConfig.UsingCustomCmd = true
+		else:
+			for control as Control in self.groupBox4.Controls:
+				control.Enabled = true
+			self.editCmdButton.Enabled = false
+			self._cmdLineBox.CmdLine = ""
+			self._videoEncConfig.UsingCustomCmd = false
+	
+	private def EditCmdButtonClick(sender as object, e as System.EventArgs):
+	//TODO 第一次要引入VideoENCcONFIG的数据，之后都使用CusntomConfig的数据
+		self._cmdLineBox.ShowDialog()
+		self.VideoEncConfig.CustomCmdLine = self._cmdLineBox.CmdLine 
+	
+	private def SaveFileDialog1FileOk(sender as object, e as System.ComponentModel.CancelEventArgs):
+		pass
 		
 
 	

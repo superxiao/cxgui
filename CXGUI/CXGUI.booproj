@@ -66,6 +66,10 @@
     <Compile Include="Exception.boo" />
     <Compile Include="GUI\AvsConfig.boo" />
     <Compile Include="GUI\ControlResetter.boo" />
+    <Compile Include="GUI\CommandLineBox.boo" />
+    <Compile Include="GUI\CommandLineBox.Designer.boo">
+      <DependentUpon>CommandLineBox.boo</DependentUpon>
+    </Compile>
     <Compile Include="GUI\JobItemConfig.boo" />
     <Compile Include="GUI\MainForm.boo" />
     <Compile Include="GUI\MainForm.Designer.boo">
@@ -97,6 +101,12 @@
     <Compile Include="VideoEncoding\X264Config.boo">
       <DependentUpon>X264.boo</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="GUI\CommandLineBox.resx">
+      <DependentUpon>CommandLineBox.Designer.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\CommandLineBox.resx">
+      <DependentUpon>CommandLineBox.boo</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.boo</DependentUpon>
     </EmbeddedResource>
@@ -106,6 +116,7 @@
     <EmbeddedResource Include="GUI\ProgramConfigForm.resx">
       <DependentUpon>ProgramConfigForm.boo</DependentUpon>
     </EmbeddedResource>
+    <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AudioEncoding" />

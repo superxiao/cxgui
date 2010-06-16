@@ -25,22 +25,15 @@ class X264(VideoEncoderBase):
 		readThread.Start()
 		_encodingProcess.WaitForExit()
 		if _errOccured:
-			raise InvalidVideoAvisynthScriptException(_avisynthScriptFile)
+			if _config.UsingCustomCmd:
+				raise BadEncoderCmdException("Encoding failed due to bad custom command line.")
+			else:
+				raise InvalidVideoAvisynthScriptException(_avisynthScriptFile)
 		else:
-			count = 0
-			while true:
-				if _progress >= 99:
-					_progress = 100
-					_timeLeft = timespan(0)
-					readThread.Abort()
-					break
-				elif count <= 10:	
-					count += 1
-					Threading.Thread.Sleep(250)
-				else:
-					readThread.Abort()
-					_timeLeft = timespan(0)
-					break
+			if _progress >= 99:
+				_progress = 100
+			_timeLeft = timespan(0)
+			readThread.Abort()
 
 	private def ReadStdErr():
 		sr = _encodingProcess.StandardError
@@ -48,6 +41,10 @@ class X264(VideoEncoderBase):
 		while true:
 			_line = sr.ReadLine()
 			_line = "" if _line == null
+			
+			if _line.Length != 0 and not _line.StartsWith("["):
+				File.AppendAllText("d:\\x264log.txt", _line+'\r\n')
+				
 			if _line.StartsWith("["):
 				UpdateProgress(_line)
 			elif _line.Contains("error"):

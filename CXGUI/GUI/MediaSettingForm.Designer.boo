@@ -56,6 +56,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.neroAacRateControlBox = System.Windows.Forms.ComboBox()
 		self.label13 = System.Windows.Forms.Label()
 		self.groupBox4 = System.Windows.Forms.GroupBox()
+		self.useCustomCmdBox = System.Windows.Forms.CheckBox()
+		self.editCmdButton = System.Windows.Forms.Button()
 		self.slow_firstpass = System.Windows.Forms.CheckBox()
 		self.tune = System.Windows.Forms.ComboBox()
 		self.label12 = System.Windows.Forms.Label()
@@ -551,6 +553,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		self.groupBox4.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
+		self.groupBox4.Controls.Add(self.useCustomCmdBox)
+		self.groupBox4.Controls.Add(self.editCmdButton)
 		self.groupBox4.Controls.Add(self.slow_firstpass)
 		self.groupBox4.Controls.Add(self.tune)
 		self.groupBox4.Controls.Add(self.label12)
@@ -570,6 +574,26 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox4.TabIndex = 0
 		self.groupBox4.TabStop = false
 		self.groupBox4.Text = "x264"
+		# 
+		# useCustomCmdBox
+		# 
+		self.useCustomCmdBox.Location = System.Drawing.Point(326, 12)
+		self.useCustomCmdBox.Name = "useCustomCmdBox"
+		self.useCustomCmdBox.Size = System.Drawing.Size(104, 24)
+		self.useCustomCmdBox.TabIndex = 14
+		self.useCustomCmdBox.Text = "自定义命令行"
+		self.useCustomCmdBox.UseVisualStyleBackColor = true
+		self.useCustomCmdBox.CheckedChanged += self.UseCustomCmdBoxCheckedChanged as System.EventHandler
+		# 
+		# editCmdButton
+		# 
+		self.editCmdButton.Location = System.Drawing.Point(326, 40)
+		self.editCmdButton.Name = "editCmdButton"
+		self.editCmdButton.Size = System.Drawing.Size(75, 23)
+		self.editCmdButton.TabIndex = 13
+		self.editCmdButton.Text = "编辑命令行"
+		self.editCmdButton.UseVisualStyleBackColor = true
+		self.editCmdButton.Click += self.EditCmdButtonClick as System.EventHandler
 		# 
 		# slow_firstpass
 		# 
@@ -605,7 +629,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.level.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		self.level.FormattingEnabled = true
 		self.level.Items.AddRange((of object: "自动", "1", "1.1", "1.2", "1.3", "2", "2.1", "2.2", "3", "3.1", "3.2", "4", "4.1", "4.2", "5", "5.1"))
-		self.level.Location = System.Drawing.Point(215, 94)
+		self.level.Location = System.Drawing.Point(200, 91)
 		self.level.Name = "level"
 		self.level.Size = System.Drawing.Size(75, 20)
 		self.level.TabIndex = 9
@@ -613,7 +637,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# label11
 		# 
-		self.label11.Location = System.Drawing.Point(167, 94)
+		self.label11.Location = System.Drawing.Point(152, 94)
 		self.label11.Name = "label11"
 		self.label11.Size = System.Drawing.Size(42, 20)
 		self.label11.TabIndex = 8
@@ -728,6 +752,10 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.okButton.UseVisualStyleBackColor = true
 		self.okButton.Click += self.OkButtonClick as System.EventHandler
 		# 
+		# saveFileDialog1
+		# 
+		self.saveFileDialog1.Filter = "MP4文件|*.MP4"
+		# 
 		# openFileDialog1
 		# 
 		self.openFileDialog1.FileName = "openFileDialog1"
@@ -780,6 +808,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private editCmdButton as System.Windows.Forms.Button
+	private useCustomCmdBox as System.Windows.Forms.CheckBox
 	private saveProfileButton as System.Windows.Forms.Button
 	private label15 as System.Windows.Forms.Label
 	private profileBox as System.Windows.Forms.ComboBox

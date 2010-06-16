@@ -7,3 +7,12 @@ class VideoEncConfigBase:
 	public def constructor():
 		pass
 
+
+	[Property(CustomCmdLine)]
+	_customCmdLine as string
+
+	[Property(UsingCustomCmd)]
+	_usingCustomCmd as bool
+	
+	public abstract def GetSettings() as string:
+		pass

@@ -37,3 +37,7 @@ class FFmpegBugException(Exception):
 class ProfileNotFoundException(Exception):
 	public def constructor(message as string):
 		super(message)
+
+class BadEncoderCmdException(Exception):
+	public def constructor(message as string):
+		super(message)

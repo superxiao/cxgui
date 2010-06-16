@@ -285,7 +285,11 @@ partial class MainForm(System.Windows.Forms.Form):
 		jobItem.Event = JobEvent.VideoEncoding
 		result = EncodingReport.BeginInvoke(jobItem, encoder, e)
 		if not self.backgroundWorker1.CancellationPending:
-			encoder.Start()
+			try:
+				encoder.Start()
+			except as BadEncoderCmdException:
+				MessageBox.Show("视频编码失败。是否使用了不正确的命令行？", "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+				self.backgroundWorker1.CancelAsync()
 		result.AsyncWaitHandle.WaitOne()
 		jobItem.VideoEncoder = null
 

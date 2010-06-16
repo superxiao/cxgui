@@ -15,6 +15,8 @@ class X264Config(VideoEncConfigBase):
 	_freezedOptions = []
 	_presets = {}
 	
+
+	
 	public def constructor():
 		for option, defaultAndRange in \
 		(
@@ -121,7 +123,11 @@ class X264Config(VideoEncConfigBase):
 			dict.Add(entry.Key, entry.Value)
 		return dict
 
-	def GetSettings() as string:
+
+
+	override def GetSettings() as string:
+		if self._usingCustomCmd:
+			return self._customCmdLine
 		settings = ""
 		for _settingInUse as DictionaryEntry in _settingsInUse:
 			if _settingInUse.Value != null\
