@@ -353,6 +353,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		# stopButton
 		# 
+		self.stopButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
 		self.stopButton.Location = System.Drawing.Point(430, 363)
 		self.stopButton.Name = "stopButton"
 		self.stopButton.Size = System.Drawing.Size(75, 30)

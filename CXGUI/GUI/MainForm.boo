@@ -552,6 +552,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			dragToIndex++
 	
 	private def MainFormLoad(sender as object, e as System.EventArgs):
+		self.UpdateProfileBox(Profile.GetProfileNames(), _programConfig.ProfileName)
 		jobItems as Dictionary[of ListViewItem, JobItem]
 		formater = BinaryFormatter()
 		if not File.Exists("JobItems.bin"):
@@ -567,7 +568,6 @@ partial class MainForm(System.Windows.Forms.Form):
 			for jobItem as JobItem in jobItems.Values:
 				self.listView1.Items.Add(jobItem.UIItem)
 				self._jobItems.Add(jobItem.UIItem, jobItem)
-		self.UpdateProfileBox(Profile.GetProfileNames(), _programConfig.ProfileName)
 			
 	private def MainFormFormClosing(sender as object, e as System.Windows.Forms.FormClosingEventArgs):
 		if self._workingItem != null and self._workingItem.State == JobState.Working:
