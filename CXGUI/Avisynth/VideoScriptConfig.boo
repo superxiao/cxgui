@@ -4,6 +4,7 @@ import System
 import System.Windows.Forms//test
 import System.Collections
 import System.Collections.Specialized
+import System.IO
 import CXGUI
 
 class VideoScriptConfig():
@@ -207,6 +208,15 @@ class VideoScriptConfig():
 			SetFilter("Resizer", "${_resizeFilter}(${_width}, ${_height})")
 		else:
 			_filters.Remove("Resizer")
+			
+		//Subtitle
+		if File.Exists(self._subtitle):
+			SetImport("VSFilter.dll")
+			SetFilter("TextSub", "TextSub(\"${self._subtitle}\")")
+		else:
+			_filters.Remove("TextSub")
+
+			
 	private def SetFilter(filterName as string, statement as string):
 		if _filters.Contains(filterName):
 			_filters[filterName] = statement
@@ -302,6 +312,11 @@ class VideoScriptConfig():
 				raise ArgumentException("Height must be positive.")
 			_height = value
 	_height as int
+	
+	[Property(Subtitle)]
+	_subtitle as string
+	"""字幕路径。"""
+
 	//增添预定义视频滤镜注意：1.整理好属性间关系,添加注释 2.确定UpdateFilters中的位置 
 	//3.编写UpdateFilters代码 4 SetCustomFilter RemoveFilter扩充 5.InitializeProperties
 	//6更改各处注释

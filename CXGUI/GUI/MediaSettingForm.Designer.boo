@@ -71,6 +71,9 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label8 = System.Windows.Forms.Label()
 		self.label7 = System.Windows.Forms.Label()
 		self.rateControlBox = System.Windows.Forms.ComboBox()
+		self.tabPage3 = System.Windows.Forms.TabPage()
+		self.subtitleButton = System.Windows.Forms.Button()
+		self.label18 = System.Windows.Forms.Label()
 		self.saveProfileButton = System.Windows.Forms.Button()
 		self.cancelButton = System.Windows.Forms.Button()
 		self.okButton = System.Windows.Forms.Button()
@@ -78,6 +81,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.openFileDialog1 = System.Windows.Forms.OpenFileDialog()
 		self.profileBox = System.Windows.Forms.ComboBox()
 		self.label15 = System.Windows.Forms.Label()
+		self.openFileDialog2 = System.Windows.Forms.OpenFileDialog()
+		self.subtitleTextBox = System.Windows.Forms.TextBox()
 		self.tabControl1.SuspendLayout()
 		self.tabPage1.SuspendLayout()
 		self.gbAudioAvs.SuspendLayout()
@@ -87,6 +92,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox6.SuspendLayout()
 		self.groupBox5.SuspendLayout()
 		self.groupBox4.SuspendLayout()
+		self.tabPage3.SuspendLayout()
 		self.SuspendLayout()
 		# 
 		# tabControl1
@@ -96,6 +102,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.tabControl1.Controls.Add(self.tabPage1)
 		self.tabControl1.Controls.Add(self.tabPage2)
+		self.tabControl1.Controls.Add(self.tabPage3)
 		self.tabControl1.Location = System.Drawing.Point(12, 12)
 		self.tabControl1.Name = "tabControl1"
 		self.tabControl1.SelectedIndex = 0
@@ -723,6 +730,38 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.rateControlBox.TabIndex = 0
 		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged as System.EventHandler
 		# 
+		# tabPage3
+		# 
+		self.tabPage3.Controls.Add(self.subtitleTextBox)
+		self.tabPage3.Controls.Add(self.subtitleButton)
+		self.tabPage3.Controls.Add(self.label18)
+		self.tabPage3.Location = System.Drawing.Point(4, 22)
+		self.tabPage3.Name = "tabPage3"
+		self.tabPage3.Size = System.Drawing.Size(432, 463)
+		self.tabPage3.TabIndex = 2
+		self.tabPage3.Text = "字幕"
+		self.tabPage3.UseVisualStyleBackColor = true
+		# 
+		# subtitleButton
+		# 
+		self.subtitleButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
+		self.subtitleButton.Location = System.Drawing.Point(354, 40)
+		self.subtitleButton.Name = "subtitleButton"
+		self.subtitleButton.Size = System.Drawing.Size(75, 23)
+		self.subtitleButton.TabIndex = 2
+		self.subtitleButton.Text = "浏览"
+		self.subtitleButton.UseVisualStyleBackColor = true
+		self.subtitleButton.Click += self.SubtitleButtonClick as System.EventHandler
+		# 
+		# label18
+		# 
+		self.label18.Location = System.Drawing.Point(3, 38)
+		self.label18.Name = "label18"
+		self.label18.Size = System.Drawing.Size(100, 23)
+		self.label18.TabIndex = 0
+		self.label18.Text = "字幕路径"
+		self.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		# 
 		# saveProfileButton
 		# 
 		self.saveProfileButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
@@ -787,6 +826,21 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label15.Text = "预设"
 		self.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 		# 
+		# openFileDialog2
+		# 
+		self.openFileDialog2.FileName = "openFileDialog2"
+		self.openFileDialog2.Filter = "srt|*.srt|ass|*.ass|ssa|*.ssa"
+		# 
+		# subtitleTextBox
+		# 
+		self.subtitleTextBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.subtitleTextBox.Location = System.Drawing.Point(72, 42)
+		self.subtitleTextBox.Name = "subtitleTextBox"
+		self.subtitleTextBox.ReadOnly = true
+		self.subtitleTextBox.Size = System.Drawing.Size(276, 21)
+		self.subtitleTextBox.TabIndex = 3
+		# 
 		# MediaSettingForm
 		# 
 		self.AcceptButton = self.okButton
@@ -816,7 +870,14 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox6.ResumeLayout(false)
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
+		self.tabPage3.ResumeLayout(false)
+		self.tabPage3.PerformLayout()
 		self.ResumeLayout(false)
+	private subtitleTextBox as System.Windows.Forms.TextBox
+	private openFileDialog2 as System.Windows.Forms.OpenFileDialog
+	private label18 as System.Windows.Forms.Label
+	private subtitleButton as System.Windows.Forms.Button
+	private tabPage3 as System.Windows.Forms.TabPage
 	private editCmdButton as System.Windows.Forms.Button
 	private useCustomCmdBox as System.Windows.Forms.CheckBox
 	private saveProfileButton as System.Windows.Forms.Button

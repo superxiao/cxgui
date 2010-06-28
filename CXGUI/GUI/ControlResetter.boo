@@ -9,11 +9,19 @@ import System.Windows.Forms
 class ControlResetter:
 """提供控件属性的保存和重设功能。"""
 
-	_savedCheckBox = Dictionary[of CheckBox, bool]()
+	_savedCheckBox = Dictionary[of Control, bool]()
 	_savedTextControl = Dictionary[of Control, string]()
 
 	public def constructor():
 		pass
+
+
+
+
+	def SaveControls(rootControl as Control):
+		SaveControls(rootControl.Controls)
+		for control as Control in rootControl.Controls:
+			SaveControls(control)
 
 	def SaveControls(controls as IEnumerable):
 	"""

@@ -85,6 +85,9 @@ class JobItem:
 
 	[Property(UsingCustomCfgInsteadOfProfile)]
 	_usingCustomCfgInsteadOfProfile as bool
+	
+	[Property(Subtitle)]
+	_subtitle as string
 
 	_readAvsCfg as bool
 	_readVideoCfg as bool

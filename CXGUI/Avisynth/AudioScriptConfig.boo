@@ -4,6 +4,7 @@ import System
 import System.Windows.Forms//test
 import System.Collections
 import System.Collections.Specialized
+import System.IO
 import CXGUI
 
 class AudioScriptConfig():
@@ -159,6 +160,7 @@ class AudioScriptConfig():
 			SetFilter("Normalize", "audio.Normalize()")
 		else:
 			_filters.Remove("Normalize")
+
 	private def SetFilter(filterName as string, statement as string):
 		if _filters.Contains(filterName):
 			_filters[filterName] = statement

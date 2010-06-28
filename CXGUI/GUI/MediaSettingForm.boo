@@ -52,6 +52,9 @@ partial class MediaSettingForm:
 	[Property(UsingProfile)]
 	_usingProfile as string
 
+	[Property(Subtitle)]
+	_subtitle as string
+	
 
 	public def constructor():
 		InitializeComponent()
@@ -62,8 +65,12 @@ partial class MediaSettingForm:
 		_sourceFile = jobItem.SourceFile
 		_destFile = jobItem.DestFile
 		self.destFileBox.Text = _destFile
+
 		_sepAudio = jobItem.SeparateAudio
 		self.tbSepAudio.Text = _sepAudio
+		_subtitle = jobItem.Subtitle
+		self.subtitleTextBox.Text = jobItem.Subtitle
+
 		self._jobConfig = jobItem.JobConfig
 		self._avsConfig = jobItem.AvsConfig
 		self._videoEncConfig = jobItem.VideoEncConfig
@@ -528,6 +535,9 @@ partial class MediaSettingForm:
 				elif result == DialogResult.Yes:
 					self.chbSepAudio.Checked = false //TODO
 
+		if self.subtitleTextBox.Text != "":
+			self._subtitle = self.subtitleTextBox.Text
+		
 		if _resetter.Changed:
 			_changed = true
 		SaveToAvsConfig(_avsConfig)
@@ -538,6 +548,7 @@ partial class MediaSettingForm:
 		self.Close()
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
+		_resetter.ResetControls()
 		_resetter.Clear()
 		self.DialogResult = DialogResult.Cancel
 		self.Close()
@@ -545,14 +556,9 @@ partial class MediaSettingForm:
 	private def MediaSettingFormLoad(sender as object, e as System.EventArgs):
 		if _resetter == null:
 			_resetter = ControlResetter()
-		_resetter.SaveControls(self.gbResolution.Controls)
-		_resetter.SaveControls(self.gbVideoSource.Controls)
-		_resetter.SaveControls(self.gbAudioAvs.Controls)
-		_resetter.SaveControls(self.groupBox4.Controls)
-		_resetter.SaveControls(self.groupBox5.Controls)
-		_resetter.SaveControls(self.groupBox6.Controls)
-		_resetter.SaveControls(self.tabPage1.Controls)
-		_resetter.SaveControls(self.Controls)
+
+		_resetter.SaveControls(self)
+		
 
 	private def MediaSettingFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
 		if e.CloseReason == System.Windows.Forms.CloseReason.UserClosing:
@@ -754,6 +760,11 @@ partial class MediaSettingForm:
 		self._destFile = Path.ChangeExtension(self._destFile, ext)
 		self._destFile = GetUniqueName(self._destFile)
 		self.destFileBox.Text = self._destFile
+	
+	private def SubtitleButtonClick(sender as object, e as System.EventArgs):
+		self.openFileDialog2.FileName = self.subtitleTextBox.Text
+		self.openFileDialog2.ShowDialog()
+		self.subtitleTextBox.Text = self.openFileDialog2.FileName
 
 		
 

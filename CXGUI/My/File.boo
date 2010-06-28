@@ -24,5 +24,5 @@ def GetUniqueName(path as string) as string:
 		else:
 			num = 2
 		name = "${name}_${num}"
-		path = Path.GetDirectoryName(path) + name + Path.GetExtension(path)
+		path = Path.Combine(Path.GetDirectoryName(path), name + Path.GetExtension(path))
 	return path

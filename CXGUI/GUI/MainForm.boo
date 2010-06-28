@@ -72,7 +72,6 @@ partial class MainForm(System.Windows.Forms.Form):
 				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+ext)
 			else:
 				destFile = Path.ChangeExtension(filePath, ext)
-
 			destFile = GetUniqueName(destFile)
 			item = ListViewItem(("等待", fileName, destFile))
 			self.listView1.Items.Add(item)
@@ -143,7 +142,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		jobConfig = jobItem.JobConfig
 
 		if jobConfig.VideoMode == JobMode.Encode:
-			self.WriteVideoAvs(jobItem.SourceFile, 'video.avs', avsConfig)
+			self.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.Subtitle, avsConfig)
 			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
 		
 		return if IsCancelled(e)
@@ -436,6 +435,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.KeepingCfg = true
 			if jobItem.JobConfig.UseSeparateAudio:
 				jobItem.SeparateAudio = self._mediaSettingForm.SepAudio
+			jobItem.Subtitle = self._mediaSettingForm.Subtitle
 		else:
 			jobItem.Clear()
 
@@ -473,7 +473,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		audioConfig.SourceFilter = avsConfig.AudioSource
 		writer.WriteAudioScript()
 
-	private def WriteVideoAvs(sourceFile as string, avsFile as string, avsConfig as AvisynthConfig):
+	private def WriteVideoAvs(sourceFile as string, avsFile as string, subtitle as string, avsConfig as AvisynthConfig):
 		writer = AvisynthWriter(sourceFile)
 		videoConfig as VideoScriptConfig = writer.VideoConfig
 		if avsConfig.Width > 0:
@@ -485,6 +485,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			videoConfig.FrameRate = avsConfig.FrameRate
 		videoConfig.Resizer = avsConfig.Resizer
 		videoConfig.SourceFilter = avsConfig.VideoSource
+		videoConfig.Subtitle = subtitle
 		writer.VideoScriptFile = avsFile
 		writer.WriteVideoScript()
 
