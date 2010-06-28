@@ -7,7 +7,7 @@ import My
 enum Muxer:
 	MP4Box
 	FFMP4
-	MKV
+	MKVMerge
 	None
 
 class MuxerBase(IEncoder):

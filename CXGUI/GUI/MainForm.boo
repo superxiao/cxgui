@@ -61,13 +61,19 @@ partial class MainForm(System.Windows.Forms.Form):
 		else:
 			fileName = Path.GetFileName(filePath)
 		item as ListViewItem
+
 		addFile = do:
-			if self._configForm.destDirComboBox.Text != "":
-				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+".mp4")
+			profile = Profile(self.profileBox.Text)
+			ext = ".mp4"
+			if profile != null:
+				ext = profile.GetExtByMuxer()
+				
+			if self._configForm.destDirComboBox.Text != ""://改名 援引预设的设置 每次更改profile时都要改 更改混流器时也要改
+				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+ext)
 			else:
-				destFile = Path.ChangeExtension(filePath, "mp4")
-			if IsSameFile(filePath, destFile):
-				destFile = Path.Combine(Path.GetDirectoryName(destFile), Path.GetFileNameWithoutExtension(destFile) + '1' + Path.GetExtension(destFile))
+				destFile = Path.ChangeExtension(filePath, ext)
+
+			destFile = GetUniqueName(destFile)
 			item = ListViewItem(("等待", fileName, destFile))
 			self.listView1.Items.Add(item)
 			jobItem = JobItem(filePath, destFile, item, self.profileBox.Text)
@@ -313,7 +319,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			muxer = MP4Box()
 		elif jobItem.JobConfig.Muxer == Muxer.FFMP4:
 			muxer = FFMP4()
-
+		elif jobItem.JobConfig.Muxer == Muxer.MKVMerge:
+			muxer = MKVMerge()
 		if muxer != null:
 			muxer.VideoFile = video
 			muxer.AudioFile = audio
@@ -362,6 +369,7 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def ClearButtonClick(sender as object, e as EventArgs):
 		self.listView1.Items.Clear()
 		self._jobItems.Clear()
+		self.settingButton.Enabled = false
 	
 	private def ContextMenuStrip1Opening(sender as object, e as CancelEventArgs):
 		if self.listView1.SelectedItems.Count == 0:
@@ -405,6 +413,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.muxTimeUsed.Text = string.Empty
 
 	private def SettingButtonClick(sender as object, e as EventArgs):
+		
 		item as ListViewItem = self.listView1.SelectedItems[0]
 		jobItem = self._jobItems[item]
 		SetUpItems((jobItem,))
@@ -418,6 +427,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.State = JobState.Waiting
 			jobItem.UIItem.Text = "等待"
 			jobItem.DestFile = self._mediaSettingForm.DestFile
+			jobItem.UIItem.SubItems[2].Text = jobItem.DestFile
 			jobItem.AvsConfig = self._mediaSettingForm.AvsConfig
 			jobItem.VideoEncConfig = self._mediaSettingForm.VideoEncConfig
 			jobItem.AudioEncConfig = self._mediaSettingForm.AudioEncConfig
@@ -598,8 +608,17 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def ProfileBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
 		result = MessageBox.Show("是否应用更改到所有项目？", "预设更改", MessageBoxButtons.YesNo, MessageBoxIcon.Information)
 		if result == DialogResult.Yes:
+			profile = Profile(self.profileBox.Text)
+			ext = ""
+			if profile != null:
+				ext = profile.GetExtByMuxer()
 			for item in self._jobItems.Values:
 				item.ProfileName = self.profileBox.Text
+				if ext != "":
+					item.DestFile = Path.ChangeExtension(item.DestFile, ext)  //TODO 同步修改到界面
+					item.DestFile = GetUniqueName(item.DestFile)
+					item.UIItem.SubItems[2].Text = item.DestFile
+				
 [STAThread]
 public def Main(argv as (string)) as void:
 	Application.EnableVisualStyles()
@@ -610,3 +629,5 @@ public def Main(argv as (string)) as void:
 	//CXGUI.GUI.cfgtest()
 	//test()
 	//CXGUI.StreamMuxer.fftest()
+	//CXGUI.StreamMuxer.MKVtest()
+	//My.FileModule.MyTest()

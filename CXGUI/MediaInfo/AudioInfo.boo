@@ -24,11 +24,11 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 		audioID = info.Get(StreamKind.Audio, 0, "ID")
 		videoID = info.Get(StreamKind.Video, 0, "ID")
 		if audioID == "0" or videoID == "0":
-			firstID = 0
+			_id = 0
 		elif audioID == "1" or videoID == "1":
-			firstID = 1
-		int.TryParse(info.Get(StreamKind.Audio, streamNum, "ID"), _id)
-		_id = _id - firstID if _id > 0
+			_id = 1
+		int.TryParse(info.Get(StreamKind.Audio, streamNum, "ID"), _streamID)
+		_streamID = _streamID - _id if _streamID > 0
 		double.TryParse(info.Get(StreamKind.Audio, streamNum, "Duration"), _length)
 		_length = _length / 1000
 		_streamsCount = info.Count_Get(StreamKind.Audio)
@@ -82,7 +82,12 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 	[Getter(Format)]
 	_format as string
 	"""音频格式。"""
-	[Getter(ID)]
-	_id as int
+	[Getter(StreamID)]
+	_streamID as int
 	[Getter(Length)]
 	_length as double
+	[Getter(ID)]
+	_id as int
+	"""
+	流ID，mkv和mp4从1起，其他多从0起。
+	"""

@@ -21,14 +21,11 @@ class MP4Box(MuxerBase):
 		_startTime = date.Now
 		_process.Start()
 		readThread.Start()
-		while true:
-			if _progress >= 99:
-				_progress = 100
-				_timeLeft = timespan(0)
-				break
-			Threading.Thread.Sleep(250)
-		readThread.Abort()
 		_process.WaitForExit()
+		if _progress >= 99:
+			_progress = 100
+			_timeLeft = timespan(0)
+		readThread.Abort()
 	
 	private def ReadStdErr():
 		sr = _process.StandardOutput

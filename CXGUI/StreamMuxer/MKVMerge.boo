@@ -6,48 +6,53 @@ import System.Threading
 import System.Windows.Forms
 import CXGUI
 
-class FFMP4(MuxerBase):
-"""Description of FFMP4"""
+class MKVMerge(MuxerBase):
+"""Description of MKVMerge"""
 	
 	_startTime as date
 
 
 	public def constructor():
-		_process.StartInfo.FileName = "ffmpeg.exe"
+		_process.StartInfo.FileName = "mkvmerge.exe"
 	
 	
 	def Start():
+		if self._videoFile == self._dstFile:
+			tempFile =Path.Combine(Path.GetDirectoryName(self._videoFile),"temp"+Path.GetExtension(self._videoFile))
+			File.Move(self._videoFile, tempFile)
+			self._videoFile = tempFile
+			
+			
+		elif self._audioFile == self._dstFile:
+			tempFile =Path.Combine(Path.GetDirectoryName(self._audioFile),"temp"+Path.GetExtension(self._audioFile))
+			File.Move(self._audioFile, tempFile)
+			self._audioFile = tempFile
+		
 		vInfo = VideoInfo(self._videoFile)
 		aInfo = AudioInfo(self._audioFile)
 		argument = GetArgument(vInfo as VideoInfo, aInfo as AudioInfo)
 		_process.StartInfo.Arguments = argument
 		_process.StartInfo.UseShellExecute = false
-		_process.StartInfo.RedirectStandardError = true
+		_process.StartInfo.RedirectStandardOutput = true
 		_process.StartInfo.CreateNoWindow = true
 		_startTime = date.Now
-		if vInfo.HasVideo:
-			length = vInfo.Length
-		elif aInfo.StreamsCount:
-			length = aInfo.Length
 		_process.Start()
-		ReadStdErr(length)
+		ReadStdErr()
 		_process.WaitForExit()
+		File.Delete(tempFile)
 		
 	private def GetArgument(vInfo as VideoInfo, aInfo as AudioInfo) as string:
 		if vInfo.HasVideo and aInfo.StreamsCount:
-			argument = "-i \"${_videoFile}\" -i \"${_audioFile}\""+\
-		" -y -vcodec copy -acodec copy -sn \"${_dstFile}\" -map 0.${vInfo.StreamID} -map 1.${aInfo.StreamID}"
+			argument = "-o \"${_dstFile}\" -A -d ${vInfo.ID} \"${_videoFile}\" -D -a ${aInfo.ID} \"${_audioFile}\""
 		elif not vInfo.HasVideo:
-			argument = "-i \"${_audioFile}\""+\
-		" -y -vn -acodec copy -sn \"${_dstFile}\""
+			argument = "-o \"${_dstFile}\" -D -a ${aInfo.ID} \"${_audioFile}\""
 		elif not aInfo.StreamsCount:
-			argument = "-i \"${_videoFile}\""+\
-		" -y -vcodec copy -an -sn \"${_dstFile}\""
+			argument = "-o \"${_dstFile}\" -A -d ${vInfo.ID} \"${_videoFile}\""
 		
 		return argument
 
-	private def ReadStdErr(length as double):
-		sr = _process.StandardError
+	private def ReadStdErr():
+		sr = _process.StandardOutput
 		line = ""
 		while true:
 			if _progress == 100:
@@ -55,20 +60,12 @@ class FFMP4(MuxerBase):
 			line = sr.ReadLine()
 			line = "" if line == null
 			if line.Length:
-#				File.AppendAllText("d:\\test.txt", line+'\r\n')
-				UpdateProgress(line, length)
+				File.AppendAllText("c:\\test.txt", line+'\r\n')
+				UpdateProgress(line)
 
-	private def UpdateProgress(line as string, length as double):
-		if line.Contains("time="):
-			timeString = line[line.IndexOf("time="):line.IndexOf("bitrate=")]
-			currentTime = double.Parse(timeString[5:])
-			_progress = currentTime * 100 / length
-		elif line.Contains("incorrect codec"):
-			raise FormatNotSupportedException()
-		elif line.Contains("non monotone"):
-			raise FFmpegBugException()
-		elif line.StartsWith("video:"):
-			_progress = 100
+	private def UpdateProgress(line as string):
+		if line.StartsWith("Progress"):
+			_progress = int.Parse(line[10:-1])
 		
 		_timeUsed = date.Now - _startTime	
 		_timeLeft = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds * (100-_progress) / _progress)) if _progress != 0
@@ -81,8 +78,8 @@ class FFMP4(MuxerBase):
 			pass
 
 
-def fftest():
-	m = FFMP4()
+def MKVtest():
+	m = MKVMerge()
 	m.VideoFile = """G:\Movie\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD-SAMPLE.mkv"""
 	m.AudioFile = """G:\Movie\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD-SAMPLE.mkv"""
 	m.DstFile = """d:\test.mp4"""

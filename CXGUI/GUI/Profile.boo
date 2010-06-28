@@ -7,6 +7,7 @@ import System.Runtime.Serialization.Formatters.Binary
 import CXGUI
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
+import CXGUI.StreamMuxer
 
 class Profile:	
 	
@@ -86,4 +87,11 @@ class Profile:
 		stream = FileStream(path, FileMode.Create)
 		formater.Serialize(stream, profile)
 		stream.Close()
+		
+	public def GetExtByMuxer() as string:
+		if self.JobConfig.Muxer in (Muxer.FFMP4, Muxer.MP4Box, Muxer.None):
+			ext = ".mp4"
+		elif self.JobConfig.Muxer == Muxer.MKVMerge:
+			ext = ".mkv"
+		return ext
 		

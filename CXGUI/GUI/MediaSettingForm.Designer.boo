@@ -164,6 +164,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# destFileBox
 		# 
+		self.destFileBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
 		self.destFileBox.FormattingEnabled = true
 		self.destFileBox.Location = System.Drawing.Point(74, 427)
 		self.destFileBox.Name = "destFileBox"
@@ -209,6 +211,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tbSepAudio
 		# 
+		self.tbSepAudio.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
 		self.tbSepAudio.Enabled = false
 		self.tbSepAudio.Location = System.Drawing.Point(85, 67)
 		self.tbSepAudio.Name = "tbSepAudio"
@@ -232,7 +236,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		self.chbSepAudio.Location = System.Drawing.Point(6, 65)
 		self.chbSepAudio.Name = "chbSepAudio"
-		self.chbSepAudio.Size = System.Drawing.Size(91, 24)
+		self.chbSepAudio.Size = System.Drawing.Size(88, 24)
 		self.chbSepAudio.TabIndex = 3
 		self.chbSepAudio.Text = "独立音轨："
 		self.chbSepAudio.UseVisualStyleBackColor = true
@@ -492,11 +496,12 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		self.muxerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		self.muxerComboBox.FormattingEnabled = true
-		self.muxerComboBox.Items.AddRange((of object: "MP4"))
+		self.muxerComboBox.Items.AddRange((of object: "MP4", "MKV"))
 		self.muxerComboBox.Location = System.Drawing.Point(6, 20)
 		self.muxerComboBox.Name = "muxerComboBox"
 		self.muxerComboBox.Size = System.Drawing.Size(121, 20)
 		self.muxerComboBox.TabIndex = 0
+		self.muxerComboBox.SelectedIndexChanged += self.MuxerComboBoxSelectedIndexChanged as System.EventHandler
 		# 
 		# groupBox5
 		# 
@@ -720,7 +725,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# saveProfileButton
 		# 
-		self.saveProfileButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
+		self.saveProfileButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
 		self.saveProfileButton.Location = System.Drawing.Point(194, 507)
 		self.saveProfileButton.Name = "saveProfileButton"
 		self.saveProfileButton.Size = System.Drawing.Size(75, 23)
@@ -754,7 +759,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# saveFileDialog1
 		# 
-		self.saveFileDialog1.Filter = "MP4文件|*.MP4"
+		self.saveFileDialog1.OverwritePrompt = false
+		self.saveFileDialog1.FileOk += self.SaveFileDialog1FileOk as System.ComponentModel.CancelEventHandler
 		# 
 		# openFileDialog1
 		# 
@@ -762,6 +768,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# profileBox
 		# 
+		self.profileBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
 		self.profileBox.FormattingEnabled = true
 		self.profileBox.Location = System.Drawing.Point(67, 509)
 		self.profileBox.Name = "profileBox"
@@ -771,6 +779,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# label15
 		# 
+		self.label15.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
 		self.label15.Location = System.Drawing.Point(12, 507)
 		self.label15.Name = "label15"
 		self.label15.Size = System.Drawing.Size(48, 23)

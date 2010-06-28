@@ -25,7 +25,7 @@ public class VideoInfo:
 
 	protected _width as int
 
-	protected _id as int
+	protected _streamID as int
 	
 	protected _frameCount as int
 	
@@ -64,13 +64,13 @@ public class VideoInfo:
 			audioID = info.Get(StreamKind.Audio, 0, "ID")
 			videoID = info.Get(StreamKind.Video, 0, "ID")
 			if audioID == "0" or videoID == "0":
-				firstID = 0
+				_id = 0
 			elif audioID == "1" or videoID == "1":
-				firstID = 1
+				_id = 1
 			double.TryParse(info.Get(StreamKind.Video, 0, "Duration"), _length)
 			_length = _length / 1000
-			int.TryParse(info.Get(StreamKind.Video, 0, 'ID', InfoKind.Text), self._id)
-			_id = _id - firstID if _id > 0
+			int.TryParse(info.Get(StreamKind.Video, 0, 'ID', InfoKind.Text), self._streamID)
+			_streamID = _streamID - _id if _streamID > 0
 			int.TryParse(info.Get(StreamKind.Video, 0, 'Width', InfoKind.Text), self._width)
 			int.TryParse(info.Get(StreamKind.Video, 0, 'Height', InfoKind.Text), self._height)
 			double.TryParse(info.Get(StreamKind.Video, 0, 'FrameRate', InfoKind.Text), self._frameRate)
@@ -124,9 +124,12 @@ public class VideoInfo:
 		get:
 			return self._width	
 
-	public ID as int:
+	public StreamID as int:
+	"""
+	流序号。
+	"""
 		get:
-			return self._id
+			return self._streamID
 
 	public FrameCount as int:
 		get:
@@ -134,3 +137,11 @@ public class VideoInfo:
 
 	[Getter(Length)]
 	_length as double
+	
+	[Getter(ID)]
+	_id as int
+	"""
+	流ID，mkv和mp4从1起，其他多从0起。
+	"""
+	
+	

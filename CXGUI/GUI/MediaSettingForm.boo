@@ -12,6 +12,7 @@ import CXGUI.Avisynth
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
+import My
 
 partial class MediaSettingForm:
 """Description of MediaSettingForm."""
@@ -110,7 +111,8 @@ partial class MediaSettingForm:
 		else:
 			self.gbResolution.Enabled = true
 			self.gbVideoSource.Enabled = true
-		if jobConfig.Muxer == Muxer.MKV:
+			
+		if jobConfig.Muxer == Muxer.MKVMerge:
 			self.muxerComboBox.Text = "MKV"
 		else:
 			self.muxerComboBox.Text = "MP4"
@@ -280,14 +282,11 @@ partial class MediaSettingForm:
 
 	private def BtOutBrowseClick(sender as object, e as System.EventArgs):
 		if self.destFileBox.Text == "":
-			self.destFileBox.Text = self.destFileBox.Text
+			self.destFileBox.Text = self.DestFile
 		try:	
 			self.saveFileDialog1.InitialDirectory = Path.GetDirectoryName(self.destFileBox.Text)
-			self.saveFileDialog1.FileName = self.destFileBox.Text
+			self.saveFileDialog1.FileName = Path.GetFileName(self.destFileBox.Text)
 			self.saveFileDialog1.ShowDialog()
-			if not saveFileDialog1.FileName.ToLower().EndsWith(".mp4"):
-				saveFileDialog1.FileName += ".mp4"
-			self.destFileBox.Text = saveFileDialog1.FileName
 		except:
 			MessageBox.Show("无效路径或含非法字符。", "", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
@@ -479,15 +478,45 @@ partial class MediaSettingForm:
 		jobConfig.UseSeparateAudio = self.chbSepAudio.Checked
 		jobConfig.VideoMode = cast(JobMode, self.cbVideoMode.SelectedIndex)
 		jobConfig.AudioMode = cast(JobMode, self.cbAudioMode.SelectedIndex)
-		if self.muxerComboBox.Text == "MP4" and (jobConfig.VideoMode == JobMode.Copy or jobConfig.AudioMode == JobMode.Copy):
+		if self.muxerComboBox.Text == "MKV":
+			jobConfig.Muxer = Muxer.MKVMerge
+		elif jobConfig.VideoMode == JobMode.Copy or jobConfig.AudioMode == JobMode.Copy:
 			jobConfig.Muxer = Muxer.FFMP4
-		elif self.muxerComboBox.Text == "MP4" and (jobConfig.VideoMode == JobMode.Encode or jobConfig.AudioMode == JobMode.Encode):
+		elif Path.GetExtension(self._destFile).ToLower() not in ('.mp4', '.m4v', '.m4a'):
+			jobConfig.Muxer = Muxer.FFMP4
+		elif jobConfig.VideoMode == JobMode.Encode or jobConfig.AudioMode == JobMode.Encode:
 			jobConfig.Muxer = Muxer.MP4Box
 		else:
 			jobConfig.Muxer = Muxer.None
 
 		
-	private def OkButtonClick(sender as object, e as System.EventArgs):
+	private def OkButtonClick(sender as object, e as System.EventArgs):		
+		try:
+			dir = Path.GetDirectoryName(self.destFileBox.Text)
+			if dir == "" or dir == null:
+				self.destFileBox.Text = self._destFile			
+				
+			elif IsSameFile(self._sourceFile, saveFileDialog1.FileName):
+				MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+				return
+			elif Exists(saveFileDialog1.FileName):
+				result = MessageBox.Show("${Path.GetFileName(saveFileDialog1.FileName)} 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+				if result == DialogResult.No:
+					return
+			elif Directory.Exists(dir):
+				self._destFile = self.destFileBox.Text
+			elif not Directory.Exists(dir):
+				result = MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
+				if result == DialogResult.OK:
+					Directory.CreateDirectory(Path.GetDirectoryName(self.destFileBox.Text))
+					self._destFile = self.destFileBox.Text
+				else:
+					self.destFileBox.Text = self._destFile
+			else:
+				self._destFile = self.destFileBox.Text
+		except:
+			self.destFileBox.Text = self._destFile
+
 		if self.chbSepAudio.Checked:
 			if self.tbSepAudio.Text != "":
 				self._sepAudio = self.tbSepAudio.Text
@@ -498,26 +527,12 @@ partial class MediaSettingForm:
 					return
 				elif result == DialogResult.Yes:
 					self.chbSepAudio.Checked = false //TODO
+
 		if _resetter.Changed:
 			_changed = true
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
 	
-		try:
-			dir = Path.GetDirectoryName(self.destFileBox.Text)
-			if dir == "" or dir == null:
-				self.destFileBox.Text = self._destFile
-			elif Directory.Exists(dir):
-				self._destFile = self.destFileBox.Text
-			else:
-				result = MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
-				if result == DialogResult.OK:
-					Directory.CreateDirectory(Path.GetDirectoryName(self.destFileBox.Text))
-					self._destFile = self.destFileBox.Text
-				else:
-					self.destFileBox.Text = self._destFile
-		except:
-			self.destFileBox.Text = self._destFile
 		_resetter.Clear()
 		self.DialogResult = DialogResult.OK
 		self.Close()
@@ -684,7 +699,7 @@ partial class MediaSettingForm:
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
 		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig)
-		self.profileBox.Items.Add(self.profileBox.Text)
+		self.profileBox.Items.Add(self.profileBox.Text) if self.profileBox.Text not in self.profileBox.Items
 		self._usingProfile = self.profileBox.Text
 		
 	public def ImportProfiles(profileNames as (string), selectedProfile as string):
@@ -696,9 +711,6 @@ partial class MediaSettingForm:
 		
 	public def GetProfiles() as (string):
 		return array(string, self.profileBox.Items)
-	
-	private def CheckBox1CheckedChanged(sender as object, e as System.EventArgs): 
-		pass
 	
 	private def UseCustomCmdBoxCheckedChanged(sender as object, e as System.EventArgs):
 		//TODO 选项导入导出
@@ -724,7 +736,25 @@ partial class MediaSettingForm:
 		self.VideoEncConfig.CustomCmdLine = self._cmdLineBox.CmdLine 
 	
 	private def SaveFileDialog1FileOk(sender as object, e as System.ComponentModel.CancelEventArgs):
-		pass
+			ext = '.' + self.muxerComboBox.Text.ToLower()
+			if not saveFileDialog1.FileName.ToLower().EndsWith(ext):
+				saveFileDialog1.FileName += ext
+			if IsSameFile(self._sourceFile, saveFileDialog1.FileName):
+				MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+				e.Cancel = true
+				return
+			if Exists(saveFileDialog1.FileName):
+				result = MessageBox.Show("${Path.GetFileName(saveFileDialog1.FileName)} 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+				if result == DialogResult.No:
+					return
+			self.destFileBox.Text = self.saveFileDialog1.FileName
+	
+	private def MuxerComboBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
+		ext = self.muxerComboBox.Text.ToLower()
+		self._destFile = Path.ChangeExtension(self._destFile, ext)
+		self._destFile = GetUniqueName(self._destFile)
+		self.destFileBox.Text = self._destFile
+
 		
 
 	

@@ -93,6 +93,7 @@
     <Compile Include="My\IEncoder.boo" />
     <Compile Include="My\Math.boo" />
     <Compile Include="StreamMuxer\FFMP4.boo" />
+    <Compile Include="StreamMuxer\MKVMerge.boo" />
     <Compile Include="StreamMuxer\MP4Box.boo" />
     <Compile Include="StreamMuxer\MuxerBase.boo" />
     <Compile Include="VideoEncoding\VideoEncConfigBase.boo" />
