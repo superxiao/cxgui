@@ -72,6 +72,13 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label7 = System.Windows.Forms.Label()
 		self.rateControlBox = System.Windows.Forms.ComboBox()
 		self.tabPage3 = System.Windows.Forms.TabPage()
+		self.fontBottomBox = System.Windows.Forms.DomainUpDown()
+		self.label21 = System.Windows.Forms.Label()
+		self.fontSizeBox = System.Windows.Forms.DomainUpDown()
+		self.label20 = System.Windows.Forms.Label()
+		self.fontButton = System.Windows.Forms.Button()
+		self.label19 = System.Windows.Forms.Label()
+		self.subtitleTextBox = System.Windows.Forms.TextBox()
 		self.subtitleButton = System.Windows.Forms.Button()
 		self.label18 = System.Windows.Forms.Label()
 		self.saveProfileButton = System.Windows.Forms.Button()
@@ -82,7 +89,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.profileBox = System.Windows.Forms.ComboBox()
 		self.label15 = System.Windows.Forms.Label()
 		self.openFileDialog2 = System.Windows.Forms.OpenFileDialog()
-		self.subtitleTextBox = System.Windows.Forms.TextBox()
+		self.fontDialog1 = System.Windows.Forms.FontDialog()
 		self.tabControl1.SuspendLayout()
 		self.tabPage1.SuspendLayout()
 		self.gbAudioAvs.SuspendLayout()
@@ -732,6 +739,12 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tabPage3
 		# 
+		self.tabPage3.Controls.Add(self.fontBottomBox)
+		self.tabPage3.Controls.Add(self.label21)
+		self.tabPage3.Controls.Add(self.fontSizeBox)
+		self.tabPage3.Controls.Add(self.label20)
+		self.tabPage3.Controls.Add(self.fontButton)
+		self.tabPage3.Controls.Add(self.label19)
 		self.tabPage3.Controls.Add(self.subtitleTextBox)
 		self.tabPage3.Controls.Add(self.subtitleButton)
 		self.tabPage3.Controls.Add(self.label18)
@@ -741,6 +754,69 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage3.TabIndex = 2
 		self.tabPage3.Text = "字幕"
 		self.tabPage3.UseVisualStyleBackColor = true
+		# 
+		# fontBottomBox
+		# 
+		self.fontBottomBox.Location = System.Drawing.Point(269, 164)
+		self.fontBottomBox.Name = "fontBottomBox"
+		self.fontBottomBox.Size = System.Drawing.Size(79, 21)
+		self.fontBottomBox.TabIndex = 9
+		self.fontBottomBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
+		# 
+		# label21
+		# 
+		self.label21.Location = System.Drawing.Point(197, 161)
+		self.label21.Name = "label21"
+		self.label21.Size = System.Drawing.Size(66, 23)
+		self.label21.TabIndex = 8
+		self.label21.Text = "底部边距"
+		self.label21.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		# 
+		# fontSizeBox
+		# 
+		self.fontSizeBox.Location = System.Drawing.Point(269, 90)
+		self.fontSizeBox.Name = "fontSizeBox"
+		self.fontSizeBox.Size = System.Drawing.Size(79, 21)
+		self.fontSizeBox.TabIndex = 7
+		self.fontSizeBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
+		# 
+		# label20
+		# 
+		self.label20.Location = System.Drawing.Point(206, 90)
+		self.label20.Name = "label20"
+		self.label20.Size = System.Drawing.Size(57, 23)
+		self.label20.TabIndex = 6
+		self.label20.Text = "字号"
+		self.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		# 
+		# fontButton
+		# 
+		self.fontButton.Location = System.Drawing.Point(72, 90)
+		self.fontButton.Name = "fontButton"
+		self.fontButton.Size = System.Drawing.Size(75, 23)
+		self.fontButton.TabIndex = 5
+		self.fontButton.Text = "宋体"
+		self.fontButton.UseVisualStyleBackColor = true
+		self.fontButton.Click += self.FontButtonClick as System.EventHandler
+		# 
+		# label19
+		# 
+		self.label19.Location = System.Drawing.Point(3, 90)
+		self.label19.Name = "label19"
+		self.label19.Size = System.Drawing.Size(43, 23)
+		self.label19.TabIndex = 4
+		self.label19.Text = "字体"
+		self.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		# 
+		# subtitleTextBox
+		# 
+		self.subtitleTextBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.subtitleTextBox.Location = System.Drawing.Point(72, 42)
+		self.subtitleTextBox.Name = "subtitleTextBox"
+		self.subtitleTextBox.ReadOnly = true
+		self.subtitleTextBox.Size = System.Drawing.Size(276, 21)
+		self.subtitleTextBox.TabIndex = 3
 		# 
 		# subtitleButton
 		# 
@@ -829,17 +905,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# openFileDialog2
 		# 
 		self.openFileDialog2.FileName = "openFileDialog2"
-		self.openFileDialog2.Filter = "srt|*.srt|ass|*.ass|ssa|*.ssa"
-		# 
-		# subtitleTextBox
-		# 
-		self.subtitleTextBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-						| System.Windows.Forms.AnchorStyles.Right))
-		self.subtitleTextBox.Location = System.Drawing.Point(72, 42)
-		self.subtitleTextBox.Name = "subtitleTextBox"
-		self.subtitleTextBox.ReadOnly = true
-		self.subtitleTextBox.Size = System.Drawing.Size(276, 21)
-		self.subtitleTextBox.TabIndex = 3
+		self.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*,ssa|srt|*.srt|ass|*.ass|ssa|*.ssa"
 		# 
 		# MediaSettingForm
 		# 
@@ -873,6 +939,13 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage3.ResumeLayout(false)
 		self.tabPage3.PerformLayout()
 		self.ResumeLayout(false)
+	private fontBottomBox as System.Windows.Forms.DomainUpDown
+	private label21 as System.Windows.Forms.Label
+	private fontSizeBox as System.Windows.Forms.DomainUpDown
+	private label20 as System.Windows.Forms.Label
+	private fontDialog1 as System.Windows.Forms.FontDialog
+	private label19 as System.Windows.Forms.Label
+	private fontButton as System.Windows.Forms.Button
 	private subtitleTextBox as System.Windows.Forms.TextBox
 	private openFileDialog2 as System.Windows.Forms.OpenFileDialog
 	private label18 as System.Windows.Forms.Label

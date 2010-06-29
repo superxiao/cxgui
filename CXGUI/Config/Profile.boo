@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace CXGUI.Config
 
 import System
 import System.IO
@@ -8,6 +8,7 @@ import CXGUI
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
+import CXGUI.Job
 
 class Profile:	
 	
@@ -18,7 +19,9 @@ class Profile:
 	[Property(AudioEncConfig)]
 	_audioEncConfig as NeroAacConfig
 	[Property(JobConfig)]
-	_jobConfig as JobItemConfig
+	_jobConfig as JobItemConfig	
+	[Property(SubConfig)]
+	_subConfig as SubtitleConfig
 	
 	
 	public def constructor(initializeConfig as bool):
@@ -30,6 +33,7 @@ class Profile:
 			_videoEncConfig = X264Config()
 			_audioEncConfig = NeroAacConfig()
 			_jobConfig = JobItemConfig()
+			_subConfig = SubtitleConfig()
 		
 	public def constructor(profileName as string):
 	"""
@@ -52,6 +56,7 @@ class Profile:
 		self._videoEncConfig = profile._videoEncConfig
 		self._audioEncConfig = profile._audioEncConfig
 		self._jobConfig = profile._jobConfig
+		self._subConfig = profile._subConfig
 				
 	public static def GetProfileNames() as (string):
 		profileNames = List[of string]()
@@ -76,7 +81,8 @@ class Profile:
 		stream.Close()
 		
 	public static def Save(profileName as string, jobConfig as JobItemConfig,
-	avsConfig as AvisynthConfig, videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase):
+	avsConfig as AvisynthConfig, videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase,
+	subConfig as SubtitleConfig):
 		formater = BinaryFormatter()
 		path = Path.Combine("", profileName+".profile")
 		profile = Profile(false)
@@ -84,6 +90,7 @@ class Profile:
 		profile._videoEncConfig = videoEncConfig
 		profile._audioEncConfig = audioEncConfig
 		profile._avsConfig = avsConfig
+		profile._subConfig = subConfig
 		stream = FileStream(path, FileMode.Create)
 		formater.Serialize(stream, profile)
 		stream.Close()

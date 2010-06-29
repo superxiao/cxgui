@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace CXGUI.Job
 
 import System
 import System.IO
@@ -9,6 +9,7 @@ import CXGUI.Avisynth
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
+import CXGUI.Config
 
 enum JobState:
 	Waiting
@@ -45,6 +46,9 @@ class JobItem:
 
 	[Property(AudioEncConfig)]
 	_audioEncConfig as AudioEncConfigBase
+	
+	[Property(SubConfig)]
+	_subConfig as SubtitleConfig
 
 	JobConfig as JobItemConfig:
 		get:
@@ -93,6 +97,7 @@ class JobItem:
 	_readVideoCfg as bool
 	_readAudioCfg as bool
 	_readJobCfg as bool
+	_readSubCfg as bool
 	_videoInfo as VideoInfo
 	
 	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem, profileName as string):
@@ -115,13 +120,15 @@ class JobItem:
 			_readAudioCfg = true
 		if self.JobConfig == null:
 			_readJobCfg = true
+		if self.SubConfig == null:
+			_readSubCfg = true
 		ReadProfile(self._profileName)
 
 	private def ReadProfile(profileName as string):
 	"""
 	从profile文件中读取VideoEncConfig AudioEncConfig AvsConfig对象到本类的相关属性。
 	"""
-		if _readAvsCfg or _readVideoCfg or _readAudioCfg or _readJobCfg:
+		if _readAvsCfg or _readVideoCfg or _readAudioCfg or _readJobCfg or _readSubCfg:
 			profile = Profile(profileName)
 		if self._readAvsCfg:
 			_avsConfig = profile.AvsConfig
@@ -135,7 +142,9 @@ class JobItem:
 		if self._readJobCfg:
 			_jobConfig = profile.JobConfig
 			_readJobCfg = false
-
+		if self._readSubCfg:
+			_subConfig = profile.SubConfig
+			_readSubCfg = false
 	
 	public def Clear():
 	"""
@@ -147,3 +156,4 @@ class JobItem:
 			self._audioEncConfig = null
 			self._videoEncConfig = null
 			self._jobConfig = null
+			self._subConfig = null

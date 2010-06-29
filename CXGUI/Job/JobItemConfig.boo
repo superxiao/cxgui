@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace CXGUI.Job
 
 import System
 import System.Windows.Forms//test

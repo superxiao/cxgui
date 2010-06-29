@@ -18,6 +18,8 @@ import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
 import CXGUI.Avisynth
+import CXGUI.Config
+import CXGUI.Job
 import DirectShowLib.DES
 import My
 
@@ -110,8 +112,10 @@ partial class MainForm(System.Windows.Forms.Form):
 		_workingItems = GetWorkingJobItems()
 		SetUpItems(_workingItems.ToArray())
 		if _workingItems.Count > 0:
-			self.backgroundWorker1.RunWorkerAsync(_workingItems[0])
-			self.tabControl1.SelectTab(self.progressPage)
+			item = _workingItems[0]
+			SubWriter(item.Subtitle, item.SubConfig, item.AvsConfig).Write()
+#			self.backgroundWorker1.RunWorkerAsync(_workingItems[0])
+#			self.tabControl1.SelectTab(self.progressPage)
 		
 	private def GetWorkingJobItems() as Boo.Lang.List[of JobItem]:
 		jobItems = Boo.Lang.List[of JobItem]()

@@ -63,14 +63,14 @@
     <Compile Include="Avisynth\AvisynthWriter.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
     <Compile Include="Avisynth\VideoScriptConfig.boo" />
+    <Compile Include="Config\Profile.boo" />
+    <Compile Include="Config\ProgramConfig.boo" />
     <Compile Include="Exception.boo" />
-    <Compile Include="GUI\AvsConfig.boo" />
     <Compile Include="GUI\ControlResetter.boo" />
     <Compile Include="GUI\CommandLineBox.boo" />
     <Compile Include="GUI\CommandLineBox.Designer.boo">
       <DependentUpon>CommandLineBox.boo</DependentUpon>
     </Compile>
-    <Compile Include="GUI\JobItemConfig.boo" />
     <Compile Include="GUI\MainForm.boo" />
     <Compile Include="GUI\MainForm.Designer.boo">
       <DependentUpon>MainForm.boo</DependentUpon>
@@ -79,13 +79,17 @@
     <Compile Include="GUI\ProgramConfigForm.Designer.boo">
       <DependentUpon>ProgramConfigForm.boo</DependentUpon>
     </Compile>
-    <Compile Include="GUI\JobItem.boo" />
     <Compile Include="GUI\MediaSettingForm.boo" />
     <Compile Include="GUI\MediaSettingForm.Designer.boo">
       <DependentUpon>MediaSettingForm.boo</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Profile.boo" />
-    <Compile Include="GUI\ProgramConfig.boo" />
+    <Compile Include="Job\AvisynthConfig.boo" />
+    <Compile Include="Job\JobItem.boo" />
+    <Compile Include="Job\JobItemConfig.boo" />
+    <Compile Include="Job\SubtitleConfig.boo">
+      <DependentUpon>SubWriter.boo</DependentUpon>
+    </Compile>
+    <Compile Include="Job\SubWriter.boo" />
     <Compile Include="MediaInfo\AudioInfo.boo" />
     <Compile Include="MediaInfo\DirectShowInfo.boo" />
     <Compile Include="MediaInfo\VideoInfo.boo" />
@@ -127,6 +131,8 @@
     <Folder Include="My" />
     <Folder Include="StreamMuxer" />
     <Folder Include="VideoEncoding" />
+    <Folder Include="Job" />
+    <Folder Include="Config" />
   </ItemGroup>
   <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
 </Project>

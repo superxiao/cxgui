@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace CXGUI.Config
 
 import System
 import System.Configuration

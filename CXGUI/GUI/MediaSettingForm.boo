@@ -12,6 +12,8 @@ import CXGUI.Avisynth
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
+import CXGUI.Config
+import CXGUI.Job
 import My
 
 partial class MediaSettingForm:
@@ -46,6 +48,9 @@ partial class MediaSettingForm:
 	[Property(JobConfig)]
 	_jobConfig as JobItemConfig
 
+	[Property(SubConfig)]
+	_subConfig as SubtitleConfig
+
 	[Property(Changed)]
 	_changed as bool
 	
@@ -60,7 +65,6 @@ partial class MediaSettingForm:
 		InitializeComponent()
 		
 	public def SetUpForItem(jobItem as JobItem):
-		
 		_usingProfile = jobItem.ProfileName
 		_sourceFile = jobItem.SourceFile
 		_destFile = jobItem.DestFile
@@ -75,10 +79,12 @@ partial class MediaSettingForm:
 		self._avsConfig = jobItem.AvsConfig
 		self._videoEncConfig = jobItem.VideoEncConfig
 		self._audioEncConfig = jobItem.AudioEncConfig
+		self._subConfig = jobItem.SubConfig
 		_videoInfo = VideoInfo(_sourceFile)
 		_audioInfo = AudioInfo(_sourceFile)
 		InitializeJobConfig(_jobConfig)
 		InitializeAvsConfig(_avsConfig)
+		InitializeSubConfig(_subConfig)
 		InitializeEncConfig()
 
 	private def InitializeJobConfig(jobConfig as JobItemConfig):
@@ -207,6 +213,14 @@ partial class MediaSettingForm:
 		self.widthBox.Text = _resolutionCal.Width.ToString() if caller is not self.widthBox
 		self.aspectRatioBox.Text = _resolutionCal.AspectRatio.ToString() if caller is not self.aspectRatioBox
 		self.modBox.Text = _resolutionCal.Mod.ToString()
+
+	private def InitializeSubConfig(subConfig as SubtitleConfig):
+		
+		self.fontButton.Text = subConfig.Fontname
+		self.fontSizeBox.Text = subConfig.Fontsize.ToString()
+		self.fontBottomBox.Text = subConfig.MarginV.ToString()
+
+
 
 	private def WidthBoxKeyUp(sender as object, e as System.Windows.Forms.KeyEventArgs):
 		width as int
@@ -485,6 +499,8 @@ partial class MediaSettingForm:
 		jobConfig.UseSeparateAudio = self.chbSepAudio.Checked
 		jobConfig.VideoMode = cast(JobMode, self.cbVideoMode.SelectedIndex)
 		jobConfig.AudioMode = cast(JobMode, self.cbAudioMode.SelectedIndex)
+		jobConfig.VideoMode = JobMode.None if jobConfig.VideoMode == -1
+		jobConfig.AudioMode = JobMode.None if jobConfig.AudioMode == -1
 		if self.muxerComboBox.Text == "MKV":
 			jobConfig.Muxer = Muxer.MKVMerge
 		elif jobConfig.VideoMode == JobMode.Copy or jobConfig.AudioMode == JobMode.Copy:
@@ -495,7 +511,11 @@ partial class MediaSettingForm:
 			jobConfig.Muxer = Muxer.MP4Box
 		else:
 			jobConfig.Muxer = Muxer.None
-
+	
+	private def SaveToSubConfig(subConfig as SubtitleConfig):
+		subConfig.Fontname = self.fontDialog1.Font.Name
+		int.TryParse(self.fontSizeBox.Text, subConfig.Fontsize)
+		int.TryParse(self.fontBottomBox.Text, subConfig.MarginV)
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):		
 		try:
@@ -542,7 +562,7 @@ partial class MediaSettingForm:
 			_changed = true
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
-	
+		SaveToSubConfig(_subConfig)
 		_resetter.Clear()
 		self.DialogResult = DialogResult.OK
 		self.Close()
@@ -586,12 +606,14 @@ partial class MediaSettingForm:
 		self._videoEncConfig = null
 		self._audioEncConfig = null
 		self._jobConfig = null
+		self._subConfig = null
 		self._videoInfo = null
 		self._audioInfo = null
 		self._resolutionCal = null
 		self._sourceFile = ""
 		self._destFile = ""
 		self._sepAudio = ""
+		self._subtitle = ""
 		self.widthBox.Text = ""
 		self.heightBox.Text = ""
 		self.aspectRatioBox.Text = ""
@@ -704,7 +726,8 @@ partial class MediaSettingForm:
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
-		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig)
+		SaveToSubConfig(_subConfig)
+		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig, _subConfig)
 		self.profileBox.Items.Add(self.profileBox.Text) if self.profileBox.Text not in self.profileBox.Items
 		self._usingProfile = self.profileBox.Text
 		
@@ -765,6 +788,14 @@ partial class MediaSettingForm:
 		self.openFileDialog2.FileName = self.subtitleTextBox.Text
 		self.openFileDialog2.ShowDialog()
 		self.subtitleTextBox.Text = self.openFileDialog2.FileName
+	
+	private def FontButtonClick(sender as object, e as System.EventArgs):
+		self.fontDialog1.Font = Font(self._subConfig.Fontname, 100) //TODO
+		self.fontDialog1.ShowDialog()
+		self._subConfig.Fontname = self.fontDialog1.Font.Name
+		self.fontButton.Text = self.fontDialog1.Font.Name
+
+		
 
 		
 

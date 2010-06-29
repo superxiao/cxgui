@@ -5,6 +5,7 @@ import System.Collections
 import System.Drawing
 import System.Windows.Forms
 import System.Configuration
+import CXGUI.Config
 
 partial class ProgramConfigForm:
 """Description of ProgramConfigForm."""
