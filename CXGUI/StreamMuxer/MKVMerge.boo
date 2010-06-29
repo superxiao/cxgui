@@ -5,6 +5,7 @@ import System.IO
 import System.Threading
 import System.Windows.Forms
 import CXGUI
+import My
 
 class MKVMerge(MuxerBase):
 """Description of MKVMerge"""
@@ -19,12 +20,14 @@ class MKVMerge(MuxerBase):
 	def Start():
 		if self._videoFile == self._dstFile:
 			tempFile =Path.Combine(Path.GetDirectoryName(self._videoFile),"temp"+Path.GetExtension(self._videoFile))
+			tempFile = GetUniqueName(tempFile)
 			File.Move(self._videoFile, tempFile)
 			self._videoFile = tempFile
 			
 			
 		elif self._audioFile == self._dstFile:
 			tempFile =Path.Combine(Path.GetDirectoryName(self._audioFile),"temp"+Path.GetExtension(self._audioFile))
+			tempFile = GetUniqueName(tempFile)
 			File.Move(self._audioFile, tempFile)
 			self._audioFile = tempFile
 		

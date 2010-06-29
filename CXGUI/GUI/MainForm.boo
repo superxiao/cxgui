@@ -24,7 +24,6 @@ import DirectShowLib.DES
 import My
 
 partial class MainForm(System.Windows.Forms.Form):
-	
 	_configForm as ProgramConfigForm
 	_mediaSettingForm as MediaSettingForm
 	_programConfig as ProgramConfig
@@ -35,6 +34,7 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	public def constructor():
 		self.InitializeComponent()
+		
 
 		config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
 		_programConfig = config.Sections["programConfig"]
@@ -672,6 +672,9 @@ partial class MainForm(System.Windows.Forms.Form):
 
 [STAThread]
 public def Main(argv as (string)) as void:
+	if not Directory.Exists("tools"):
+		Directory.CreateDirectory("tools")
+	Directory.SetCurrentDirectory("tools")
 	Application.EnableVisualStyles()
 	Application.SetCompatibleTextRenderingDefault(false)
 	Application.Run(MainForm())

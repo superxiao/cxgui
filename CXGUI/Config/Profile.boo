@@ -23,7 +23,15 @@ class Profile:
 	[Property(SubConfig)]
 	_subConfig as SubtitleConfig
 	
+	static final _profileDir as string 
 	
+	
+	
+	static def constructor():
+		_profileDir = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "profile")
+		if not Directory.Exists(_profileDir):
+			Directory.CreateDirectory(_profileDir)
+		
 	public def constructor(initializeConfig as bool):
 	"""
 	使用默认的各个设置对象。
@@ -39,7 +47,7 @@ class Profile:
 	"""
 	如果profile文件不存在或损坏将引起异常。
 	"""
-		path = Path.Combine("", profileName+".profile") //TODO profile文件夹
+		path = Path.Combine(_profileDir, profileName+".profile") //TODO profile文件夹
 		formater = BinaryFormatter()
 		if not File.Exists(path):
 			raise ProfileNotFoundException("文件未找到")
@@ -60,7 +68,7 @@ class Profile:
 				
 	public static def GetProfileNames() as (string):
 		profileNames = List[of string]()
-		files = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.profile")
+		files = Directory.GetFiles(_profileDir, "*.profile")
 		formater = BinaryFormatter()
 		for file in files:
 			try:
@@ -74,7 +82,7 @@ class Profile:
 	
 	public static def RebuildDefault(defaultProfileName as string):
 		formater = BinaryFormatter()
-		path = Path.Combine("", defaultProfileName+".profile")
+		path = Path.Combine(_profileDir, defaultProfileName+".profile")
 		profile = Profile(true)
 		stream = FileStream(path, FileMode.Create)
 		formater.Serialize(stream, profile)
@@ -84,7 +92,7 @@ class Profile:
 	avsConfig as AvisynthConfig, videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase,
 	subConfig as SubtitleConfig):
 		formater = BinaryFormatter()
-		path = Path.Combine("", profileName+".profile")
+		path = Path.Combine(_profileDir, profileName+".profile")
 		profile = Profile(false)
 		profile._jobConfig = jobConfig
 		profile._videoEncConfig = videoEncConfig

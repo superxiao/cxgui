@@ -37,7 +37,6 @@
     <Reference Include="AvisynthWrapperDotNet">
       <HintPath>bin\Debug\AvisynthWrapperDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="Boo.Lang.Useful" />
     <Reference Include="DirectShowLib-2005">
       <HintPath>bin\Debug\DirectShowLib-2005.dll</HintPath>
     </Reference>
