@@ -77,6 +77,7 @@ class FFMP4(MuxerBase):
 	def Stop():
 		try:
 			_process.Kill()
+			_process.WaitForExit()
 		except:
 			pass
 

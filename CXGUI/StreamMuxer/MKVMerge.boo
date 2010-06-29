@@ -60,7 +60,7 @@ class MKVMerge(MuxerBase):
 			line = sr.ReadLine()
 			line = "" if line == null
 			if line.Length:
-				File.AppendAllText("c:\\test.txt", line+'\r\n')
+#				File.AppendAllText("c:\\test.txt", line+'\r\n')
 				UpdateProgress(line)
 
 	private def UpdateProgress(line as string):
@@ -74,6 +74,7 @@ class MKVMerge(MuxerBase):
 	def Stop():
 		try:
 			_process.Kill()
+			_process.WaitForExit()
 		except:
 			pass
 

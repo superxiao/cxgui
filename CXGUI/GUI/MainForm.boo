@@ -112,10 +112,8 @@ partial class MainForm(System.Windows.Forms.Form):
 		_workingItems = GetWorkingJobItems()
 		SetUpItems(_workingItems.ToArray())
 		if _workingItems.Count > 0:
-			item = _workingItems[0]
-			SubWriter(item.Subtitle, item.SubConfig, item.AvsConfig).Write()
-#			self.backgroundWorker1.RunWorkerAsync(_workingItems[0])
-#			self.tabControl1.SelectTab(self.progressPage)
+			self.backgroundWorker1.RunWorkerAsync(_workingItems[0])
+			self.tabControl1.SelectTab(self.progressPage)
 		
 	private def GetWorkingJobItems() as Boo.Lang.List[of JobItem]:
 		jobItems = Boo.Lang.List[of JobItem]()
@@ -139,82 +137,107 @@ partial class MainForm(System.Windows.Forms.Form):
 		return jobItems
 
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
-		jobItem as JobItem = e.Argument
-		jobItem.Event = JobEvent.OneStart
-		SyncReport(jobItem)
-		avsConfig = jobItem.AvsConfig
-		jobConfig = jobItem.JobConfig
-
-		if jobConfig.VideoMode == JobMode.Encode:
-			self.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.Subtitle, avsConfig)
-			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
-		
-		return if IsCancelled(e)
-
-		if jobConfig.AudioMode == JobMode.Encode:
-			if jobConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
-				sourceAudio = jobItem.SeparateAudio
-			else:
-				sourceAudio = jobItem.SourceFile
-			self.WriteAudioAvs(sourceAudio, 'audio.avs', avsConfig)
-			if jobConfig.VideoMode != JobMode.None:
-				destAudio = Path.ChangeExtension(jobItem.DestFile, 'm4a')
-			else:
-				destAudio = jobItem.DestFile
-
-			try:
-				self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
-			except InvalidAudioAvisynthScriptException:
-				ChangeSourceAndRetry = do:
-					source = avsConfig.AudioSource
-					source = source + 1 if source == 0
-					source = source - 1 if source == 1 
-					self.WriteAudioAvs(jobItem.SourceFile, 'audio.avs', avsConfig)
-					try:
-						self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
-					except InvalidAudioAvisynthScriptException:
-						MessageBox.Show(jobItem.SourceFile + "\n音频脚本无法读取。", 
-				"检测失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
-				if self._configForm.cbAudioAutoSF.Checked:
-					ChangeSourceAndRetry()
-				else:
-					result = MessageBox.Show(jobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
-					"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
-					jobConfig.AudioMode = JobMode.None
-					if result == DialogResult.OK:
-						ChangeSourceAndRetry()
-			
-
-		return if IsCancelled(e)
-
-		if jobConfig.Muxer != Muxer.None:
-			if jobConfig.AudioMode == JobMode.Encode:
-				muxAudio = destAudio
-			elif jobConfig.AudioMode == JobMode.Copy:
-				if jobConfig.UseSeparateAudio and jobItem.SeparateAudio != "":
-					muxAudio = jobItem.SeparateAudio
-				else:
-					muxAudio = jobItem.SourceFile
-			else:
-				muxAudio = ""
-					
-			if jobConfig.VideoMode == JobMode.Encode:
-				muxVideo = jobItem.DestFile
-			elif jobConfig.VideoMode == JobMode.Copy:
-				muxVideo = jobItem.SourceFile
-			else:
-				muxVideo = ""
-			self.Mux(muxVideo, muxAudio, jobItem.DestFile, e)
-
-		return if IsCancelled(e)
-		jobItem.Event = JobEvent.OneDone
-		SyncReport(jobItem)
-		if self._workingItems[-1] is jobItem:
-			jobItem.Event = JobEvent.AllDone
+		try:
+			jobItem as JobItem = e.Argument
+			jobItem.Event = JobEvent.OneStart
 			SyncReport(jobItem)
-		else:
-			index = self._workingItems.IndexOf(jobItem)
-			e.Result = self._workingItems[index+1]
+			avsConfig = jobItem.AvsConfig
+			jobConfig = jobItem.JobConfig
+	
+			if jobConfig.VideoMode == JobMode.Encode:
+				self.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.Subtitle, avsConfig)
+				
+				substyleWriter = SubStyleWriter(jobItem.Subtitle, jobItem.SubConfig)
+				substyleWriter.Write()
+				jobItem.CreatedFiles.Add(jobItem.DestFile)
+				self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
+				substyleWriter.CleanUp()
+				if jobItem.AvsConfig.VideoSource == VideoScriptConfig.VideoSourceFilter.FFVideoSource:
+					File.Delete(jobItem.SourceFile+'.ffindex')
+			
+			return if IsCancelled(e)
+	
+			if jobConfig.AudioMode == JobMode.Encode:
+				if jobConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
+					sourceAudio = jobItem.SeparateAudio
+				else:
+					sourceAudio = jobItem.SourceFile
+				self.WriteAudioAvs(sourceAudio, 'audio.avs', avsConfig)
+				if jobConfig.VideoMode != JobMode.None:
+					destAudio = Path.ChangeExtension(jobItem.DestFile, 'm4a')
+				else:
+					destAudio = jobItem.DestFile
+				
+				jobItem.CreatedFiles.Add(destAudio)
+				try:
+					self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
+				except as InvalidAudioAvisynthScriptException:
+					ChangeSourceAndRetry = do:
+						source = avsConfig.AudioSource
+						source = source + 1 if source == 0
+						source = source - 1 if source == 1 
+						self.WriteAudioAvs(jobItem.SourceFile, 'audio.avs', avsConfig)
+						try:
+							self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
+						except as InvalidAudioAvisynthScriptException:
+							MessageBox.Show(jobItem.SourceFile + "\n音频脚本无法读取。", 
+					"检测失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+					if self._configForm.cbAudioAutoSF.Checked:
+						ChangeSourceAndRetry()
+					else:
+						result = MessageBox.Show(jobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
+						"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
+						jobConfig.AudioMode = JobMode.None
+						if result == DialogResult.OK:
+							ChangeSourceAndRetry()
+						else:
+							jobItem.Event = JobEvent.Error
+							SyncReport(jobItem)
+				
+				if jobItem.AvsConfig.AudioSource == AudioScriptConfig.AudioSourceFilter.FFAudioSource:
+					File.Delete(sourceAudio + '.ffindex')
+	
+			return if IsCancelled(e)
+	
+			if jobConfig.Muxer != Muxer.None:
+				if jobConfig.AudioMode == JobMode.Encode:
+					muxAudio = destAudio
+				elif jobConfig.AudioMode == JobMode.Copy:
+					if jobConfig.UseSeparateAudio and jobItem.SeparateAudio != "":
+						muxAudio = jobItem.SeparateAudio
+					else:
+						muxAudio = jobItem.SourceFile
+				else:
+					muxAudio = ""
+						
+				if jobConfig.VideoMode == JobMode.Encode:
+					muxVideo = jobItem.DestFile
+				elif jobConfig.VideoMode == JobMode.Copy:
+					muxVideo = jobItem.SourceFile
+				else:
+					muxVideo = ""
+	
+				jobItem.CreatedFiles.Add(jobItem.DestFile)
+				self.Mux(muxVideo, muxAudio, jobItem.DestFile, e)
+			return if IsCancelled(e)
+
+			if jobItem.State != JobState.Error:
+				jobItem.Event = JobEvent.OneDone
+				SyncReport(jobItem)
+
+		except e as Exception:
+			MessageBox.Show("发生了一个错误。\n"+e.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			jobItem.Event = JobEvent.Error
+			SyncReport(jobItem)
+		ensure:
+			if substyleWriter != null:
+				substyleWriter.CleanUp()
+			if self._workingItems[-1] is jobItem:
+				jobItem.Event = JobEvent.AllDone
+				SyncReport(jobItem)
+			else:
+				index = self._workingItems.IndexOf(jobItem)
+				e.Result = self._workingItems[index+1]
 			
 	private def IsCancelled(e as DoWorkEventArgs):
 		if self.backgroundWorker1.CancellationPending:
@@ -257,6 +280,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingItems.Count}个文件"
 		//One job done
 		elif jobItem.Event == JobEvent.OneDone:
+			jobItem.CreatedFiles.Clear()
 			self._workingItem = null
 			if not jobItem.KeepingCfg:
 				jobItem.Clear()
@@ -284,6 +308,20 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.startButton.Enabled = true
 			self.statusLable.Text = "中止"
 			self.tabControl1.SelectTab(self.inputPage)
+			for file in jobItem.CreatedFiles:
+				File.Delete(file)
+			jobItem.CreatedFiles.Clear()
+		//Error
+		elif jobItem.Event == JobEvent.Error:
+			self._workingItem = null
+			if not jobItem.KeepingCfg:
+				jobItem.Clear()
+			jobItem.State = JobState.Error
+			jobItem.UIItem.SubItems[0].Text = "错误"
+			self.statusLable.Text = "错误"
+			for file in jobItem.CreatedFiles:
+				File.Delete(file)
+			jobItem.CreatedFiles.Clear()
 		self._workerReporting = false
 
 	private def EncodeVideo(avsFile as string, destFile as string, config as VideoEncConfigBase, e as DoWorkEventArgs):
@@ -336,10 +374,12 @@ partial class MainForm(System.Windows.Forms.Form):
 					muxer.Start()
 				except exc as FormatNotSupportedException:
 					MessageBox.Show("合成MP4失败。可能源媒体流中有不支持的格式。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-					self.backgroundWorker1.CancelAsync()
+					jobItem.Event = JobEvent.Error
+					SyncReport(jobItem)
 				except exc as FFmpegBugException:
 					MessageBox.Show("合成MP4失败。这是由于FFmpeg的一些Bug, 对某些流无法使用复制。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-					self.backgroundWorker1.CancelAsync()
+					jobItem.Event = JobEvent.Error
+					SyncReport(jobItem)
 			result.AsyncWaitHandle.WaitOne()
 			jobItem.Muxer = null
 			if jobItem.JobConfig.AudioMode == JobMode.Encode:
@@ -351,9 +391,12 @@ partial class MainForm(System.Windows.Forms.Form):
 			if self.backgroundWorker1.CancellationPending:
 				StopWorker(encoder, e)
 				break
+			if jobItem.State == JobState.Error:
+				break
 			if encoder.Progress == 100:
 				SyncReport(jobItem)
 				break
+			
 			SyncReport(jobItem)
 	
 	private def StopWorker(encoder as IEncoder, e as DoWorkEventArgs):
@@ -362,12 +405,6 @@ partial class MainForm(System.Windows.Forms.Form):
 			encoder.Stop()
 			jobItem.Event = JobEvent.Stop
 			SyncReport(jobItem)
-
-	private def NextJob(sender as object, e as RunWorkerCompletedEventArgs):
-		if e.Cancelled or e.Result == null:
-			return
-		nextJobItem = e.Result
-		self.backgroundWorker1.RunWorkerAsync(nextJobItem) 
 
 	private def ClearButtonClick(sender as object, e as EventArgs):
 		self.listView1.Items.Clear()
@@ -428,9 +465,9 @@ partial class MainForm(System.Windows.Forms.Form):
 		if result == DialogResult.OK and self._mediaSettingForm.Changed:
 			self._mediaSettingForm.Changed = false
 			jobItem.State = JobState.Waiting
-			jobItem.UIItem.Text = "等待"
 			jobItem.DestFile = self._mediaSettingForm.DestFile
 			jobItem.UIItem.SubItems[2].Text = jobItem.DestFile
+			jobItem.UIItem.SubItems[0].Text = "等待"
 			jobItem.AvsConfig = self._mediaSettingForm.AvsConfig
 			jobItem.VideoEncConfig = self._mediaSettingForm.VideoEncConfig
 			jobItem.AudioEncConfig = self._mediaSettingForm.AudioEncConfig
@@ -623,7 +660,16 @@ partial class MainForm(System.Windows.Forms.Form):
 					item.DestFile = Path.ChangeExtension(item.DestFile, ext)  //TODO 同步修改到界面
 					item.DestFile = GetUniqueName(item.DestFile)
 					item.UIItem.SubItems[2].Text = item.DestFile
-				
+
+	private def NextJob(sender as object, e as RunWorkerCompletedEventArgs):
+		try:
+			if e.Cancelled or e.Result == null:
+				return
+		except:
+			return
+		nextJobItem = e.Result
+		self.backgroundWorker1.RunWorkerAsync(nextJobItem) 
+
 [STAThread]
 public def Main(argv as (string)) as void:
 	Application.EnableVisualStyles()

@@ -22,4 +22,5 @@ class SubtitleConfig:
 	public Fontname as string
 	public Fontsize as int
 	public MarginV as int
+	public UsingStyle as bool
 	

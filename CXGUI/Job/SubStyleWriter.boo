@@ -5,21 +5,25 @@ import System.IO
 import System.Text
 import My
 
-class SubWriter:
+class SubStyleWriter:
 """Description of Subtitler"""
 
 	_subtitle as string
 	_subConfig as SubtitleConfig
+	_tempFiles as List[of string]
 	
-	public def constructor(subtitle as string, subConfig as SubtitleConfig, avsConfig as AvisynthConfig):
+	public def constructor(subtitle as string, subConfig as SubtitleConfig):
 		_subtitle = subtitle
 		_subConfig = subConfig
-		
+		_tempFiles = List[of string](2)
 	public def Write():
-		if Path.GetExtension(_subtitle).ToLower() in (".ssa", ".ass"):
-			_subtitle = GenerateSrtFromAss(_subtitle)
-		styleFile = _subtitle + ".style"
-		if _subConfig != null:
+		_tempFiles.Clear()
+		if _subConfig.UsingStyle:
+		
+			if Path.GetExtension(_subtitle).ToLower() in (".ssa", ".ass"):
+				_subtitle = GenerateSrtFromAss(_subtitle)
+				_tempFiles.Add(_subtitle)
+			styleFile = _subtitle + ".style"
 			styles = _subConfig.GetStyles()
 			content =\
 """
@@ -29,6 +33,7 @@ Collisions: Normal
 Timer: 100.0000
 """ + styles
 			File.WriteAllText(styleFile, content, Encoding.UTF8)
+			_tempFiles.Add(styleFile)
 		
 	private def GenerateSrtFromAss(assFile as string) as string:
 		srt = Path.ChangeExtension(assFile, 'srt')
@@ -49,6 +54,11 @@ Timer: 100.0000
 				num++
 		File.WriteAllText(srt, srtContent, Encoding.UTF8)
 		return srt
+	
+	public def CleanUp():
+		for file in _tempFiles:
+			File.Delete(file)
+		_tempFiles.Clear()
 		
 			
 

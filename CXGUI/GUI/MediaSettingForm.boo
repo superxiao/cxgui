@@ -191,8 +191,7 @@ partial class MediaSettingForm:
 		if self.videoSourceBox.SelectedIndex == -1:
 			self.videoSourceBox.SelectedIndex = 0				
 		self.convertFPSCheckBox.Checked = avsConfig.ConvertFPS
-		if sourceFrameRateCheckBox.Checked or self.videoSourceBox.Text == "DSS2":
-			self.convertFPSCheckBox.Checked = true
+		if sourceFrameRateCheckBox.Checked or not self.videoSourceBox.Text == "DirectShowSource" :
 			self.convertFPSCheckBox.Enabled = false
 		else:
 			self.convertFPSCheckBox.Enabled = true
@@ -219,7 +218,8 @@ partial class MediaSettingForm:
 		self.fontButton.Text = subConfig.Fontname
 		self.fontSizeBox.Text = subConfig.Fontsize.ToString()
 		self.fontBottomBox.Text = subConfig.MarginV.ToString()
-
+		self.customSubCheckBox.Checked = subConfig.UsingStyle
+		self.CustomSubCheckBoxCheckedChanged(null, null)
 
 
 	private def WidthBoxKeyUp(sender as object, e as System.Windows.Forms.KeyEventArgs):
@@ -278,7 +278,7 @@ partial class MediaSettingForm:
 				self.convertFPSCheckBox.Enabled = true
 			
 	private def VideoSourceBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
-		if self.videoSourceBox.Text == "DSS2":
+		if not self.videoSourceBox.Text == "DirectShowSource":
 			self.convertFPSCheckBox.Checked = true
 			self.convertFPSCheckBox.Enabled = false
 		else:
@@ -507,7 +507,7 @@ partial class MediaSettingForm:
 			jobConfig.Muxer = Muxer.FFMP4
 		elif Path.GetExtension(self._destFile).ToLower() not in ('.mp4', '.m4v', '.m4a'):
 			jobConfig.Muxer = Muxer.FFMP4
-		elif jobConfig.VideoMode == JobMode.Encode or jobConfig.AudioMode == JobMode.Encode:
+		elif jobConfig.VideoMode == JobMode.Encode and jobConfig.AudioMode == JobMode.Encode:
 			jobConfig.Muxer = Muxer.MP4Box
 		else:
 			jobConfig.Muxer = Muxer.None
@@ -516,6 +516,7 @@ partial class MediaSettingForm:
 		subConfig.Fontname = self.fontDialog1.Font.Name
 		int.TryParse(self.fontSizeBox.Text, subConfig.Fontsize)
 		int.TryParse(self.fontBottomBox.Text, subConfig.MarginV)
+		subConfig.UsingStyle = self.customSubCheckBox.Checked
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):		
 		try:
@@ -794,6 +795,12 @@ partial class MediaSettingForm:
 		self.fontDialog1.ShowDialog()
 		self._subConfig.Fontname = self.fontDialog1.Font.Name
 		self.fontButton.Text = self.fontDialog1.Font.Name
+	
+	private def CustomSubCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
+		if self.customSubCheckBox.Checked:
+			self.customSubGroupBox.Enabled = true
+		else:
+			self.customSubGroupBox.Enabled = false
 
 		
 

@@ -27,6 +27,7 @@ enum JobEvent:
 	OneDone
 	AllDone
 	Stop
+	Error
 	
 [Serializable()]
 class JobItem:
@@ -92,6 +93,9 @@ class JobItem:
 	
 	[Property(Subtitle)]
 	_subtitle as string
+
+	[Property(CreatedFiles)]
+	_createdFiles = List[of string](3)
 
 	_readAvsCfg as bool
 	_readVideoCfg as bool

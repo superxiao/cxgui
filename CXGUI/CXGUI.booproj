@@ -87,9 +87,9 @@
     <Compile Include="Job\JobItem.boo" />
     <Compile Include="Job\JobItemConfig.boo" />
     <Compile Include="Job\SubtitleConfig.boo">
-      <DependentUpon>SubWriter.boo</DependentUpon>
+      <DependentUpon>SubStyleWriter.boo</DependentUpon>
     </Compile>
-    <Compile Include="Job\SubWriter.boo" />
+    <Compile Include="Job\SubStyleWriter.boo" />
     <Compile Include="MediaInfo\AudioInfo.boo" />
     <Compile Include="MediaInfo\DirectShowInfo.boo" />
     <Compile Include="MediaInfo\VideoInfo.boo" />

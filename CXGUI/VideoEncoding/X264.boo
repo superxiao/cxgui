@@ -40,10 +40,10 @@ class X264(VideoEncoderBase):
 		_line = ""
 		while true:
 			_line = sr.ReadLine()
-			_line = "" if _line == null
+			_line = "" if _line == null		
 			
-			if _line.Length != 0 and not _line.StartsWith("["):
-				File.AppendAllText("d:\\x264log.txt", _line+'\r\n')
+#			if _line.Length != 0 and not _line.StartsWith("["):
+#				File.AppendAllText("d:\\x264log.txt", _line+'\r\n')	
 				
 			if _line.StartsWith("["):
 				UpdateProgress(_line)
@@ -66,11 +66,12 @@ class X264(VideoEncoderBase):
 		_timeLeft = timespan.Parse(timeLeft[timeLeft.IndexOf('a')+1:])
 		_timeUsed = date.Now - _startTime
 		_timeUsed = timespan.FromSeconds(cast(int, _timeUsed.TotalSeconds))
-
+	
 
 	def Stop():
 		try:
 			_encodingProcess.Kill()
+			_encodingProcess.WaitForExit()
 		except:
 			pass
 	//Properties

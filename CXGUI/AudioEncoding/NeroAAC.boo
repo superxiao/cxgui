@@ -55,6 +55,7 @@ class NeroAac(AudioEncoderBase):
 	def Stop():	
 		try:
 			_encodingProcess.Kill()
+			_encodingProcess.WaitForExit()
 		except:
 			pass
 	//Properties	

@@ -72,12 +72,14 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label7 = System.Windows.Forms.Label()
 		self.rateControlBox = System.Windows.Forms.ComboBox()
 		self.tabPage3 = System.Windows.Forms.TabPage()
+		self.customSubGroupBox = System.Windows.Forms.GroupBox()
+		self.customSubCheckBox = System.Windows.Forms.CheckBox()
 		self.fontBottomBox = System.Windows.Forms.DomainUpDown()
-		self.label21 = System.Windows.Forms.Label()
-		self.fontSizeBox = System.Windows.Forms.DomainUpDown()
-		self.label20 = System.Windows.Forms.Label()
-		self.fontButton = System.Windows.Forms.Button()
 		self.label19 = System.Windows.Forms.Label()
+		self.label21 = System.Windows.Forms.Label()
+		self.fontButton = System.Windows.Forms.Button()
+		self.label20 = System.Windows.Forms.Label()
+		self.fontSizeBox = System.Windows.Forms.DomainUpDown()
 		self.subtitleTextBox = System.Windows.Forms.TextBox()
 		self.subtitleButton = System.Windows.Forms.Button()
 		self.label18 = System.Windows.Forms.Label()
@@ -100,6 +102,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox5.SuspendLayout()
 		self.groupBox4.SuspendLayout()
 		self.tabPage3.SuspendLayout()
+		self.customSubGroupBox.SuspendLayout()
 		self.SuspendLayout()
 		# 
 		# tabControl1
@@ -739,12 +742,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tabPage3
 		# 
-		self.tabPage3.Controls.Add(self.fontBottomBox)
-		self.tabPage3.Controls.Add(self.label21)
-		self.tabPage3.Controls.Add(self.fontSizeBox)
-		self.tabPage3.Controls.Add(self.label20)
-		self.tabPage3.Controls.Add(self.fontButton)
-		self.tabPage3.Controls.Add(self.label19)
+		self.tabPage3.Controls.Add(self.customSubCheckBox)
+		self.tabPage3.Controls.Add(self.customSubGroupBox)
 		self.tabPage3.Controls.Add(self.subtitleTextBox)
 		self.tabPage3.Controls.Add(self.subtitleButton)
 		self.tabPage3.Controls.Add(self.label18)
@@ -755,43 +754,62 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage3.Text = "字幕"
 		self.tabPage3.UseVisualStyleBackColor = true
 		# 
+		# customSubGroupBox
+		# 
+		self.customSubGroupBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.customSubGroupBox.Controls.Add(self.fontBottomBox)
+		self.customSubGroupBox.Controls.Add(self.label19)
+		self.customSubGroupBox.Controls.Add(self.label21)
+		self.customSubGroupBox.Controls.Add(self.fontButton)
+		self.customSubGroupBox.Controls.Add(self.label20)
+		self.customSubGroupBox.Controls.Add(self.fontSizeBox)
+		self.customSubGroupBox.Location = System.Drawing.Point(3, 115)
+		self.customSubGroupBox.Name = "customSubGroupBox"
+		self.customSubGroupBox.Size = System.Drawing.Size(426, 117)
+		self.customSubGroupBox.TabIndex = 11
+		self.customSubGroupBox.TabStop = false
+		self.customSubGroupBox.Text = "字幕风格"
+		# 
+		# customSubCheckBox
+		# 
+		self.customSubCheckBox.Location = System.Drawing.Point(9, 81)
+		self.customSubCheckBox.Name = "customSubCheckBox"
+		self.customSubCheckBox.Size = System.Drawing.Size(139, 28)
+		self.customSubCheckBox.TabIndex = 10
+		self.customSubCheckBox.Text = "自定义字幕风格"
+		self.customSubCheckBox.UseVisualStyleBackColor = true
+		self.customSubCheckBox.CheckedChanged += self.CustomSubCheckBoxCheckedChanged as System.EventHandler
+		# 
 		# fontBottomBox
 		# 
-		self.fontBottomBox.Location = System.Drawing.Point(269, 164)
+		self.fontBottomBox.Location = System.Drawing.Point(66, 89)
 		self.fontBottomBox.Name = "fontBottomBox"
 		self.fontBottomBox.Size = System.Drawing.Size(79, 21)
 		self.fontBottomBox.TabIndex = 9
 		self.fontBottomBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
 		# 
+		# label19
+		# 
+		self.label19.Location = System.Drawing.Point(6, 51)
+		self.label19.Name = "label19"
+		self.label19.Size = System.Drawing.Size(43, 23)
+		self.label19.TabIndex = 4
+		self.label19.Text = "字体"
+		self.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		# 
 		# label21
 		# 
-		self.label21.Location = System.Drawing.Point(197, 161)
+		self.label21.Location = System.Drawing.Point(6, 89)
 		self.label21.Name = "label21"
 		self.label21.Size = System.Drawing.Size(66, 23)
 		self.label21.TabIndex = 8
 		self.label21.Text = "底部边距"
 		self.label21.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		# 
-		# fontSizeBox
-		# 
-		self.fontSizeBox.Location = System.Drawing.Point(269, 90)
-		self.fontSizeBox.Name = "fontSizeBox"
-		self.fontSizeBox.Size = System.Drawing.Size(79, 21)
-		self.fontSizeBox.TabIndex = 7
-		self.fontSizeBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
-		# 
-		# label20
-		# 
-		self.label20.Location = System.Drawing.Point(206, 90)
-		self.label20.Name = "label20"
-		self.label20.Size = System.Drawing.Size(57, 23)
-		self.label20.TabIndex = 6
-		self.label20.Text = "字号"
-		self.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-		# 
 		# fontButton
 		# 
-		self.fontButton.Location = System.Drawing.Point(72, 90)
+		self.fontButton.Location = System.Drawing.Point(66, 51)
 		self.fontButton.Name = "fontButton"
 		self.fontButton.Size = System.Drawing.Size(75, 23)
 		self.fontButton.TabIndex = 5
@@ -799,14 +817,22 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.fontButton.UseVisualStyleBackColor = true
 		self.fontButton.Click += self.FontButtonClick as System.EventHandler
 		# 
-		# label19
+		# label20
 		# 
-		self.label19.Location = System.Drawing.Point(3, 90)
-		self.label19.Name = "label19"
-		self.label19.Size = System.Drawing.Size(43, 23)
-		self.label19.TabIndex = 4
-		self.label19.Text = "字体"
-		self.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		self.label20.Location = System.Drawing.Point(172, 48)
+		self.label20.Name = "label20"
+		self.label20.Size = System.Drawing.Size(38, 23)
+		self.label20.TabIndex = 6
+		self.label20.Text = "字号"
+		self.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+		# 
+		# fontSizeBox
+		# 
+		self.fontSizeBox.Location = System.Drawing.Point(216, 51)
+		self.fontSizeBox.Name = "fontSizeBox"
+		self.fontSizeBox.Size = System.Drawing.Size(79, 21)
+		self.fontSizeBox.TabIndex = 7
+		self.fontSizeBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
 		# 
 		# subtitleTextBox
 		# 
@@ -938,7 +964,10 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox4.ResumeLayout(false)
 		self.tabPage3.ResumeLayout(false)
 		self.tabPage3.PerformLayout()
+		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private customSubGroupBox as System.Windows.Forms.GroupBox
+	private customSubCheckBox as System.Windows.Forms.CheckBox
 	private fontBottomBox as System.Windows.Forms.DomainUpDown
 	private label21 as System.Windows.Forms.Label
 	private fontSizeBox as System.Windows.Forms.DomainUpDown
