@@ -44,19 +44,19 @@ partial class MainForm(System.Windows.Forms.Form):
 		return jobItems
 
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
-			
-		jobItem as JobItem = e.Argument
-		if File.Exists(jobItem.DestFile):
-			r = MessageBox.Show("${jobItem.DestFile}\n目标文件已存在。决定覆盖吗？", "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning)
-			if r == DialogResult.Cancel:
-				jobItem.Event = JobEvent.OneStop
-				SyncReport(jobItem)
-				if self._workingItems[-1] is jobItem:
-					jobItem.Event = JobEvent.AllDone
-					SyncReport(jobItem)
-				e.Result = jobItem
-				return
 		try:
+			jobItem as JobItem = e.Argument
+			if File.Exists(jobItem.DestFile):
+				r = MessageBox.Show("${jobItem.DestFile}\n目标文件已存在。决定覆盖吗？", "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning)
+				if r == DialogResult.Cancel:
+					jobItem.Event = JobEvent.OneStop
+					SyncReport(jobItem)
+					if self._workingItems[-1] is jobItem:
+						jobItem.Event = JobEvent.AllDone
+						SyncReport(jobItem)
+					e.Result = jobItem
+					return
+		
 			jobItem.Event = JobEvent.OneStart
 			jobConfig = jobItem.JobConfig
 			avsConfig = jobItem.AvsConfig
@@ -64,15 +64,15 @@ partial class MainForm(System.Windows.Forms.Form):
 	
 			if jobConfig.VideoMode == JobMode.Encode:
 				DoVideoStuff(jobItem, e)
-				return if UserStopReport(jobItem, e)
+				return if ReportUserStop(jobItem, e)
 	
 			if jobConfig.AudioMode == JobMode.Encode:
 				DoAudioStuff(jobItem, e)
-				return if UserStopReport(jobItem, e)
+				return if ReportUserStop(jobItem, e)
 	
 			if jobConfig.Muxer != Muxer.None:
 				DoMuxStuff(jobItem, e)
-				return if UserStopReport(jobItem, e)
+				return if ReportUserStop(jobItem, e)
 
 			if jobItem.State != JobState.Error:
 				jobItem.Event = JobEvent.OneDone
@@ -83,13 +83,14 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.Event = JobEvent.Error
 			SyncReport(jobItem)
 		ensure:
+			
 			if self._workingItems[-1] is jobItem:
 				jobItem.Event = JobEvent.AllDone
 				SyncReport(jobItem)
 			
 			e.Result = jobItem
 
-	private def UserStopReport(jobItem as JobItem, e as DoWorkEventArgs):
+	private def ReportUserStop(jobItem as JobItem, e as DoWorkEventArgs):
 		//User stoped
 		if self.backgroundWorker1.CancellationPending:
 			jobItem.Event = JobEvent.AllStop
@@ -227,12 +228,10 @@ partial class MainForm(System.Windows.Forms.Form):
 		elif jobItem.Event == JobEvent.AllDone:
 			self._workingItem = null
 			self.statusLable.Text = "${self._workingItems.Count}个文件处理完成"
-			self._workingItems.Clear()
 			self.startButton.Enabled = true
 		//all stop
 		elif jobItem.Event == JobEvent.AllStop:
 			self._workingItem = null
-			self._workingItems.Clear()
 			ResetProgress()
 			jobItem.State = JobState.Stop
 			jobItem.UIItem.SubItems[0].Text = "中止"
@@ -325,6 +324,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				File.Delete(audio)
 		
 	private def EncodingReport(jobItem as JobItem, encoder as IEncoder, e as DoWorkEventArgs):
+		
 		while true:
 			Thread.Sleep(500)
 			if self.backgroundWorker1.CancellationPending:
@@ -348,6 +348,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem = cast(JobItem, e.Result)
 			if jobItem.Event in (JobEvent.AllDone, JobEvent.AllStop):
 				jobItem.Event = JobEvent.None
+				self._workingItems.Clear()
 				return
 			
 			if _workingItems[-1] is not jobItem:
