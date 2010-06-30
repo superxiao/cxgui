@@ -7,32 +7,33 @@ import System.Collections.Specialized
 import System.IO
 import CXGUI
 
+enum VideoSourceFilter:
+"""用于VideoScriptConfig类的SourceFilter属性。"""
+	DirectShowSource
+	DSS2
+	FFVideoSource
+	//DGAVCDec//TODO 了解用法
+	None
+
+enum ResizeFilter:
+"""用于VideoScriptConfig类的Resizer属性。"""
+	LanczosResize
+	Lanczos4Resize
+	BicubicResize
+	BilinearResize
+	BlackmanResize
+	GaussResize
+	PointResize
+	SincResize
+	Spline16Resize
+	Spline36Resize
+	Spline64Resize
+	None
+		
 class VideoScriptConfig():
 """
 用于AvisynthWriter类的VideoConfig属性。
 """
-	enum VideoSourceFilter:
-	"""用于VideoScriptConfig类的SourceFilter属性。"""
-		DirectShowSource
-		DSS2
-		FFVideoSource
-		//DGAVCDec//TODO 了解用法
-		None
-	enum ResizeFilter:
-	"""用于VideoScriptConfig类的Resizer属性。"""
-		LanczosResize
-		Lanczos4Resize
-		BicubicResize
-		BilinearResize
-		BlackmanResize
-		GaussResize
-		PointResize
-		SincResize
-		Spline16Resize
-		Spline36Resize
-		Spline64Resize
-		None
-
 	public def constructor(videoInfo as VideoInfo):
 		_videoInfo = videoInfo
 		InitializeProperties()

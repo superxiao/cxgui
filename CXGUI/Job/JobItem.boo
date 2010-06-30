@@ -1,9 +1,7 @@
 ﻿namespace CXGUI.Job
 
 import System
-import System.IO
 import System.Windows.Forms
-import System.Runtime.Serialization.Formatters.Binary
 import CXGUI
 import CXGUI.Avisynth
 import CXGUI.VideoEncoding
@@ -26,7 +24,8 @@ enum JobEvent:
 	OneStart
 	OneDone
 	AllDone
-	Stop
+	OneStop
+	AllStop
 	Error
 	
 [Serializable()]
@@ -84,6 +83,12 @@ class JobItem:
 
 	[Property(SeparateAudio)]
 	_separateAudio as string
+	
+	[Property(EncodedVideo)]
+	_encodedVideo as string
+	
+	[Property(EncodedAudio)]
+	_encodedAudio as string
 
 	[Property(ProfileName)]
 	_profileName as string

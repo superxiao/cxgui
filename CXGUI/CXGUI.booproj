@@ -59,8 +59,13 @@
     </Compile>
     <Compile Include="AudioEncoding\TEST.boo" />
     <Compile Include="Avisynth\AudioScriptConfig.boo" />
+    <Compile Include="Avisynth\AvisynthConfig.boo" />
     <Compile Include="Avisynth\AvisynthWriter.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
+    <Compile Include="Avisynth\SubStyleWriter.boo" />
+    <Compile Include="Avisynth\SubtitleConfig.boo">
+      <DependentUpon>SubStyleWriter.boo</DependentUpon>
+    </Compile>
     <Compile Include="Avisynth\VideoScriptConfig.boo" />
     <Compile Include="Config\Profile.boo" />
     <Compile Include="Config\ProgramConfig.boo" />
@@ -74,6 +79,9 @@
     <Compile Include="GUI\MainForm.Designer.boo">
       <DependentUpon>MainForm.boo</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MainForm.Worker.boo">
+      <DependentUpon>MainForm.boo</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ProgramConfigForm.boo" />
     <Compile Include="GUI\ProgramConfigForm.Designer.boo">
       <DependentUpon>ProgramConfigForm.boo</DependentUpon>
@@ -82,13 +90,8 @@
     <Compile Include="GUI\MediaSettingForm.Designer.boo">
       <DependentUpon>MediaSettingForm.boo</DependentUpon>
     </Compile>
-    <Compile Include="Job\AvisynthConfig.boo" />
     <Compile Include="Job\JobItem.boo" />
     <Compile Include="Job\JobItemConfig.boo" />
-    <Compile Include="Job\SubtitleConfig.boo">
-      <DependentUpon>SubStyleWriter.boo</DependentUpon>
-    </Compile>
-    <Compile Include="Job\SubStyleWriter.boo" />
     <Compile Include="MediaInfo\AudioInfo.boo" />
     <Compile Include="MediaInfo\DirectShowInfo.boo" />
     <Compile Include="MediaInfo\VideoInfo.boo" />

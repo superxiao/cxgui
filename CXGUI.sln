@@ -4,6 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # SharpDevelop 3.2.0.5634
 Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "CXGUI", "CXGUI\CXGUI.booproj", "{286AF126-1D81-4818-ADF0-3C5D0428903C}"
 EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "TestPlayer", "TestPlayer\TestPlayer.booproj", "{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -14,5 +16,9 @@ Global
 		{286AF126-1D81-4818-ADF0-3C5D0428903C}.Debug|x86.ActiveCfg = Debug|x86
 		{286AF126-1D81-4818-ADF0-3C5D0428903C}.Release|x86.Build.0 = Release|x86
 		{286AF126-1D81-4818-ADF0-3C5D0428903C}.Release|x86.ActiveCfg = Release|x86
+		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Debug|x86.Build.0 = Debug|x86
+		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Debug|x86.ActiveCfg = Debug|x86
+		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Release|x86.Build.0 = Release|x86
+		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

@@ -5,6 +5,7 @@ import System.IO
 import System.Windows.Forms
 import System.Runtime.Serialization.Formatters.Binary
 import CXGUI
+import CXGUI.Avisynth
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer

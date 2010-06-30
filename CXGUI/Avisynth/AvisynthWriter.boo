@@ -30,14 +30,14 @@ Remarks: 使用VideoConfig和AudioConfig进行脚本内容的设置。
 		_videoConfig = VideoScriptConfig(_videoInfo)
 		_audioConfig = AudioScriptConfig(_audioInfo)
 	//Methods
-	def WriteVideoScript():
+	def WriteVideoAvs():
 	"""
 	创建视频脚本。
 	Raises VideoStreamNotFoundException: 找不到视频流。
 	"""
 		File.WriteAllText(_videoScriptFile, _videoConfig.GetScriptContent(), Text.Encoding.Default)
 		
-	def WriteAudioScript():
+	def WriteAudioAvs():
 	"""
 	创建音频脚本。
 	Raises AudioStreamNotFoundException: 找不到音频流。
@@ -98,7 +98,30 @@ Remarks: 使用VideoConfig和AudioConfig进行脚本内容的设置。
 			_audioConfig = value
 	_audioConfig as AudioScriptConfig
 
-
+	public static def WriteVideoAvs(sourceFile as string, avsFile as string, subtitle as string, avsConfig as AvisynthConfig):
+		writer = AvisynthWriter(sourceFile)
+		videoConfig as VideoScriptConfig = writer.VideoConfig
+		if avsConfig.Width > 0:
+			videoConfig.Width = avsConfig.Width
+		if avsConfig.Height > 0:
+			videoConfig.Height = avsConfig.Height
+		videoConfig.ConvertFPS = avsConfig.ConvertFPS
+		if avsConfig.FrameRate > 0:
+			videoConfig.FrameRate = avsConfig.FrameRate
+		videoConfig.Resizer = avsConfig.Resizer
+		videoConfig.SourceFilter = avsConfig.VideoSource
+		videoConfig.Subtitle = subtitle
+		writer.VideoScriptFile = avsFile
+		writer.WriteVideoAvs()
+			
+	public static def WriteAudioAvs(sourceFile as string, avsFile as string, avsConfig as AvisynthConfig):
+		writer = AvisynthWriter(sourceFile)
+		audioConfig as AudioScriptConfig = writer.AudioConfig
+		audioConfig.DownMix = avsConfig.DownMix
+		audioConfig.Normalize = avsConfig.Normalize
+		writer.AudioScriptFile = avsFile
+		audioConfig.SourceFilter = avsConfig.AudioSource
+		writer.WriteAudioAvs()
 
 def avstest():
 	i = AvisynthWriter("""G:\Movie\The.Princess.and.the.Frog.720p.Bluray.x264-CBGB\cbgb-princessfrog.mkv""")

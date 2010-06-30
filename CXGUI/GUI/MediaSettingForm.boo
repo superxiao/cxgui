@@ -482,8 +482,8 @@ partial class MediaSettingForm:
 				avsConfig.AspectRatio = double.Parse(self.aspectRatioBox.Text)
 			avsConfig.LockAspectRatio = self.lockARCheckBox.Checked
 			avsConfig.Mod = int.Parse(self.modBox.Text)
-			avsConfig.Resizer = Enum.Parse(VideoScriptConfig.ResizeFilter, self.resizerBox.Text)
-			avsConfig.VideoSource = Enum.Parse(VideoScriptConfig.VideoSourceFilter, self.videoSourceBox.Text)
+			avsConfig.Resizer = Enum.Parse(ResizeFilter, self.resizerBox.Text)
+			avsConfig.VideoSource = Enum.Parse(VideoSourceFilter, self.videoSourceBox.Text)
 			if self.sourceFrameRateCheckBox.Checked:
 				avsConfig.FrameRate = 0
 			else:
@@ -491,7 +491,7 @@ partial class MediaSettingForm:
 			avsConfig.ConvertFPS = self.convertFPSCheckBox.Checked
 
 		if _audioInfo.StreamsCount:
-			avsConfig.AudioSource = Enum.Parse(AudioScriptConfig.AudioSourceFilter, self.audioSourceComboBox.Text)
+			avsConfig.AudioSource = Enum.Parse(AudioSourceFilter, self.audioSourceComboBox.Text)
 			avsConfig.DownMix = self.downMixBox.Checked
 			avsConfig.Normalize = self.normalizeBox.Checked	
 		

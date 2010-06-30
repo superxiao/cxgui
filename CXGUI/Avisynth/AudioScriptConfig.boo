@@ -7,17 +7,18 @@ import System.Collections.Specialized
 import System.IO
 import CXGUI
 
+
+enum AudioSourceFilter:
+"""用于AudioScriptConfig类的SourceFilter属性。"""
+	FFAudioSource
+	DirectShowSource
+	//NicAudio 仅支持独立音轨
+	None
+		
 class AudioScriptConfig():
 """
 用于AvisynthWriter类的AudioConfig属性。
 """
-	enum AudioSourceFilter:
-	"""用于AudioScriptConfig类的SourceFilter属性。"""
-		FFAudioSource
-		DirectShowSource
-		//NicAudio 仅支持独立音轨
-		None
-	
 	public def constructor(audioInfo as AudioInfo):
 		_audioInfo = audioInfo
 		InitializeProperties()

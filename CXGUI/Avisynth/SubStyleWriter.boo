@@ -1,4 +1,4 @@
-﻿namespace CXGUI.Job
+﻿namespace CXGUI.Avisynth
 
 import System
 import System.IO
