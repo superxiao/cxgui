@@ -325,45 +325,37 @@ partial class MediaSettingForm:
 	private def RefreshX264UI(): 
 	
 		x264config = _videoEncConfig as X264Config
-		settings as Hash = x264config.GetSettingsDict()
-		freezedOptions = x264config.GetFreezedOptions()
-		for setting as DictionaryEntry in settings:
-			setting.Key = (setting.Key as string).Replace(char('-'), char('_'))
-			
-			try:
-				control = self.groupBox4.Controls[setting.Key as string]
-				if setting.Value == null:
-					if control.GetType() == ComboBox:
-						(control as ComboBox).SelectedIndex = 0
-				elif setting.Value.GetType() == bool:
-					(control as CheckBox).Checked = setting.Value
-				elif setting.Value.GetType() == string:
-					control.Text = setting.Value
-			except NullReferenceException:
-				pass
-
-		if settings["crf"] != null:
-			self.rateControlBox.SelectedIndex = 0
-			self.rateFactorBox.Text = settings["crf"].ToString()
-			self.label9.Text = "量化器"
-		elif settings["qp"] != null:
-			self.rateControlBox.SelectedIndex = 1
-			self.rateFactorBox.Text = settings["qp"].ToString()
-			self.label9.Text = "质量"
-		elif settings["bitrate"] != null:
-			self.rateFactorBox.Text = settings["bitrate"].ToString()
-			self.label9.Text = "码率"
-			self.rateControlBox.SelectedIndex = 2
 		
 		for control as Control in self.groupBox4.Controls:
-			control.Enabled = true
-		for option as string in freezedOptions:
-			option = option.Replace(char('-'), char('_'))
-			try:
-				self.groupBox4.Controls[option].Enabled = false
-			except NullReferenceException:
-				pass
-
+			node = x264config.GetNode(control.Name.Replace(char('_'), char('-')))
+			if node == null:
+				continue
+			control.Enabled = not node.Locked
+			if node.Type == NodeType.Bool:
+				checkBox = control as CheckBox
+				checkBox.CheckedChanged -= self.BoolChanged
+				checkBox.Checked = node.Bool
+				checkBox.CheckedChanged += self.BoolChanged
+			elif node.Type == NodeType.Num or node.Type == NodeType.Str:
+				control.Text = node.Num.ToString()
+			elif node.Type == NodeType.StrOptionIndex:
+				comboBox = control as ComboBox
+				comboBox.SelectedIndexChanged -= self.StringOptionChanged
+				comboBox.SelectedIndex = node.StrOptionIndex
+				comboBox.SelectedIndexChanged += self.StringOptionChanged
+		if x264config.GetNode("crf").InUse:
+			self.rateControlBox.SelectedIndex = 0
+			self.rateFactorBox.Text = x264config.GetNode("crf").Num.ToString()
+			self.label9.Text = "量化器"
+		elif x264config.GetNode("qp").InUse:
+			self.rateControlBox.SelectedIndex = 1
+			self.rateFactorBox.Text = x264config.GetNode("qp").Num.ToString()
+			self.label9.Text = "质量"
+		elif x264config.GetNode("bitrate").InUse:
+			self.rateControlBox.SelectedIndex = 2
+			self.rateFactorBox.Text = x264config.GetNode("bitrate").Num.ToString()
+			self.label9.Text = "码率"
+			
 		self.useCustomCmdBox.Checked = _videoEncConfig.UsingCustomCmd
 		UseCustomCmdBoxCheckedChanged(null, null)
 			
@@ -371,28 +363,32 @@ partial class MediaSettingForm:
 	private def RateControlBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
 		_x264config = _videoEncConfig as X264Config
 		if self.rateControlBox.SelectedIndex == 0:
-			_x264config.SetFloatOption("crf", 23)
+			_x264config.SetNumOption("crf", 23)
 		elif self.rateControlBox.SelectedIndex == 1:
-			_x264config.SetIntegerOption("qp", 23)
+			_x264config.SetNumOption("qp", 23)
 		else:
-			_x264config.SetIntegerOption("bitrate", 700)
-			_x264config.SetIntegerOption("_pass", 1)
+			_x264config.SetNumOption("bitrate", 700)
+			_x264config.TotalPass = 1
+			_x264config.CurrentPass = 1
 		RefreshX264UI()
 	
 	private def RateFactorBoxValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
+		config = _videoEncConfig as X264Config
+		if self.rateControlBox.SelectedIndex == 0:
+			name = "crf"
+		elif self.rateControlBox.SelectedIndex == 1:
+			name = "qp"
+		elif self.rateControlBox.SelectedIndex in (2, 3, 4):
+			name = "bitrate"
 		try:
 			value = double.Parse(self.rateFactorBox.Text)
 		except:
-			RefreshX264UI()
+			self.rateFactorBox.Text = config.GetNode(name).Num.ToString()
 			return
-		config = _videoEncConfig as X264Config
-		if self.rateControlBox.SelectedIndex == 0:
-			config.SetFloatOption("crf", value)
-		elif self.rateControlBox.SelectedIndex == 1:
-			config.SetIntegerOption("qp", Math.Floor(value))
-		elif self.rateControlBox.SelectedIndex in (2, 3, 4):
-			config.SetIntegerOption("bitrate", Math.Floor(value))
-		RefreshX264UI()	
+		if name != "crf":
+			value = Math.Floor(value)
+		config.SetNumOption(name, value)
+		self.rateFactorBox.Text = config.GetNode(name).Num.ToString()
 	
 	private def BoolChanged(sender as object, e as System.EventArgs):
 		checkBox as CheckBox = sender
@@ -401,7 +397,7 @@ partial class MediaSettingForm:
 			(_videoEncConfig as X264Config).SetBooleanOption(name, checkBox.Checked)
 			RefreshX264UI()	
 
-	private def StringChanged(sender as object, e as System.EventArgs):
+	private def StringOptionChanged(sender as object, e as System.EventArgs):
 		box as ComboBox = sender
 		if box.Enabled:
 			name = box.Name.Replace(char('_'), char('-'))
@@ -751,7 +747,7 @@ partial class MediaSettingForm:
 				control.Enabled = false
 			self.useCustomCmdBox.Enabled = true
 			self.editCmdButton.Enabled = true
-			self._cmdLineBox.CmdLine = self.VideoEncConfig.GetSettings()
+			self._cmdLineBox.CmdLine = self.VideoEncConfig.GetArgument()
 			self._videoEncConfig.UsingCustomCmd = true
 		else:
 			for control as Control in self.groupBox4.Controls:

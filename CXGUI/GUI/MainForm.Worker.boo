@@ -109,8 +109,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
 			jobItem.EncodedVideo = jobItem.DestFile
 		except e as Exception:
-			if substyleWriter != null:
-				substyleWriter.CleanUp()
+			substyleWriter.CleanUp()
 			raise e
 		substyleWriter.CleanUp()
 		if jobItem.AvsConfig.VideoSource == VideoSourceFilter.FFVideoSource:
@@ -188,95 +187,101 @@ partial class MainForm(System.Windows.Forms.Form):
 			Threading.Thread.Sleep(1)
 	
 	private def BackgroundWorker1ProgressChanged(sender as object, e as ProgressChangedEventArgs):
-		jobItem = cast(JobItem, e.UserState)
-		//video
-		if jobItem.Event == JobEvent.VideoEncoding:
-			self.videoProgressBar.Value = cast(int, (jobItem.VideoEncoder.Progress))
-			self.videoTimeUsed.Text = jobItem.VideoEncoder.TimeUsed.ToString()
-			self.videoTimeLeft.Text = jobItem.VideoEncoder.TimeLeft.ToString()
-		//audio
-		elif jobItem.Event == JobEvent.AudioEncoding:
-			self.audioProgressBar.Value = cast(int, (jobItem.AudioEncoder.Progress))
-			self.audioTimeUsed.Text = jobItem.AudioEncoder.TimeUsed.ToString()
-			self.audioTimeLeft.Text = jobItem.AudioEncoder.TimeLeft.ToString()
-		//mux
-		elif jobItem.Event == JobEvent.Muxing:
-			self.muxProgressBar.Value = cast(int, jobItem.Muxer.Progress)
-			self.muxTimeUsed.Text = jobItem.Muxer.TimeUsed.ToString()
-			self.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString()
-		//One job starts
-		elif jobItem.Event == JobEvent.OneStart:
-			self._workingItem = jobItem
-			ResetProgress()
-			jobItem.State = JobState.Working
-			jobItem.UIItem.SubItems[0].Text = "工作中"
-			self.startButton.Enabled = false
-			i = self._workingItems.IndexOf(jobItem)
-			self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingItems.Count}个文件"
-		//One job done
-		elif jobItem.Event == JobEvent.OneDone:
-			jobItem.CreatedFiles.Clear()
-			self._workingItem = null
-			if not jobItem.KeepingCfg:
-				jobItem.Clear()
-			jobItem.State = JobState.Done
-			jobItem.UIItem.SubItems[0].Text = "完成"
-			i = self._workingItems.IndexOf(jobItem)
-			self.statusLable.Text = "第${i+1}个文件处理完毕，共${self._workingItems.Count}个文件"
-			
-		//all done
-		elif jobItem.Event == JobEvent.AllDone:
-			self._workingItem = null
-			self.statusLable.Text = "${self._workingItems.Count}个文件处理完成"
-			self.startButton.Enabled = true
-		//all stop
-		elif jobItem.Event == JobEvent.AllStop:
-			self._workingItem = null
-			ResetProgress()
-			jobItem.State = JobState.Stop
-			jobItem.UIItem.SubItems[0].Text = "中止"
-			jobItem.VideoEncoder = null
-			jobItem.AudioEncoder = null
-			jobItem.Muxer = null //TODO 删除文件
-			self.startButton.Enabled = true
-			self.statusLable.Text = "中止"
-			self.tabControl1.SelectTab(self.inputPage)
-			for file in jobItem.CreatedFiles:
-				File.Delete(file)
-			jobItem.CreatedFiles.Clear()
-		//one stop
-		elif jobItem.Event == JobEvent.OneStop:
-			jobItem.State = JobState.Stop
-			jobItem.UIItem.SubItems[0].Text = "中止"
-			self.statusLable.Text = "中止"
-			for file in jobItem.CreatedFiles:
-				File.Delete(file)
-			jobItem.CreatedFiles.Clear()
-		//Error
-		elif jobItem.Event == JobEvent.Error:
-			jobItem.State = JobState.Error
-			jobItem.UIItem.SubItems[0].Text = "错误"
-			self.statusLable.Text = "错误"
-			for file in jobItem.CreatedFiles:
-				File.Delete(file)
-			jobItem.CreatedFiles.Clear()
-		self._workerReporting = false
+		try:
+			jobItem = cast(JobItem, e.UserState)
+			//video
+			if jobItem.Event == JobEvent.VideoEncoding:
+				self.videoProgressBar.Value = cast(int, (jobItem.VideoEncoder.Progress))
+				self.videoTimeUsed.Text = jobItem.VideoEncoder.TimeUsed.ToString()
+				self.videoTimeLeft.Text = jobItem.VideoEncoder.TimeLeft.ToString()
+			//audio
+			elif jobItem.Event == JobEvent.AudioEncoding:
+				self.audioProgressBar.Value = cast(int, (jobItem.AudioEncoder.Progress))
+				self.audioTimeUsed.Text = jobItem.AudioEncoder.TimeUsed.ToString()
+				self.audioTimeLeft.Text = jobItem.AudioEncoder.TimeLeft.ToString()
+			//mux
+			elif jobItem.Event == JobEvent.Muxing:
+				self.muxProgressBar.Value = cast(int, jobItem.Muxer.Progress)
+				self.muxTimeUsed.Text = jobItem.Muxer.TimeUsed.ToString()
+				self.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString()
+			//One job starts
+			elif jobItem.Event == JobEvent.OneStart:
+				self._workingItem = jobItem
+				ResetProgress()
+				jobItem.State = JobState.Working
+				jobItem.UIItem.SubItems[0].Text = "工作中"
+				self.startButton.Enabled = false
+				i = self._workingItems.IndexOf(jobItem)
+				self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingItems.Count}个文件"
+			//One job done
+			elif jobItem.Event == JobEvent.OneDone:
+				jobItem.CreatedFiles.Clear()
+				self._workingItem = null
+				if not jobItem.KeepingCfg:
+					jobItem.Clear()
+				jobItem.State = JobState.Done
+				jobItem.UIItem.SubItems[0].Text = "完成"
+				i = self._workingItems.IndexOf(jobItem)
+				self.statusLable.Text = "第${i+1}个文件处理完毕，共${self._workingItems.Count}个文件"
+				
+			//all done
+			elif jobItem.Event == JobEvent.AllDone:
+				self._workingItem = null
+				self.statusLable.Text = "${self._workingItems.Count}个文件处理完成"
+				self.startButton.Enabled = true
+			//all stop
+			elif jobItem.Event == JobEvent.AllStop:
+				self._workingItem = null
+				ResetProgress()
+				jobItem.State = JobState.Stop
+				jobItem.UIItem.SubItems[0].Text = "中止"
+				jobItem.VideoEncoder = null
+				jobItem.AudioEncoder = null
+				jobItem.Muxer = null //TODO 删除文件
+				self.startButton.Enabled = true
+				self.statusLable.Text = "中止"
+				self.tabControl1.SelectTab(self.inputPage)
+				for file in jobItem.CreatedFiles:
+					File.Delete(file)
+				jobItem.CreatedFiles.Clear()
+			//one stop
+			elif jobItem.Event == JobEvent.OneStop:
+				jobItem.State = JobState.Stop
+				jobItem.UIItem.SubItems[0].Text = "中止"
+				self.statusLable.Text = "中止"
+				for file in jobItem.CreatedFiles:
+					File.Delete(file)
+				jobItem.CreatedFiles.Clear()
+			//Error
+			elif jobItem.Event == JobEvent.Error:
+				jobItem.State = JobState.Error
+				jobItem.UIItem.SubItems[0].Text = "错误"
+				self.statusLable.Text = "错误"
+				for file in jobItem.CreatedFiles:
+					File.Delete(file)
+				jobItem.CreatedFiles.Clear()
+			self._workerReporting = false
+		except e:
+			MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n"+e.ToString())
 
 	private def EncodeVideo(avsFile as string, destFile as string, config as VideoEncConfigBase, e as DoWorkEventArgs):
-		jobItem = cast(JobItem, e.Argument)
-		encoder = X264(avsFile, destFile)
-		encoder.Config = config as X264Config
-		jobItem.VideoEncoder = encoder
-		jobItem.Event = JobEvent.VideoEncoding
-		result = EncodingReport.BeginInvoke(jobItem, encoder, e)
-		if not self.backgroundWorker1.CancellationPending:
-			try:
-				encoder.Start()
-			except as BadEncoderCmdException:
-				MessageBox.Show("视频编码失败。是否使用了不正确的命令行？", "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
-				self.backgroundWorker1.CancelAsync()
-		result.AsyncWaitHandle.WaitOne()
-		jobItem.VideoEncoder = null
+		try:
+			jobItem = cast(JobItem, e.Argument)
+			encoder = X264(avsFile, destFile)
+			encoder.Config = config as X264Config
+			jobItem.VideoEncoder = encoder
+			jobItem.Event = JobEvent.VideoEncoding
+			result = EncodingReport.BeginInvoke(jobItem, encoder, e)
+			if not self.backgroundWorker1.CancellationPending:
+				try:
+					encoder.Start()
+				except as BadEncoderCmdException:
+					MessageBox.Show("视频编码失败。是否使用了不正确的命令行？", "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+					self.backgroundWorker1.CancelAsync()
+			result.AsyncWaitHandle.WaitOne()
+			jobItem.VideoEncoder = null
+		except e:
+			MessageBox.Show("发生了一个错误。\nEncodeVideo:\n"+e.ToString())
 
 	private def EncodeAudio(avsFile as string, destFile as string, config as AudioEncConfigBase, e as DoWorkEventArgs):
 		jobItem = cast(JobItem, e.Argument)

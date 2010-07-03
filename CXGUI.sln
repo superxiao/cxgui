@@ -6,6 +6,8 @@ Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "CXGUI", "CXGUI\CXGUI.boopro
 EndProject
 Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "TestPlayer", "TestPlayer\TestPlayer.booproj", "{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}"
 EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "Test", "Test\Test.booproj", "{ABB60ED0-907B-45CA-BC14-5BDAF90985EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -20,5 +22,9 @@ Global
 		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Debug|x86.ActiveCfg = Debug|x86
 		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Release|x86.Build.0 = Release|x86
 		{A2ECA36C-95FD-4EAC-8C08-B9E4A4ADF9AE}.Release|x86.ActiveCfg = Release|x86
+		{ABB60ED0-907B-45CA-BC14-5BDAF90985EF}.Debug|x86.Build.0 = Debug|x86
+		{ABB60ED0-907B-45CA-BC14-5BDAF90985EF}.Debug|x86.ActiveCfg = Debug|x86
+		{ABB60ED0-907B-45CA-BC14-5BDAF90985EF}.Release|x86.Build.0 = Release|x86
+		{ABB60ED0-907B-45CA-BC14-5BDAF90985EF}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

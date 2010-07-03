@@ -15,7 +15,7 @@ class X264(VideoEncoderBase):
 		_encoderPath = "x264.exe"
 		_encodingProcess.StartInfo.FileName = _encoderPath
 	def Start():
-		_encodingProcess.StartInfo.Arguments = "${_config.GetSettings()} --output \"${_destinationFile}\" \"${_avisynthScriptFile}\""
+		_encodingProcess.StartInfo.Arguments = "${_config.GetArgument()} --output \"${_destinationFile}\" \"${_avisynthScriptFile}\""
 		_encodingProcess.StartInfo.UseShellExecute = false
 		_encodingProcess.StartInfo.RedirectStandardError = true
 		_encodingProcess.StartInfo.CreateNoWindow = true

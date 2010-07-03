@@ -13,6 +13,7 @@ class VideoEncoderBase(IEncoder):
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
 		if not File.Exists(avisynthScriptFile):
 			raise FileNotFoundException("", avisynthScriptFile)
+		avisynthScriptFile = Path.GetFullPath(avisynthScriptFile)
 		using _scriptInfo = AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)
 		if not _scriptInfo.HasVideo:
 			raise InvalidVideoAvisynthScriptException(avisynthScriptFile)

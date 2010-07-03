@@ -40,6 +40,9 @@
     <Reference Include="DirectShowLib-2005">
       <HintPath>bin\Debug\DirectShowLib-2005.dll</HintPath>
     </Reference>
+    <Reference Include="GenericOrderedDictionary">
+      <HintPath>bin\Release\GenericOrderedDictionary.dll</HintPath>
+    </Reference>
     <Reference Include="MediaInfoLib">
       <HintPath>bin\Debug\MediaInfoLib.dll</HintPath>
     </Reference>
@@ -106,6 +109,9 @@
     <Compile Include="VideoEncoding\VideoEncoderBase.boo" />
     <Compile Include="VideoEncoding\X264.boo" />
     <Compile Include="VideoEncoding\X264Config.boo">
+      <DependentUpon>X264.boo</DependentUpon>
+    </Compile>
+    <Compile Include="VideoEncoding\X264ConfigNode.boo">
       <DependentUpon>X264.boo</DependentUpon>
     </Compile>
     <EmbeddedResource Include="GUI\CommandLineBox.resx">

@@ -319,6 +319,7 @@ public def Main(argv as (string)) as void:
 	Application.EnableVisualStyles()
 	Application.SetCompatibleTextRenderingDefault(false)
 	Application.Run(MainForm())
+#	X264CONFIG2TEST()
 	//VideoEncoding.vetest()
 	//CXGUI.AudioEncoding.aebtest()
 	//CXGUI.GUI.cfgtest()

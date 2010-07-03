@@ -49,10 +49,11 @@ public abstract class AudioEncoderBase(IEncoder):
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
 		if not File.Exists(avisynthScriptFile):
 			raise FileNotFoundException(string.Empty, avisynthScriptFile)
+		avisynthScriptFile = Path.GetFullPath(avisynthScriptFile)
 		using self._scriptInfo = AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)
 		if self._scriptInfo.ChannelsCount == 0 or self._scriptInfo.SamplesCount == 0:
 			raise InvalidAudioAvisynthScriptException(avisynthScriptFile)
-		self._avisynthScriptFile = Path.GetFullPath(avisynthScriptFile)
+		self._avisynthScriptFile = avisynthScriptFile
 		self._destinationFile = destinationFile
 		self._totalLength = (cast(double, self._scriptInfo.SamplesCount) / cast(double, self._scriptInfo.AudioSampleRate))
 		self._encodingProcess.StartInfo.UseShellExecute = false

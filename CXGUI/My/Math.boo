@@ -9,7 +9,7 @@ def Middle(val1 as duck, val2 as duck, val3 as duck):
 	return val2 if val2 <= val3
 	return val3
 	
-def Shape(val as duck, min as duck, max as duck):
+def Chop(val as duck, min as duck, max as duck):
 	val = min if val < min
 	val = max if val > max
 	return val

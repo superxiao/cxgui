@@ -636,7 +636,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tune.Name = "tune"
 		self.tune.Size = System.Drawing.Size(75, 20)
 		self.tune.TabIndex = 11
-		self.tune.SelectedIndexChanged += self.StringChanged as System.EventHandler
+		self.tune.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
 		# 
 		# label12
 		# 
@@ -655,7 +655,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.level.Name = "level"
 		self.level.Size = System.Drawing.Size(75, 20)
 		self.level.TabIndex = 9
-		self.level.SelectedIndexChanged += self.StringChanged as System.EventHandler
+		self.level.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
 		# 
 		# label11
 		# 
@@ -674,7 +674,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.profile.Name = "profile"
 		self.profile.Size = System.Drawing.Size(75, 20)
 		self.profile.TabIndex = 7
-		self.profile.SelectedIndexChanged += self.StringChanged as System.EventHandler
+		self.profile.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
 		# 
 		# label10
 		# 
@@ -711,7 +711,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.preset.Name = "preset"
 		self.preset.Size = System.Drawing.Size(127, 20)
 		self.preset.TabIndex = 3
-		self.preset.SelectedIndexChanged += self.StringChanged as System.EventHandler
+		self.preset.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
 		# 
 		# label8
 		# 

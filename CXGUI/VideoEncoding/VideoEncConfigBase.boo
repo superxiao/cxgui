@@ -14,5 +14,5 @@ class VideoEncConfigBase:
 	[Property(UsingCustomCmd)]
 	_usingCustomCmd as bool
 	
-	public abstract def GetSettings() as string:
+	public abstract def GetArgument() as string:
 		pass
