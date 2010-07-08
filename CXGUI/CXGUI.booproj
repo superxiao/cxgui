@@ -93,6 +93,10 @@
     <Compile Include="GUI\MediaSettingForm.Designer.boo">
       <DependentUpon>MediaSettingForm.boo</DependentUpon>
     </Compile>
+    <Compile Include="GUI\X264ConfigForm.boo" />
+    <Compile Include="GUI\X264ConfigForm.Designer.boo">
+      <DependentUpon>X264ConfigForm.boo</DependentUpon>
+    </Compile>
     <Compile Include="Job\JobItem.boo" />
     <Compile Include="Job\JobItemConfig.boo" />
     <Compile Include="MediaInfo\AudioInfo.boo" />
@@ -128,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ProgramConfigForm.resx">
       <DependentUpon>ProgramConfigForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\X264ConfigForm.resx">
+      <DependentUpon>X264ConfigForm.boo</DependentUpon>
     </EmbeddedResource>
     <None Include="TODO.txt" />
   </ItemGroup>
