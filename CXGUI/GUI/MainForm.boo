@@ -47,16 +47,16 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.openFileDialog1.ShowDialog()
 
 	private def OpenFileDialog1FileOk(sender as object, e as CancelEventArgs):
-		firstAddItem as ListViewItem
+		firstAddedItem as ListViewItem
 		for fileName in self.openFileDialog1.FileNames:
-			item = AddFile(fileName)
-			if firstAddItem == null and item != null:
-				firstAddItem = item
-		if firstAddItem != null:
+			item = AddNewItem(fileName)
+			if firstAddedItem == null and item != null:
+				firstAddedItem = item
+		if firstAddedItem != null:
 			self.listView1.SelectedItems.Clear()
-			firstAddItem.Selected = true
+			firstAddedItem.Selected = true
 
-	private def AddFile(filePath as string) as ListViewItem:
+	private def AddNewItem(filePath as string) as ListViewItem:
 		if _configForm.chbInputDir.Checked:
 			fileName = filePath
 		else:
@@ -234,12 +234,12 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.listView1.SelectedItems.Clear()
 			for path in (e.Data.GetData(DataFormats.FileDrop) as (string)):
 				if IO.File.Exists(path):
-					addItem = AddFile(path)
+					addItem = AddNewItem(path)
 					if addItem != null:
 						addItem.Selected = true
 				elif IO.Directory.Exists(path):
 					for file in IO.Directory.GetFiles(path):
-						addItem = AddFile(file)
+						addItem = AddNewItem(file)
 						if addItem != null:
 							addItem.Selected = true
 			return

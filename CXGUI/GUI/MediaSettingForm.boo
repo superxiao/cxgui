@@ -162,17 +162,24 @@ partial class MediaSettingForm:
 			self.sourceResolutionCheckBox.Checked = false
 			for control as Control in self.gbResolution.Controls:
 				control.Enabled = true
-		self.lockARCheckBox.Checked = avsConfig.LockAspectRatio
+		self.allowAutoChangeARCheckBox.Checked = not avsConfig.LockAspectRatio
+		self.lockToSourceARCheckBox.Checked = avsConfig.LockToSourceAR
+		if avsConfig.LockToSourceAR or self.sourceResolutionCheckBox.Checked:
+			self.aspectRatioBox.Enabled = false
+		else:
+			self.aspectRatioBox.Enabled = true
 		self.resizerBox.Text = avsConfig.Resizer.ToString()
 		if self.resizerBox.SelectedIndex == -1:
 			self.resizerBox.SelectedIndex = 0
 
 	private def InitializeResolution(avsConfig as AvisynthConfig, videoInfo as VideoInfo):
+		
 		if avsConfig.Mod not in (2, 4, 8, 16, 32):
 			avsConfig.Mod = 2
 		_resolutionCal.Mod = avsConfig.Mod
 		_resolutionCal.LockAspectRatio = avsConfig.LockAspectRatio
-		if avsConfig.AspectRatio > 0:
+		_resolutionCal.LockToSourceAR = avsConfig.LockToSourceAR
+		if not avsConfig.LockToSourceAR and avsConfig.AspectRatio > 0:
 			_resolutionCal.AspectRatio = avsConfig.AspectRatio
 		else:
 			_resolutionCal.AspectRatio = videoInfo.DisplayAspectRatio
@@ -264,8 +271,8 @@ partial class MediaSettingForm:
 			_resolutionCal.Mod = int.Parse(modBox.Text)
 			RefreshResolution(modBox)
 	
-	private def LockARCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
-		_resolutionCal.LockAspectRatio = lockARCheckBox.Checked
+	private def AllowAutoChangeARCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
+		_resolutionCal.LockAspectRatio = not allowAutoChangeARCheckBox.Checked
 	
 	private def SourceFrameRateCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
 		if sourceFrameRateCheckBox.Checked:
@@ -300,6 +307,8 @@ partial class MediaSettingForm:
 		else:
 			for control as Control in self.gbResolution.Controls:
 				control.Enabled = true
+			if self.lockToSourceARCheckBox.Checked:
+				self.aspectRatioBox.Enabled = false
 
 	private def BtOutBrowseClick(sender as object, e as System.EventArgs):
 		if self.destFileBox.Text == "":
@@ -476,7 +485,8 @@ partial class MediaSettingForm:
 				avsConfig.Width = int.Parse(self.widthBox.Text)
 				avsConfig.Height = int.Parse(self.heightBox.Text)
 				avsConfig.AspectRatio = double.Parse(self.aspectRatioBox.Text)
-			avsConfig.LockAspectRatio = self.lockARCheckBox.Checked
+			avsConfig.LockAspectRatio = not self.allowAutoChangeARCheckBox.Checked
+			avsConfig.LockToSourceAR = self.lockToSourceARCheckBox.Checked
 			avsConfig.Mod = int.Parse(self.modBox.Text)
 			avsConfig.Resizer = Enum.Parse(ResizeFilter, self.resizerBox.Text)
 			avsConfig.VideoSource = Enum.Parse(VideoSourceFilter, self.videoSourceBox.Text)
@@ -797,6 +807,16 @@ partial class MediaSettingForm:
 			self.customSubGroupBox.Enabled = true
 		else:
 			self.customSubGroupBox.Enabled = false
+	
+	private def UseSourceARCheckedChanged(sender as object, e as System.EventArgs):
+		_resolutionCal.LockToSourceAR = self.lockToSourceARCheckBox.Checked
+		if self.lockToSourceARCheckBox.Checked:
+			self.aspectRatioBox.Text = _videoInfo.DisplayAspectRatio.ToString()
+			self.aspectRatioBox.Enabled = false
+			_resolutionCal.AspectRatio = _videoInfo.DisplayAspectRatio
+			self.RefreshResolution(self.aspectRatioBox)
+		else:
+			self.aspectRatioBox.Enabled = true
 
 		
 

@@ -21,7 +21,7 @@ class ResolutionCalculator:
 			if value % _mod != 0:
 				value = CalculateMod(value)
 			_width = value	
-			if _fixAspectRatio:
+			if _fixAspectRatio or _lockToSourceAR:
 				_height = CalculateMod(_width / _aspectRatio)
 			else:
 				_aspectRatio = cast(double, _width) / _height
@@ -40,7 +40,7 @@ class ResolutionCalculator:
 			if value % _mod != 0:
 				value = CalculateMod(value)
 			_height = value
-			if _fixAspectRatio:
+			if _fixAspectRatio or _lockToSourceAR:
 				_width = CalculateMod(_height*_aspectRatio)
 			else:
 				_aspectRatio = cast(double, _width) / _height
@@ -86,6 +86,10 @@ class ResolutionCalculator:
 			_width = CalculateMod(_width)
 			_height = CalculateMod(_height)
 	_mod as int
+	
+	[Property(LockToSourceAR)]
+	_lockToSourceAR as bool
+	
 	private def CalculateMod(number as double) as int:
 		if number%_mod >= _mod / 2.0:
 			i = 1

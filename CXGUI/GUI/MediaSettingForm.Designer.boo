@@ -36,12 +36,13 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.frameRateBox = System.Windows.Forms.ComboBox()
 		self.videoSourceBox = System.Windows.Forms.ComboBox()
 		self.gbResolution = System.Windows.Forms.GroupBox()
+		self.lockToSourceARCheckBox = System.Windows.Forms.CheckBox()
 		self.sourceResolutionCheckBox = System.Windows.Forms.CheckBox()
 		self.modBox = System.Windows.Forms.ComboBox()
 		self.label3 = System.Windows.Forms.Label()
 		self.resizerBox = System.Windows.Forms.ComboBox()
 		self.label5 = System.Windows.Forms.Label()
-		self.lockARCheckBox = System.Windows.Forms.CheckBox()
+		self.allowAutoChangeARCheckBox = System.Windows.Forms.CheckBox()
 		self.label2 = System.Windows.Forms.Label()
 		self.aspectRatioBox = System.Windows.Forms.ComboBox()
 		self.label1 = System.Windows.Forms.Label()
@@ -72,8 +73,8 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label7 = System.Windows.Forms.Label()
 		self.rateControlBox = System.Windows.Forms.ComboBox()
 		self.tabPage3 = System.Windows.Forms.TabPage()
-		self.customSubGroupBox = System.Windows.Forms.GroupBox()
 		self.customSubCheckBox = System.Windows.Forms.CheckBox()
+		self.customSubGroupBox = System.Windows.Forms.GroupBox()
 		self.fontBottomBox = System.Windows.Forms.DomainUpDown()
 		self.label19 = System.Windows.Forms.Label()
 		self.label21 = System.Windows.Forms.Label()
@@ -355,12 +356,13 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		self.gbResolution.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
+		self.gbResolution.Controls.Add(self.lockToSourceARCheckBox)
 		self.gbResolution.Controls.Add(self.sourceResolutionCheckBox)
 		self.gbResolution.Controls.Add(self.modBox)
 		self.gbResolution.Controls.Add(self.label3)
 		self.gbResolution.Controls.Add(self.resizerBox)
 		self.gbResolution.Controls.Add(self.label5)
-		self.gbResolution.Controls.Add(self.lockARCheckBox)
+		self.gbResolution.Controls.Add(self.allowAutoChangeARCheckBox)
 		self.gbResolution.Controls.Add(self.label2)
 		self.gbResolution.Controls.Add(self.aspectRatioBox)
 		self.gbResolution.Controls.Add(self.label1)
@@ -372,6 +374,16 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.gbResolution.TabIndex = 0
 		self.gbResolution.TabStop = false
 		self.gbResolution.Text = "分辨率"
+		# 
+		# lockToSourceARCheckBox
+		# 
+		self.lockToSourceARCheckBox.Location = System.Drawing.Point(275, 55)
+		self.lockToSourceARCheckBox.Name = "lockToSourceARCheckBox"
+		self.lockToSourceARCheckBox.Size = System.Drawing.Size(120, 24)
+		self.lockToSourceARCheckBox.TabIndex = 10
+		self.lockToSourceARCheckBox.Text = "锁定为源宽高比"
+		self.lockToSourceARCheckBox.UseVisualStyleBackColor = true
+		self.lockToSourceARCheckBox.CheckedChanged += self.UseSourceARCheckedChanged as System.EventHandler
 		# 
 		# sourceResolutionCheckBox
 		# 
@@ -422,15 +434,15 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label5.Text = "缩放滤镜："
 		self.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 		# 
-		# lockARCheckBox
+		# allowAutoChangeARCheckBox
 		# 
-		self.lockARCheckBox.Location = System.Drawing.Point(180, 55)
-		self.lockARCheckBox.Name = "lockARCheckBox"
-		self.lockARCheckBox.Size = System.Drawing.Size(89, 24)
-		self.lockARCheckBox.TabIndex = 5
-		self.lockARCheckBox.Text = "锁定宽高比"
-		self.lockARCheckBox.UseVisualStyleBackColor = true
-		self.lockARCheckBox.CheckedChanged += self.LockARCheckBoxCheckedChanged as System.EventHandler
+		self.allowAutoChangeARCheckBox.Location = System.Drawing.Point(180, 55)
+		self.allowAutoChangeARCheckBox.Name = "allowAutoChangeARCheckBox"
+		self.allowAutoChangeARCheckBox.Size = System.Drawing.Size(100, 24)
+		self.allowAutoChangeARCheckBox.TabIndex = 5
+		self.allowAutoChangeARCheckBox.Text = "允许自动更改"
+		self.allowAutoChangeARCheckBox.UseVisualStyleBackColor = true
+		self.allowAutoChangeARCheckBox.CheckedChanged += self.AllowAutoChangeARCheckBoxCheckedChanged as System.EventHandler
 		# 
 		# label2
 		# 
@@ -754,6 +766,16 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage3.Text = "字幕"
 		self.tabPage3.UseVisualStyleBackColor = true
 		# 
+		# customSubCheckBox
+		# 
+		self.customSubCheckBox.Location = System.Drawing.Point(9, 81)
+		self.customSubCheckBox.Name = "customSubCheckBox"
+		self.customSubCheckBox.Size = System.Drawing.Size(139, 28)
+		self.customSubCheckBox.TabIndex = 10
+		self.customSubCheckBox.Text = "自定义字幕风格"
+		self.customSubCheckBox.UseVisualStyleBackColor = true
+		self.customSubCheckBox.CheckedChanged += self.CustomSubCheckBoxCheckedChanged as System.EventHandler
+		# 
 		# customSubGroupBox
 		# 
 		self.customSubGroupBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -770,16 +792,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.customSubGroupBox.TabIndex = 11
 		self.customSubGroupBox.TabStop = false
 		self.customSubGroupBox.Text = "字幕风格"
-		# 
-		# customSubCheckBox
-		# 
-		self.customSubCheckBox.Location = System.Drawing.Point(9, 81)
-		self.customSubCheckBox.Name = "customSubCheckBox"
-		self.customSubCheckBox.Size = System.Drawing.Size(139, 28)
-		self.customSubCheckBox.TabIndex = 10
-		self.customSubCheckBox.Text = "自定义字幕风格"
-		self.customSubCheckBox.UseVisualStyleBackColor = true
-		self.customSubCheckBox.CheckedChanged += self.CustomSubCheckBoxCheckedChanged as System.EventHandler
 		# 
 		# fontBottomBox
 		# 
@@ -966,6 +978,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabPage3.PerformLayout()
 		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private lockToSourceARCheckBox as System.Windows.Forms.CheckBox
 	private customSubGroupBox as System.Windows.Forms.GroupBox
 	private customSubCheckBox as System.Windows.Forms.CheckBox
 	private fontBottomBox as System.Windows.Forms.DomainUpDown
@@ -1036,7 +1049,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private label5 as System.Windows.Forms.Label
 	private modBox as System.Windows.Forms.ComboBox
 	private label3 as System.Windows.Forms.Label
-	private lockARCheckBox as System.Windows.Forms.CheckBox
+	private allowAutoChangeARCheckBox as System.Windows.Forms.CheckBox
 	private aspectRatioBox as System.Windows.Forms.ComboBox
 	private heightBox as System.Windows.Forms.TextBox
 	private widthBox as System.Windows.Forms.TextBox

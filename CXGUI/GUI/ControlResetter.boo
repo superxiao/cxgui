@@ -39,9 +39,11 @@ class ControlResetter:
 	def Changed() as bool:
 		for checkBox as CheckBox in _savedCheckBox.Keys:
 			if checkBox.Checked != _savedCheckBox[checkBox]:
+				
 				return true
 		for control as Control in _savedTextControl.Keys:
 			if control.Text != _savedTextControl[control]:
+				
 				return true
 		return false
 		

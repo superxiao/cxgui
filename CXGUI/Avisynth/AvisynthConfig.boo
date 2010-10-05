@@ -6,6 +6,7 @@ public class AvisynthConfig():
 
 	public def constructor():
 		_lockAspectRatio = true
+		_lockToSourceAR = true
 		_mod = 2
 		_downMix = true
 		
@@ -17,6 +18,8 @@ public class AvisynthConfig():
 	_aspectRatio as double
 	[Property(LockAspectRatio)]
 	_lockAspectRatio as bool
+	[Property(LockToSourceAR)]
+	_lockToSourceAR as bool
 	[Property(Mod)]
 	_mod as int
 	[Property(Resizer)]
