@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AvisynthWrapperDotNet">
-      <HintPath>bin\Debug\AvisynthWrapperDotNet.dll</HintPath>
+      <HintPath>bin\Debug\tools\AvisynthWrapperDotNet.dll</HintPath>
     </Reference>
     <Reference Include="DirectShowLib-2005">
       <HintPath>bin\Debug\DirectShowLib-2005.dll</HintPath>
@@ -148,6 +148,10 @@
     <Folder Include="VideoEncoding" />
     <Folder Include="Job" />
     <Folder Include="Config" />
+    <ProjectReference Include="..\AviInfo\AviInfo.csproj">
+      <Project>{2D9FF0D3-7984-4E8F-A52A-A2013006741D}</Project>
+      <Name>AviInfo</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
 </Project>

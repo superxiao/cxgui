@@ -18,22 +18,21 @@ class SubStyleWriter:
 		_tempFiles = List[of string](2)
 	public def Write():
 		_tempFiles.Clear()
-		if _subConfig.UsingStyle:
 		
-			if Path.GetExtension(_subtitle).ToLower() in (".ssa", ".ass"):
-				_subtitle = GenerateSrtFromAss(_subtitle)
-				_tempFiles.Add(_subtitle)
-			styleFile = _subtitle + ".style"
-			styles = _subConfig.GetStyles()
-			content =\
+		if Path.GetExtension(_subtitle).ToLower() in (".ssa", ".ass"):
+			_subtitle = GenerateSrtFromAss(_subtitle)
+			_tempFiles.Add(_subtitle)
+		styleFile = _subtitle + ".style"
+		styles = _subConfig.GetStyles()
+		content =\
 """
 [Script Info]
 ScriptType: v4.00+
 Collisions: Normal
 Timer: 100.0000
 """ + styles
-			File.WriteAllText(styleFile, content, Encoding.UTF8)
-			_tempFiles.Add(styleFile)
+		File.WriteAllText(styleFile, content, Encoding.UTF8)
+		_tempFiles.Add(styleFile)
 		
 	private def GenerateSrtFromAss(assFile as string) as string:
 		srt = Path.ChangeExtension(assFile, 'srt')

@@ -23,6 +23,7 @@ import CXGUI.Job
 import DirectShowLib.DES
 import My
 
+
 partial class MainForm(System.Windows.Forms.Form):
 	_configForm as ProgramConfigForm
 	_mediaSettingForm as MediaSettingForm
@@ -171,10 +172,10 @@ partial class MainForm(System.Windows.Forms.Form):
 		UpdateProfileBox(self._mediaSettingForm.GetProfiles(), self.profileBox.Text)
 		self._mediaSettingForm.Clear()
 		
-	private def UpdateProfileBox(profileNames as (string), selectedProfile as string):
+	private def UpdateProfileBox(newProfileNames as (string), selectedProfile as string):
 		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
 		self.profileBox.Items.Clear()
-		self.profileBox.Items.AddRange(profileNames)
+		self.profileBox.Items.AddRange(newProfileNames)
 		if not self.profileBox.Items.Contains("Default"):
 			Profile.RebuildDefault("Default")
 			self.profileBox.Items.Add("Default")

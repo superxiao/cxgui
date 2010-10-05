@@ -21,11 +21,11 @@ enum JobEvent:
 	VideoEncoding
 	AudioEncoding
 	Muxing
-	OneStart
-	OneDone
+	OneJobItemProcessing
+	OneJobItemDone
 	AllDone
-	OneStop
-	AllStop
+	OneJobItemCancelled
+	QuitAllProcessing
 	Error
 	
 [Serializable()]
@@ -54,8 +54,8 @@ class JobItem:
 		get:
 			return _jobConfig
 		set:
-			if (not _videoInfo.AudioStreamsCount and not value.AudioMode == JobMode.None)\
-				or (not _videoInfo.HasVideo and not value.VideoMode == JobMode.None):
+			if (not _videoInfo.AudioStreamsCount and not value.AudioMode == StreamProcessMode.None)\
+				or (not _videoInfo.HasVideo and not value.VideoMode == StreamProcessMode.None):
 					raise ArgumentException("Incorrect JobMode.")
 			_jobConfig = value
 	_jobConfig as JobItemConfig
@@ -84,7 +84,7 @@ class JobItem:
 	[Property(SeparateAudio)]
 	_separateAudio as string
 	
-	[Property(EncodedVideo)]
+	[Property(OutputedVideo)]
 	_encodedVideo as string
 	
 	[Property(EncodedAudio)]
@@ -99,7 +99,7 @@ class JobItem:
 	[Property(Subtitle)]
 	_subtitle as string
 
-	[Property(CreatedFiles)]
+	[Property(FilesToDeleteWhenProcessingFails)]
 	_createdFiles = List[of string](3)
 
 	_readAvsCfg as bool

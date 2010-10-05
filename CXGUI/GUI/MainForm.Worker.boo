@@ -49,85 +49,88 @@ partial class MainForm(System.Windows.Forms.Form):
 			if File.Exists(jobItem.DestFile):
 				r = MessageBox.Show("${jobItem.DestFile}\n目标文件已存在。决定覆盖吗？", "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning)
 				if r == DialogResult.Cancel:
-					jobItem.Event = JobEvent.OneStop
-					SyncReport(jobItem)
+					jobItem.Event = JobEvent.OneJobItemCancelled
+					JobEventReport(jobItem)
 					if self._workingItems[-1] is jobItem:
 						jobItem.Event = JobEvent.AllDone
-						SyncReport(jobItem)
+						JobEventReport(jobItem)
 					e.Result = jobItem
 					return
 		
-			jobItem.Event = JobEvent.OneStart
-			jobConfig = jobItem.JobConfig
-			avsConfig = jobItem.AvsConfig
-			SyncReport(jobItem)
+			jobItem.Event = JobEvent.OneJobItemProcessing
+			JobEventReport(jobItem)
 	
-			if jobConfig.VideoMode == JobMode.Encode:
-				DoVideoStuff(jobItem, e)
-				return if ReportUserStop(jobItem, e)
+			if jobItem.JobConfig.VideoMode == StreamProcessMode.Encode:
+				ProcessVideo(jobItem, e)
+				return if DidUserPressStopButton(jobItem, e)
 	
-			if jobConfig.AudioMode == JobMode.Encode:
-				DoAudioStuff(jobItem, e)
-				return if ReportUserStop(jobItem, e)
+			if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode:
+				ProcessAudio(jobItem, e)
+				return if DidUserPressStopButton(jobItem, e)
 	
-			if jobConfig.Muxer != Muxer.None:
+			if jobItem.JobConfig.Muxer != Muxer.None:
 				DoMuxStuff(jobItem, e)
-				return if ReportUserStop(jobItem, e)
+				return if DidUserPressStopButton(jobItem, e)
 
 			if jobItem.State != JobState.Error:
-				jobItem.Event = JobEvent.OneDone
-				SyncReport(jobItem)
+				jobItem.Event = JobEvent.OneJobItemDone
+				JobEventReport(jobItem)
 
 		except e as Exception:
 			MessageBox.Show("发生了一个错误。\n"+e.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
 			jobItem.Event = JobEvent.Error
-			SyncReport(jobItem)
+			JobEventReport(jobItem)
 		ensure:
 			
 			if self._workingItems[-1] is jobItem:
 				jobItem.Event = JobEvent.AllDone
-				SyncReport(jobItem)
+				JobEventReport(jobItem)
 			
 			e.Result = jobItem
 
-	private def ReportUserStop(jobItem as JobItem, e as DoWorkEventArgs):
+	private def DidUserPressStopButton(jobItem as JobItem, e as DoWorkEventArgs):
 		//User stoped
 		if self.backgroundWorker1.CancellationPending:
-			jobItem.Event = JobEvent.AllStop
-			SyncReport(jobItem)
+			jobItem.Event = JobEvent.QuitAllProcessing
+			JobEventReport(jobItem)
 			return true
 		else:
 			return false
 				
-	private def DoVideoStuff(jobItem as JobItem, e as DoWorkEventArgs):
+	private def ProcessVideo(jobItem as JobItem, e as DoWorkEventArgs):
 		AvisynthWriter.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.Subtitle, jobItem.AvsConfig)
-		substyleWriter = SubStyleWriter(jobItem.Subtitle, jobItem.SubConfig)
-		substyleWriter.Write()
+		usingSubStyleWriter = false
+		if File.Exists(jobItem.Subtitle) and jobItem.SubConfig.UsingStyle:
+			substyleWriter = SubStyleWriter(jobItem.Subtitle, jobItem.SubConfig)
+			substyleWriter.Write()
+			usingSubStyleWriter = true
 				
-		jobItem.CreatedFiles.Add(jobItem.DestFile)
+		jobItem.FilesToDeleteWhenProcessingFails.Add(jobItem.DestFile)
 		try:
 			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
-			jobItem.EncodedVideo = jobItem.DestFile
+			jobItem.OutputedVideo = jobItem.DestFile
 		except e as Exception:
-			substyleWriter.CleanUp()
+			if usingSubStyleWriter:
+				substyleWriter.CleanUp()
 			raise e
-		substyleWriter.CleanUp()
+		if usingSubStyleWriter:
+			substyleWriter.CleanUp()
 		if jobItem.AvsConfig.VideoSource == VideoSourceFilter.FFVideoSource:
 			File.Delete(jobItem.SourceFile+'.ffindex')
 			
-	private def DoAudioStuff(jobItem as JobItem, e as DoWorkEventArgs):
+	private def ProcessAudio(jobItem as JobItem, e as DoWorkEventArgs):
 		if jobItem.JobConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
 			sourceAudio = jobItem.SeparateAudio
 		else:
 			sourceAudio = jobItem.SourceFile
 		AvisynthWriter.WriteAudioAvs(sourceAudio, 'audio.avs', jobItem.AvsConfig)
-		if jobItem.JobConfig.VideoMode != JobMode.None:
+		if jobItem.JobConfig.VideoMode != StreamProcessMode.None:
 			destAudio = Path.ChangeExtension(jobItem.DestFile, 'm4a')
 			destAudio = GetUniqueName(destAudio)
 		else:
 			destAudio = jobItem.DestFile
 
-		jobItem.CreatedFiles.Add(destAudio)
+		jobItem.FilesToDeleteWhenProcessingFails.Add(destAudio)
 		try:
 			self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
 			jobItem.EncodedAudio = destAudio
@@ -148,20 +151,20 @@ partial class MainForm(System.Windows.Forms.Form):
 			else:
 				result = MessageBox.Show(jobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", 
 				"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
-				jobItem.JobConfig.AudioMode = JobMode.None
+				jobItem.JobConfig.AudioMode = StreamProcessMode.None
 				if result == DialogResult.OK:
 					ChangeSourceAndRetry()
 				else:
 					jobItem.Event = JobEvent.Error
-					SyncReport(jobItem)
+					JobEventReport(jobItem)
 		if jobItem.AvsConfig.AudioSource == AudioSourceFilter.FFAudioSource:
 			File.Delete(sourceAudio + '.ffindex')
 			
 	private def DoMuxStuff(jobItem as JobItem, e as DoWorkEventArgs):
-		if jobItem.JobConfig.AudioMode == JobMode.Encode:
+		if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode:
 			muxAudio = jobItem.EncodedAudio
 			jobItem.EncodedAudio = ""
-		elif jobItem.JobConfig.AudioMode == JobMode.Copy:
+		elif jobItem.JobConfig.AudioMode == StreamProcessMode.Copy:
 			if jobItem.JobConfig.UseSeparateAudio and jobItem.SeparateAudio != "":
 				muxAudio = jobItem.SeparateAudio
 			else:
@@ -169,18 +172,18 @@ partial class MainForm(System.Windows.Forms.Form):
 		else:
 			muxAudio = ""
 				
-		if jobItem.JobConfig.VideoMode == JobMode.Encode:
-			muxVideo = jobItem.EncodedVideo
-			jobItem.EncodedVideo = ""
-		elif jobItem.JobConfig.VideoMode == JobMode.Copy:
+		if jobItem.JobConfig.VideoMode == StreamProcessMode.Encode:
+			muxVideo = jobItem.OutputedVideo
+			jobItem.OutputedVideo = ""
+		elif jobItem.JobConfig.VideoMode == StreamProcessMode.Copy:
 			muxVideo = jobItem.SourceFile
 		else:
 			muxVideo = ""
-		jobItem.CreatedFiles.Add(jobItem.DestFile)
+		jobItem.FilesToDeleteWhenProcessingFails.Add(jobItem.DestFile)
 		self.Mux(muxVideo, muxAudio, jobItem.DestFile, e)
 			
 	
-	private def SyncReport(jobItem as JobItem):
+	private def JobEventReport(jobItem as JobItem):
 		self._workerReporting = true
 		self.backgroundWorker1.ReportProgress(0, jobItem)
 		while self._workerReporting:
@@ -205,7 +208,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				self.muxTimeUsed.Text = jobItem.Muxer.TimeUsed.ToString()
 				self.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString()
 			//One job starts
-			elif jobItem.Event == JobEvent.OneStart:
+			elif jobItem.Event == JobEvent.OneJobItemProcessing:
 				self._workingItem = jobItem
 				ResetProgress()
 				jobItem.State = JobState.Working
@@ -214,8 +217,8 @@ partial class MainForm(System.Windows.Forms.Form):
 				i = self._workingItems.IndexOf(jobItem)
 				self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingItems.Count}个文件"
 			//One job done
-			elif jobItem.Event == JobEvent.OneDone:
-				jobItem.CreatedFiles.Clear()
+			elif jobItem.Event == JobEvent.OneJobItemDone:
+				jobItem.FilesToDeleteWhenProcessingFails.Clear()
 				self._workingItem = null
 				if not jobItem.KeepingCfg:
 					jobItem.Clear()
@@ -230,7 +233,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				self.statusLable.Text = "${self._workingItems.Count}个文件处理完成"
 				self.startButton.Enabled = true
 			//all stop
-			elif jobItem.Event == JobEvent.AllStop:
+			elif jobItem.Event == JobEvent.QuitAllProcessing:
 				self._workingItem = null
 				ResetProgress()
 				jobItem.State = JobState.Stop
@@ -241,25 +244,25 @@ partial class MainForm(System.Windows.Forms.Form):
 				self.startButton.Enabled = true
 				self.statusLable.Text = "中止"
 				self.tabControl1.SelectTab(self.inputPage)
-				for file in jobItem.CreatedFiles:
+				for file in jobItem.FilesToDeleteWhenProcessingFails:
 					File.Delete(file)
-				jobItem.CreatedFiles.Clear()
+				jobItem.FilesToDeleteWhenProcessingFails.Clear()
 			//one stop
-			elif jobItem.Event == JobEvent.OneStop:
+			elif jobItem.Event == JobEvent.OneJobItemCancelled:
 				jobItem.State = JobState.Stop
 				jobItem.UIItem.SubItems[0].Text = "中止"
 				self.statusLable.Text = "中止"
-				for file in jobItem.CreatedFiles:
+				for file in jobItem.FilesToDeleteWhenProcessingFails:
 					File.Delete(file)
-				jobItem.CreatedFiles.Clear()
+				jobItem.FilesToDeleteWhenProcessingFails.Clear()
 			//Error
 			elif jobItem.Event == JobEvent.Error:
 				jobItem.State = JobState.Error
 				jobItem.UIItem.SubItems[0].Text = "错误"
 				self.statusLable.Text = "错误"
-				for file in jobItem.CreatedFiles:
+				for file in jobItem.FilesToDeleteWhenProcessingFails:
 					File.Delete(file)
-				jobItem.CreatedFiles.Clear()
+				jobItem.FilesToDeleteWhenProcessingFails.Clear()
 			self._workerReporting = false
 		except e:
 			MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n"+e.ToString())
@@ -318,14 +321,14 @@ partial class MainForm(System.Windows.Forms.Form):
 				except exc as FormatNotSupportedException:
 					MessageBox.Show("合成MP4失败。可能源媒体流中有不支持的格式。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 					jobItem.Event = JobEvent.Error
-					SyncReport(jobItem)
+					JobEventReport(jobItem)
 				except exc as FFmpegBugException:
 					MessageBox.Show("合成MP4失败。这是由于FFmpeg的一些Bug, 对某些流无法使用复制。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 					jobItem.Event = JobEvent.Error
-					SyncReport(jobItem)
+					JobEventReport(jobItem)
 			result.AsyncWaitHandle.WaitOne()
 			jobItem.Muxer = null
-			if jobItem.JobConfig.AudioMode == JobMode.Encode and not IsSameFile(audio, dstFile):
+			if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode and not IsSameFile(audio, dstFile):
 				File.Delete(audio)
 		
 	private def EncodingReport(jobItem as JobItem, encoder as IEncoder, e as DoWorkEventArgs):
@@ -338,20 +341,20 @@ partial class MainForm(System.Windows.Forms.Form):
 			if jobItem.State == JobState.Error:
 				break
 			if encoder.Progress == 100:
-				SyncReport(jobItem)
+				JobEventReport(jobItem)
 				break
-			SyncReport(jobItem)
+			JobEventReport(jobItem)
 	
 	private def StopWorker(encoder as IEncoder, e as DoWorkEventArgs):
 			jobItem = cast(JobItem, e.Argument)
 			encoder.Stop()
-			jobItem.Event = JobEvent.AllStop
-			SyncReport(jobItem)
+			jobItem.Event = JobEvent.QuitAllProcessing
+			JobEventReport(jobItem)
 
 	private def NextJob(sender as object, e as RunWorkerCompletedEventArgs):
 		if e.Result != null:
 			jobItem = cast(JobItem, e.Result)
-			if jobItem.Event in (JobEvent.AllDone, JobEvent.AllStop):
+			if jobItem.Event in (JobEvent.AllDone, JobEvent.QuitAllProcessing):
 				jobItem.Event = JobEvent.None
 				self._workingItems.Clear()
 				return

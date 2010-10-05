@@ -493,17 +493,17 @@ partial class MediaSettingForm:
 		
 	private def SaveToJobConfig(jobConfig as JobItemConfig):
 		jobConfig.UseSeparateAudio = self.chbSepAudio.Checked
-		jobConfig.VideoMode = cast(JobMode, self.cbVideoMode.SelectedIndex)
-		jobConfig.AudioMode = cast(JobMode, self.cbAudioMode.SelectedIndex)
-		jobConfig.VideoMode = JobMode.None if jobConfig.VideoMode == -1
-		jobConfig.AudioMode = JobMode.None if jobConfig.AudioMode == -1
+		jobConfig.VideoMode = cast(StreamProcessMode, self.cbVideoMode.SelectedIndex)
+		jobConfig.AudioMode = cast(StreamProcessMode, self.cbAudioMode.SelectedIndex)
+		jobConfig.VideoMode = StreamProcessMode.None if jobConfig.VideoMode == -1
+		jobConfig.AudioMode = StreamProcessMode.None if jobConfig.AudioMode == -1
 		if self.muxerComboBox.Text == "MKV":
 			jobConfig.Muxer = Muxer.MKVMerge
-		elif jobConfig.VideoMode == JobMode.Copy or jobConfig.AudioMode == JobMode.Copy:
+		elif jobConfig.VideoMode == StreamProcessMode.Copy or jobConfig.AudioMode == StreamProcessMode.Copy:
 			jobConfig.Muxer = Muxer.FFMP4
 		elif Path.GetExtension(self._destFile).ToLower() not in ('.mp4', '.m4v', '.m4a'):
 			jobConfig.Muxer = Muxer.FFMP4
-		elif jobConfig.VideoMode == JobMode.Encode and jobConfig.AudioMode == JobMode.Encode:
+		elif jobConfig.VideoMode == StreamProcessMode.Encode and jobConfig.AudioMode == StreamProcessMode.Encode:
 			jobConfig.Muxer = Muxer.MP4Box
 		else:
 			jobConfig.Muxer = Muxer.None

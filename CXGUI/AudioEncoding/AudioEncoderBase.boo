@@ -43,6 +43,7 @@ public abstract class AudioEncoderBase(IEncoder):
 	protected _totalLength as double
 	
 	_avsEn as AviSynthScriptEnvironment
+	
 
 	
 	// Methods
