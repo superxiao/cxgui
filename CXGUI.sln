@@ -4,7 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # SharpDevelop 3.2.0.5777
 Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "CXGUI", "CXGUI\CXGUI.booproj", "{286AF126-1D81-4818-ADF0-3C5D0428903C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{1E838FE6-7AC7-4768-9C85-8A52BD4B01AD}"
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "Test", "Test\Test.booproj", "{47518928-C91C-499D-AEEA-AE7C0AC2254B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,9 +16,9 @@ Global
 		{286AF126-1D81-4818-ADF0-3C5D0428903C}.Debug|x86.ActiveCfg = Debug|x86
 		{286AF126-1D81-4818-ADF0-3C5D0428903C}.Release|x86.Build.0 = Release|x86
 		{286AF126-1D81-4818-ADF0-3C5D0428903C}.Release|x86.ActiveCfg = Release|x86
-		{1E838FE6-7AC7-4768-9C85-8A52BD4B01AD}.Debug|x86.Build.0 = Debug|x86
-		{1E838FE6-7AC7-4768-9C85-8A52BD4B01AD}.Debug|x86.ActiveCfg = Debug|x86
-		{1E838FE6-7AC7-4768-9C85-8A52BD4B01AD}.Release|x86.Build.0 = Release|x86
-		{1E838FE6-7AC7-4768-9C85-8A52BD4B01AD}.Release|x86.ActiveCfg = Release|x86
+		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Debug|x86.Build.0 = Debug|x86
+		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Debug|x86.ActiveCfg = Debug|x86
+		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Release|x86.Build.0 = Release|x86
+		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

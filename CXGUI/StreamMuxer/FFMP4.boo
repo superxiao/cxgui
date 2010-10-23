@@ -1,8 +1,6 @@
 ﻿namespace CXGUI.StreamMuxer
 
 import System
-import System.IO
-import System.Threading
 import System.Windows.Forms
 import CXGUI
 
@@ -81,10 +79,3 @@ class FFMP4(MuxerBase):
 		except:
 			pass
 
-
-def fftest():
-	m = FFMP4()
-	m.VideoFile = """G:\Movie\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD-SAMPLE.mkv"""
-	m.AudioFile = """G:\Movie\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD\Cashback.2006.720p.HDTV.AC3.5.1.x264-XSHD-SAMPLE.mkv"""
-	m.DstFile = """d:\test.mp4"""
-	m.Start()

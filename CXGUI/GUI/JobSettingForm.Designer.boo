@@ -1,6 +1,6 @@
 ﻿namespace CXGUI.GUI
 
-partial class MediaSettingForm(System.Windows.Forms.Form):
+partial class JobSettingForm(System.Windows.Forms.Form):
 	private components as System.ComponentModel.IContainer = null
 	
 	protected override def Dispose(disposing as bool) as void:
@@ -14,7 +14,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	// not be able to load this method if it was changed manually.
 	private def InitializeComponent():
 		self.tabControl1 = System.Windows.Forms.TabControl()
-		self.tabPage1 = System.Windows.Forms.TabPage()
+		self.editTabPage = System.Windows.Forms.TabPage()
 		self.cbAudioMode = System.Windows.Forms.ComboBox()
 		self.cbVideoMode = System.Windows.Forms.ComboBox()
 		self.label17 = System.Windows.Forms.Label()
@@ -72,7 +72,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label8 = System.Windows.Forms.Label()
 		self.label7 = System.Windows.Forms.Label()
 		self.rateControlBox = System.Windows.Forms.ComboBox()
-		self.tabPage3 = System.Windows.Forms.TabPage()
+		self.subtitleTabPage = System.Windows.Forms.TabPage()
 		self.customSubCheckBox = System.Windows.Forms.CheckBox()
 		self.customSubGroupBox = System.Windows.Forms.GroupBox()
 		self.fontBottomBox = System.Windows.Forms.DomainUpDown()
@@ -93,8 +93,9 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.label15 = System.Windows.Forms.Label()
 		self.openFileDialog2 = System.Windows.Forms.OpenFileDialog()
 		self.fontDialog1 = System.Windows.Forms.FontDialog()
+		self.avsInputTabPage = System.Windows.Forms.TabPage()
 		self.tabControl1.SuspendLayout()
-		self.tabPage1.SuspendLayout()
+		self.editTabPage.SuspendLayout()
 		self.gbAudioAvs.SuspendLayout()
 		self.gbVideoSource.SuspendLayout()
 		self.gbResolution.SuspendLayout()
@@ -102,7 +103,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox6.SuspendLayout()
 		self.groupBox5.SuspendLayout()
 		self.groupBox4.SuspendLayout()
-		self.tabPage3.SuspendLayout()
+		self.subtitleTabPage.SuspendLayout()
 		self.customSubGroupBox.SuspendLayout()
 		self.SuspendLayout()
 		# 
@@ -111,9 +112,10 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.tabControl1.Anchor = cast(System.Windows.Forms.AnchorStyles,(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 						| System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
-		self.tabControl1.Controls.Add(self.tabPage1)
+		self.tabControl1.Controls.Add(self.editTabPage)
+		self.tabControl1.Controls.Add(self.avsInputTabPage)
 		self.tabControl1.Controls.Add(self.tabPage2)
-		self.tabControl1.Controls.Add(self.tabPage3)
+		self.tabControl1.Controls.Add(self.subtitleTabPage)
 		self.tabControl1.Location = System.Drawing.Point(12, 12)
 		self.tabControl1.Name = "tabControl1"
 		self.tabControl1.SelectedIndex = 0
@@ -122,23 +124,23 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tabPage1
 		# 
-		self.tabPage1.Controls.Add(self.cbAudioMode)
-		self.tabPage1.Controls.Add(self.cbVideoMode)
-		self.tabPage1.Controls.Add(self.label17)
-		self.tabPage1.Controls.Add(self.label16)
-		self.tabPage1.Controls.Add(self.destFileBox)
-		self.tabPage1.Controls.Add(self.label6)
-		self.tabPage1.Controls.Add(self.btOutBrowse)
-		self.tabPage1.Controls.Add(self.gbAudioAvs)
-		self.tabPage1.Controls.Add(self.gbVideoSource)
-		self.tabPage1.Controls.Add(self.gbResolution)
-		self.tabPage1.Location = System.Drawing.Point(4, 22)
-		self.tabPage1.Name = "tabPage1"
-		self.tabPage1.Padding = System.Windows.Forms.Padding(3)
-		self.tabPage1.Size = System.Drawing.Size(432, 463)
-		self.tabPage1.TabIndex = 0
-		self.tabPage1.Text = "编辑"
-		self.tabPage1.UseVisualStyleBackColor = true
+		self.editTabPage.Controls.Add(self.cbAudioMode)
+		self.editTabPage.Controls.Add(self.cbVideoMode)
+		self.editTabPage.Controls.Add(self.label17)
+		self.editTabPage.Controls.Add(self.label16)
+		self.editTabPage.Controls.Add(self.destFileBox)
+		self.editTabPage.Controls.Add(self.label6)
+		self.editTabPage.Controls.Add(self.btOutBrowse)
+		self.editTabPage.Controls.Add(self.gbAudioAvs)
+		self.editTabPage.Controls.Add(self.gbVideoSource)
+		self.editTabPage.Controls.Add(self.gbResolution)
+		self.editTabPage.Location = System.Drawing.Point(4, 22)
+		self.editTabPage.Name = "tabPage1"
+		self.editTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.editTabPage.Size = System.Drawing.Size(432, 463)
+		self.editTabPage.TabIndex = 0
+		self.editTabPage.Text = "编辑"
+		self.editTabPage.UseVisualStyleBackColor = true
 		# 
 		# cbAudioMode
 		# 
@@ -754,17 +756,17 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		# 
 		# tabPage3
 		# 
-		self.tabPage3.Controls.Add(self.customSubCheckBox)
-		self.tabPage3.Controls.Add(self.customSubGroupBox)
-		self.tabPage3.Controls.Add(self.subtitleTextBox)
-		self.tabPage3.Controls.Add(self.subtitleButton)
-		self.tabPage3.Controls.Add(self.label18)
-		self.tabPage3.Location = System.Drawing.Point(4, 22)
-		self.tabPage3.Name = "tabPage3"
-		self.tabPage3.Size = System.Drawing.Size(432, 463)
-		self.tabPage3.TabIndex = 2
-		self.tabPage3.Text = "字幕"
-		self.tabPage3.UseVisualStyleBackColor = true
+		self.subtitleTabPage.Controls.Add(self.customSubCheckBox)
+		self.subtitleTabPage.Controls.Add(self.customSubGroupBox)
+		self.subtitleTabPage.Controls.Add(self.subtitleTextBox)
+		self.subtitleTabPage.Controls.Add(self.subtitleButton)
+		self.subtitleTabPage.Controls.Add(self.label18)
+		self.subtitleTabPage.Location = System.Drawing.Point(4, 22)
+		self.subtitleTabPage.Name = "tabPage3"
+		self.subtitleTabPage.Size = System.Drawing.Size(432, 463)
+		self.subtitleTabPage.TabIndex = 2
+		self.subtitleTabPage.Text = "字幕"
+		self.subtitleTabPage.UseVisualStyleBackColor = true
 		# 
 		# customSubCheckBox
 		# 
@@ -945,6 +947,16 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.openFileDialog2.FileName = "openFileDialog2"
 		self.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*,ssa|srt|*.srt|ass|*.ass|ssa|*.ssa"
 		# 
+		# tabPage4
+		# 
+		self.avsInputTabPage.Location = System.Drawing.Point(4, 22)
+		self.avsInputTabPage.Name = "tabPage4"
+		self.avsInputTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.avsInputTabPage.Size = System.Drawing.Size(432, 463)
+		self.avsInputTabPage.TabIndex = 3
+		self.avsInputTabPage.Text = "avs输入"
+		self.avsInputTabPage.UseVisualStyleBackColor = true
+		# 
 		# MediaSettingForm
 		# 
 		self.AcceptButton = self.okButton
@@ -952,9 +964,9 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.CancelButton = self.cancelButton
 		self.ClientSize = System.Drawing.Size(464, 542)
+		self.Controls.Add(self.tabControl1)
 		self.Controls.Add(self.label15)
 		self.Controls.Add(self.profileBox)
-		self.Controls.Add(self.tabControl1)
 		self.Controls.Add(self.saveProfileButton)
 		self.Controls.Add(self.okButton)
 		self.Controls.Add(self.cancelButton)
@@ -964,7 +976,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.Load += self.MediaSettingFormLoad as System.EventHandler
 		self.FormClosed += self.MediaSettingFormFormClosed as System.Windows.Forms.FormClosedEventHandler
 		self.tabControl1.ResumeLayout(false)
-		self.tabPage1.ResumeLayout(false)
+		self.editTabPage.ResumeLayout(false)
 		self.gbAudioAvs.ResumeLayout(false)
 		self.gbAudioAvs.PerformLayout()
 		self.gbVideoSource.ResumeLayout(false)
@@ -974,10 +986,11 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 		self.groupBox6.ResumeLayout(false)
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
-		self.tabPage3.ResumeLayout(false)
-		self.tabPage3.PerformLayout()
+		self.subtitleTabPage.ResumeLayout(false)
+		self.subtitleTabPage.PerformLayout()
 		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private avsInputTabPage as System.Windows.Forms.TabPage
 	private lockToSourceARCheckBox as System.Windows.Forms.CheckBox
 	private customSubGroupBox as System.Windows.Forms.GroupBox
 	private customSubCheckBox as System.Windows.Forms.CheckBox
@@ -992,7 +1005,7 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private openFileDialog2 as System.Windows.Forms.OpenFileDialog
 	private label18 as System.Windows.Forms.Label
 	private subtitleButton as System.Windows.Forms.Button
-	private tabPage3 as System.Windows.Forms.TabPage
+	private subtitleTabPage as System.Windows.Forms.TabPage
 	private editCmdButton as System.Windows.Forms.Button
 	private useCustomCmdBox as System.Windows.Forms.CheckBox
 	private saveProfileButton as System.Windows.Forms.Button
@@ -1056,6 +1069,6 @@ partial class MediaSettingForm(System.Windows.Forms.Form):
 	private label1 as System.Windows.Forms.Label
 	private label2 as System.Windows.Forms.Label
 	private tabPage2 as System.Windows.Forms.TabPage
-	private tabPage1 as System.Windows.Forms.TabPage
+	private editTabPage as System.Windows.Forms.TabPage
 	private tabControl1 as System.Windows.Forms.TabControl
 

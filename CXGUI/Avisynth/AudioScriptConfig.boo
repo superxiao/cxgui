@@ -4,7 +4,6 @@ import System
 import System.Windows.Forms//test
 import System.Collections
 import System.Collections.Specialized
-import System.IO
 import CXGUI
 
 

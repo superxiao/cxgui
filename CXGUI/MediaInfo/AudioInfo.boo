@@ -1,6 +1,8 @@
 ﻿namespace CXGUI
 
 import System
+import System.IO
+import MeGUI
 import MediaInfoLib
 
 class AudioInfo():
@@ -16,6 +18,9 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 		InitializeProperties(path, 0)
 
 	private def InitializeProperties(path as string, streamNum as int):
+		if Path.GetExtension(path).ToLower() == ".avs":
+			self.AvisynthInfo(path)
+			return
 		info = MediaInfoLib.MediaInfo()
 		info.Open(path)
 		_filePath = path
@@ -33,6 +38,17 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 		_length = _length / 1000
 		_streamsCount = info.Count_Get(StreamKind.Audio)
 		info.Close()
+		
+	private def AvisynthInfo(path as string):
+		using info = AviSynthScriptEnvironment().OpenScriptFile(path)
+		self._filePath = path
+		self._currentStream = 0
+		self._streamsCount = 1
+		self._format = "avs"
+		self._streamID = 0
+		self._id  = 0
+		self._length = (cast(double, info.SamplesCount) / cast(double, info.AudioSampleRate))
+		
 
 	//Methods
 	public static def GetAudioInfo(path as string, streamNumber as int, audioParameter as string) as string:

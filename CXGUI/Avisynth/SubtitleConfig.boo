@@ -2,10 +2,9 @@
 
 import System
 import System.Windows.Forms
-import System.Drawing
 
 class SubtitleConfig:
-"""Description of SubConfig"""
+"""Description of SubtitleConfig"""
 	public def constructor():
 		Fontname = "宋体"
 		Fontsize = 32

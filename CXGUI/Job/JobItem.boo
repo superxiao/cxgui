@@ -27,16 +27,46 @@ enum JobEvent:
 	OneJobItemCancelled
 	QuitAllProcessing
 	Error
-	
+
 [Serializable()]
-class JobItem:
+class JobItem():
 """Description of JobItem"""
-
-	[Getter(SourceFile)]
+	
+	
 	_sourceFile as string
+	SourceFile as string:
+		get:
+			return _sourceFile
+		set:
+			_sourceFile = value
+			_cxListViewItem.SubItems[1].Text = value
+			
 
-	[Property(DestFile)]
 	_destFile as string
+	DestFile as string:
+		get:
+			return _destFile
+		set:
+			_destFile = value
+			_cxListViewItem.SubItems[2].Text = value
+	
+
+	_state as JobState
+	State as JobState:
+		get:
+			return _state
+		set:
+			_state = value
+			if value == JobState.Waiting:
+				_cxListViewItem.SubItems[0].Text = "等待"
+			elif value == JobState.Working:
+				_cxListViewItem.SubItems[0].Text = "工作中"
+			if value == JobState.Done:
+				_cxListViewItem.SubItems[0].Text = "完成"
+			if value == JobState.Stop:
+				_cxListViewItem.SubItems[0].Text = "中止"
+			if value == JobState.Error:
+				_cxListViewItem.SubItems[0].Text = "错误"
 
 	[Property(AvsConfig)]
 	_avsConfig as AvisynthConfig
@@ -47,8 +77,8 @@ class JobItem:
 	[Property(AudioEncConfig)]
 	_audioEncConfig as AudioEncConfigBase
 	
-	[Property(SubConfig)]
-	_subConfig as SubtitleConfig
+	[Property(SubtitleConfig)]
+	_subtitleConfig as SubtitleConfig
 
 	JobConfig as JobItemConfig:
 		get:
@@ -69,22 +99,19 @@ class JobItem:
 	[Property(Muxer)]
 	_muxer as MuxerBase
 
-	[Property(State)]
-	_state as JobState
-
 	[Property(Event)]
 	_event as JobEvent
+	"""
+	仅当向从工作线程向UI线程汇报前更改此属性。
+	"""
 
-	[Property(UIItem)]
-	_uiItem as ListViewItem
+	[Property(CxListViewItem)]
+	_cxListViewItem as CxListViewItem
 
-	[Property(KeepingCfg)]
-	_KeepingCfg as bool
-
-	[Property(SeparateAudio)]
-	_separateAudio as string
+	[Property(ExternalAudio)]
+	_externalAudio as string
 	
-	[Property(OutputedVideo)]
+	[Property(EncodedVideo)]
 	_encodedVideo as string
 	
 	[Property(EncodedAudio)]
@@ -109,16 +136,17 @@ class JobItem:
 	_readSubCfg as bool
 	_videoInfo as VideoInfo
 	
-	public def constructor(sourceFile as string, destFile as string, uiItem as ListViewItem, profileName as string):
+	public def constructor(sourceFile as string, destFile as string, profileName as string):
 		self._sourceFile = sourceFile
 		self._destFile = destFile
-		self._uiItem = uiItem
 		self._profileName = profileName
 		_videoInfo = VideoInfo(sourceFile)
+		self._cxListViewItem = CxListViewItem(("等待", sourceFile, destFile))
+		self._cxListViewItem.JobItem = self
 	
 	public def SetUp():
 	"""
-	根据JobItem对象的ProfileName属性为其读取各设置实例。
+	根据JobItem对象的ProfileName属性为其读取各设置实例，并应用到值为null的设置属性。
 	如对应Profile文件不存在，则报错。
 	"""
 		if self._avsConfig == null:
@@ -129,7 +157,7 @@ class JobItem:
 			_readAudioCfg = true
 		if self.JobConfig == null:
 			_readJobCfg = true
-		if self.SubConfig == null:
+		if self.SubtitleConfig == null:
 			_readSubCfg = true
 		ReadProfile(self._profileName)
 
@@ -152,17 +180,15 @@ class JobItem:
 			_jobConfig = profile.JobConfig
 			_readJobCfg = false
 		if self._readSubCfg:
-			_subConfig = profile.SubConfig
+			_subtitleConfig = profile.SubtitleConfig
 			_readSubCfg = false
 	
 	public def Clear():
 	"""
-	清理内部存储设置数据的对象。
-	如果KeepingCfg属性设置为true, 则不执行任何操作。
+	将内部各设置属性设为null。
 	"""
-		if not self._KeepingCfg:
 			self._avsConfig = null
 			self._audioEncConfig = null
 			self._videoEncConfig = null
 			self._jobConfig = null
-			self._subConfig = null
+			self._subtitleConfig = null

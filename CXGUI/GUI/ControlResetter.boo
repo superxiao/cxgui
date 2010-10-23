@@ -1,7 +1,6 @@
 ﻿namespace CXGUI.GUI
 
 import System
-import System.Reflection
 import System.Collections
 import System.Collections.Generic
 import System.Windows.Forms

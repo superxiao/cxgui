@@ -47,9 +47,6 @@ class VideoScriptConfig():
 		//Resizer
 		_width = _videoInfo.Width
 		_height = _videoInfo.Height
-		_aspectRatio = _videoInfo.DisplayAspectRatio
-		_fixAspectRatio = true
-		_mod = 2
 		//_filters和UpdateFilters方法是本类的核心。
 		//在每次使用_filters前必先调用UpdateFilters。
 		UpdateFilters()

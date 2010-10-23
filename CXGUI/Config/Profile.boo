@@ -21,8 +21,8 @@ class Profile:
 	_audioEncConfig as NeroAacConfig
 	[Property(JobConfig)]
 	_jobConfig as JobItemConfig	
-	[Property(SubConfig)]
-	_subConfig as SubtitleConfig
+	[Property(SubtitleConfig)]
+	_subtitleConfig as SubtitleConfig
 	
 	static final _profileDir as string 
 	
@@ -42,7 +42,7 @@ class Profile:
 			_videoEncConfig = X264Config()
 			_audioEncConfig = NeroAacConfig()
 			_jobConfig = JobItemConfig()
-			_subConfig = SubtitleConfig()
+			_subtitleConfig = SubtitleConfig()
 		
 	public def constructor(profileName as string):
 	"""
@@ -65,9 +65,9 @@ class Profile:
 		self._videoEncConfig = profile._videoEncConfig
 		self._audioEncConfig = profile._audioEncConfig
 		self._jobConfig = profile._jobConfig
-		self._subConfig = profile._subConfig
+		self._subtitleConfig = profile._subtitleConfig
 				
-	public static def GetProfileNames() as (string):
+	public static def GetExistingProfilesNamesOnHardDisk() as (string):
 		profileNames = List[of string]()
 		files = Directory.GetFiles(_profileDir, "*.profile")
 		formater = BinaryFormatter()
@@ -91,7 +91,7 @@ class Profile:
 		
 	public static def Save(profileName as string, jobConfig as JobItemConfig,
 	avsConfig as AvisynthConfig, videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase,
-	subConfig as SubtitleConfig):
+	subtitleConfig as SubtitleConfig):
 		formater = BinaryFormatter()
 		path = Path.Combine(_profileDir, profileName+".profile")
 		profile = Profile(false)
@@ -99,7 +99,7 @@ class Profile:
 		profile._videoEncConfig = videoEncConfig
 		profile._audioEncConfig = audioEncConfig
 		profile._avsConfig = avsConfig
-		profile._subConfig = subConfig
+		profile._subtitleConfig = subtitleConfig
 		stream = FileStream(path, FileMode.Create)
 		formater.Serialize(stream, profile)
 		stream.Close()

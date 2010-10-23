@@ -1,8 +1,10 @@
 ﻿namespace CXGUI
 
 import System
+import System.IO
 import System.Windows.Forms
 import MediaInfoLib
+import MeGUI
 
 
 [Serializable]
@@ -33,28 +35,10 @@ public class VideoInfo:
 	public def constructor(path as string):
 		self.InitializeProperties(path)
 
-	
-	public static def GetVideoInfo(path as string, *videoParameters as (string)) as Hash:
-		hash = Hash()
-		index = 0
-		strArray as (string) = videoParameters
-		length as int = strArray.Length
-		while index < length:
-			videoInfo as string = GetVideoInfo(path, strArray[index])
-			hash.Add(strArray[index], videoInfo)
-			index += 1
-		return hash
-
-	
-	public static def GetVideoInfo(path as string, videoParameter as string) as string:
-		info = MediaInfoLib.MediaInfo()
-		info.Open(path)
-		str as string = info.Get(StreamKind.Video, 0, videoParameter, InfoKind.Text)
-		info.Close()
-		return str
-
-	
 	private def InitializeProperties(path as string):
+		if Path.GetExtension(path).ToLower() == ".avs":
+			self.AvisynthInfo(path)
+			return
 		info = MediaInfoLib.MediaInfo()
 		info.Open(path)
 		self._filePath = path
@@ -82,6 +66,49 @@ public class VideoInfo:
 				self._displayAspectRatio = (cast(double, self._width) / cast(double, self._height))
 		self._audioStreamsCount = info.Count_Get(StreamKind.Audio)
 		info.Close()
+		
+	private def AvisynthInfo(path as string):
+		using info = AviSynthScriptEnvironment().OpenScriptFile(path)
+		if info.ChannelsCount:
+			self._audioStreamsCount = 1
+		else:
+			self._audioStreamsCount = 0
+		self._width = info.VideoWidth
+		self._height = info.VideoHeight
+		self._displayAspectRatio = (cast(double, self._width) / self._height)
+		self._filePath = path
+		self._format = "avs"
+		self._frameRate = Math.Round(cast(double, info.raten) / info.rated, 3 , MidpointRounding.AwayFromZero)
+		self._hasVideo = info.HasVideo
+		self._frameCount = info.num_frames
+		self._streamID = 0
+		self._length = cast(double, info.num_frames) / self._frameRate
+		self._id = 0
+		
+		
+		
+		
+	public static def GetVideoInfo(path as string, *videoParameters as (string)) as Hash:
+		hash = Hash()
+		index = 0
+		strArray as (string) = videoParameters
+		length as int = strArray.Length
+		while index < length:
+			videoInfo as string = GetVideoInfo(path, strArray[index])
+			hash.Add(strArray[index], videoInfo)
+			index += 1
+		return hash
+
+	
+	public static def GetVideoInfo(path as string, videoParameter as string) as string:
+		info = MediaInfoLib.MediaInfo()
+		info.Open(path)
+		str as string = info.Get(StreamKind.Video, 0, videoParameter, InfoKind.Text)
+		info.Close()
+		return str
+
+	
+
 
 	
 	// Properties
@@ -126,7 +153,7 @@ public class VideoInfo:
 
 	public StreamID as int:
 	"""
-	流序号。
+	流序号。仅用于FFMPEG MP4合成。
 	"""
 		get:
 			return self._streamID
@@ -137,6 +164,9 @@ public class VideoInfo:
 
 	[Getter(Length)]
 	_length as double
+	"""
+	秒。
+	"""
 	
 	[Getter(ID)]
 	_id as int

@@ -8,42 +8,41 @@ import CXGUI.Job
 
 partial class MainForm(System.Windows.Forms.Form):
 
-	private def SetUpItems(items as (JobItem)):
+	private def SetUpJobItems(items as (JobItem)):
 	"""
-	根据JobItem对象的ProfileName属性为其读取各设置实例。
-	如对应Profile文件不存在，则显示警告信息，并决定是否刷新预设列表。
-	如刷新预设列表后预设数为0，则自动重建Default预设。
+	仅当JobItem的某设置属性为null时，根据ProfileName属性为其读取相应设置实例。
+	如对应Profile文件不存在，则刷新预设列表，将Default Profile应用到JobItem。
 	"""
 		for item in items:
 			try:
 				item.SetUp()
 			except as ProfileNotFoundException:
-				self.UpdateProfileBox(Profile.GetProfileNames(), self.profileBox.Text)
+				self.UpdateProfileBox(Profile.GetExistingProfilesNamesOnHardDisk(), self.profileBox.Text)
 				item.ProfileName = self.profileBox.Text
 				item.SetUp()
 
 	private def GetWorkingJobItems() as Boo.Lang.List[of JobItem]:
 		jobItems = Boo.Lang.List[of JobItem]()
 		
-		for listItem as ListViewItem in self.listView1.Items:
-			if listItem.SubItems[0].Text == "中止":
+		for listItem as CxListViewItem in self.jobItemListView.Items:
+			jobItem = listItem.JobItem
+			if jobItem.State == JobState.Stop:
 				if _configForm.chbSilentRestart.Checked:
-					self._jobItems[listItem].State = JobState.Waiting
-					listItem.SubItems[0].Text = "等待"
+					jobItem.State = JobState.Waiting
 				else:
 					result = MessageBox.Show(listItem.SubItems[1].Text + "\n该项已经中止。是否重新开始？\n", 
 					"项目中止", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
 					if result == DialogResult.OK:
-						self._jobItems[listItem].State = JobState.Waiting
-						listItem.SubItems[0].Text = "等待"
+						jobItem.State = JobState.Waiting
 						
-		for listItem as ListViewItem in self.listView1.Items:
-			if listItem.SubItems[0].Text == "等待":
-				jobItem = self._jobItems[listItem]
+		for listItem as CxListViewItem in self.jobItemListView.Items:
+			jobItem = listItem.JobItem
+			if jobItem.State == JobState.Waiting:
 				jobItems.Add(jobItem)
 		return jobItems
 
 	private def BackgroundWorker1DoWork(sender as object, e as DoWorkEventArgs):
+	"""一个worker过程处理一个JobItem的全部任务。"""
 		try:
 			jobItem as JobItem = e.Argument
 			if File.Exists(jobItem.DestFile):
@@ -51,7 +50,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				if r == DialogResult.Cancel:
 					jobItem.Event = JobEvent.OneJobItemCancelled
 					JobEventReport(jobItem)
-					if self._workingItems[-1] is jobItem:
+					if self._workingJobItems[-1] is jobItem:
 						jobItem.Event = JobEvent.AllDone
 						JobEventReport(jobItem)
 					e.Result = jobItem
@@ -82,7 +81,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			JobEventReport(jobItem)
 		ensure:
 			
-			if self._workingItems[-1] is jobItem:
+			if self._workingJobItems[-1] is jobItem:
 				jobItem.Event = JobEvent.AllDone
 				JobEventReport(jobItem)
 			
@@ -100,15 +99,15 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def ProcessVideo(jobItem as JobItem, e as DoWorkEventArgs):
 		AvisynthWriter.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.Subtitle, jobItem.AvsConfig)
 		usingSubStyleWriter = false
-		if File.Exists(jobItem.Subtitle) and jobItem.SubConfig.UsingStyle:
-			substyleWriter = SubStyleWriter(jobItem.Subtitle, jobItem.SubConfig)
+		if File.Exists(jobItem.Subtitle) and jobItem.SubtitleConfig.UsingStyle:
+			substyleWriter = SubStyleWriter(jobItem.Subtitle, jobItem.SubtitleConfig)
 			substyleWriter.Write()
 			usingSubStyleWriter = true
 				
 		jobItem.FilesToDeleteWhenProcessingFails.Add(jobItem.DestFile)
 		try:
 			self.EncodeVideo('video.avs', jobItem.DestFile, jobItem.VideoEncConfig, e)
-			jobItem.OutputedVideo = jobItem.DestFile
+			jobItem.EncodedVideo = jobItem.DestFile
 		except e as Exception:
 			if usingSubStyleWriter:
 				substyleWriter.CleanUp()
@@ -119,8 +118,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			File.Delete(jobItem.SourceFile+'.ffindex')
 			
 	private def ProcessAudio(jobItem as JobItem, e as DoWorkEventArgs):
-		if jobItem.JobConfig.UseSeparateAudio and File.Exists(jobItem.SeparateAudio):
-			sourceAudio = jobItem.SeparateAudio
+		if jobItem.JobConfig.UseSeparateAudio and File.Exists(jobItem.ExternalAudio):
+			sourceAudio = jobItem.ExternalAudio
 		else:
 			sourceAudio = jobItem.SourceFile
 		AvisynthWriter.WriteAudioAvs(sourceAudio, 'audio.avs', jobItem.AvsConfig)
@@ -165,16 +164,16 @@ partial class MainForm(System.Windows.Forms.Form):
 			muxAudio = jobItem.EncodedAudio
 			jobItem.EncodedAudio = ""
 		elif jobItem.JobConfig.AudioMode == StreamProcessMode.Copy:
-			if jobItem.JobConfig.UseSeparateAudio and jobItem.SeparateAudio != "":
-				muxAudio = jobItem.SeparateAudio
+			if jobItem.JobConfig.UseSeparateAudio and jobItem.ExternalAudio != "":
+				muxAudio = jobItem.ExternalAudio
 			else:
 				muxAudio = jobItem.SourceFile
 		else:
 			muxAudio = ""
 				
 		if jobItem.JobConfig.VideoMode == StreamProcessMode.Encode:
-			muxVideo = jobItem.OutputedVideo
-			jobItem.OutputedVideo = ""
+			muxVideo = jobItem.EncodedVideo
+			jobItem.EncodedVideo = ""
 		elif jobItem.JobConfig.VideoMode == StreamProcessMode.Copy:
 			muxVideo = jobItem.SourceFile
 		else:
@@ -209,38 +208,29 @@ partial class MainForm(System.Windows.Forms.Form):
 				self.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString()
 			//One job starts
 			elif jobItem.Event == JobEvent.OneJobItemProcessing:
-				self._workingItem = jobItem
 				ResetProgress()
 				jobItem.State = JobState.Working
-				jobItem.UIItem.SubItems[0].Text = "工作中"
 				self.startButton.Enabled = false
-				i = self._workingItems.IndexOf(jobItem)
-				self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingItems.Count}个文件"
+				i = self._workingJobItems.IndexOf(jobItem)
+				self.statusLable.Text = "正在处理第${i+1}个文件，共${self._workingJobItems.Count}个文件"
 			//One job done
 			elif jobItem.Event == JobEvent.OneJobItemDone:
 				jobItem.FilesToDeleteWhenProcessingFails.Clear()
-				self._workingItem = null
-				if not jobItem.KeepingCfg:
-					jobItem.Clear()
 				jobItem.State = JobState.Done
-				jobItem.UIItem.SubItems[0].Text = "完成"
-				i = self._workingItems.IndexOf(jobItem)
-				self.statusLable.Text = "第${i+1}个文件处理完毕，共${self._workingItems.Count}个文件"
+				i = self._workingJobItems.IndexOf(jobItem)
+				self.statusLable.Text = "第${i+1}个文件处理完毕，共${self._workingJobItems.Count}个文件"
 				
 			//all done
 			elif jobItem.Event == JobEvent.AllDone:
-				self._workingItem = null
-				self.statusLable.Text = "${self._workingItems.Count}个文件处理完成"
+				self.statusLable.Text = "${self._workingJobItems.Count}个文件处理完成"
 				self.startButton.Enabled = true
 			//all stop
 			elif jobItem.Event == JobEvent.QuitAllProcessing:
-				self._workingItem = null
 				ResetProgress()
 				jobItem.State = JobState.Stop
-				jobItem.UIItem.SubItems[0].Text = "中止"
 				jobItem.VideoEncoder = null
 				jobItem.AudioEncoder = null
-				jobItem.Muxer = null //TODO 删除文件
+				jobItem.Muxer = null
 				self.startButton.Enabled = true
 				self.statusLable.Text = "中止"
 				self.tabControl1.SelectTab(self.inputPage)
@@ -250,7 +240,6 @@ partial class MainForm(System.Windows.Forms.Form):
 			//one stop
 			elif jobItem.Event == JobEvent.OneJobItemCancelled:
 				jobItem.State = JobState.Stop
-				jobItem.UIItem.SubItems[0].Text = "中止"
 				self.statusLable.Text = "中止"
 				for file in jobItem.FilesToDeleteWhenProcessingFails:
 					File.Delete(file)
@@ -258,7 +247,6 @@ partial class MainForm(System.Windows.Forms.Form):
 			//Error
 			elif jobItem.Event == JobEvent.Error:
 				jobItem.State = JobState.Error
-				jobItem.UIItem.SubItems[0].Text = "错误"
 				self.statusLable.Text = "错误"
 				for file in jobItem.FilesToDeleteWhenProcessingFails:
 					File.Delete(file)
@@ -351,18 +339,21 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.Event = JobEvent.QuitAllProcessing
 			JobEventReport(jobItem)
 
-	private def NextJob(sender as object, e as RunWorkerCompletedEventArgs):
+	private def NextJobOrExist(sender as object, e as RunWorkerCompletedEventArgs):
+		
+		self._workingJobItem = null
 		if e.Result != null:
-			jobItem = cast(JobItem, e.Result)
-			if jobItem.Event in (JobEvent.AllDone, JobEvent.QuitAllProcessing):
-				jobItem.Event = JobEvent.None
-				self._workingItems.Clear()
+			lastJobItem = cast(JobItem, e.Result)
+			if lastJobItem.Event in (JobEvent.AllDone, JobEvent.QuitAllProcessing):
+				lastJobItem.Event = JobEvent.None
+				self._workingJobItems.Clear()
 				return
 			
-			if _workingItems[-1] is not jobItem:
-				nextIndex = _workingItems.IndexOf(jobItem) + 1
-				nextItem = _workingItems[nextIndex]
-				self.backgroundWorker1.RunWorkerAsync(nextItem) 
+			if _workingJobItems[-1] is not lastJobItem:
+				nextIndex = _workingJobItems.IndexOf(lastJobItem) + 1
+				nextJobItem = _workingJobItems[nextIndex]
+				self._workingJobItem = nextJobItem
+				self.backgroundWorker1.RunWorkerAsync(nextJobItem) 
 		
 
 

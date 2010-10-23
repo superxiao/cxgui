@@ -9,12 +9,12 @@ class SubStyleWriter:
 """Description of Subtitler"""
 
 	_subtitle as string
-	_subConfig as SubtitleConfig
+	_subtitleConfig as SubtitleConfig
 	_tempFiles as List[of string]
 	
-	public def constructor(subtitle as string, subConfig as SubtitleConfig):
+	public def constructor(subtitle as string, subtitleConfig as SubtitleConfig):
 		_subtitle = subtitle
-		_subConfig = subConfig
+		_subtitleConfig = subtitleConfig
 		_tempFiles = List[of string](2)
 	public def Write():
 		_tempFiles.Clear()
@@ -23,7 +23,7 @@ class SubStyleWriter:
 			_subtitle = GenerateSrtFromAss(_subtitle)
 			_tempFiles.Add(_subtitle)
 		styleFile = _subtitle + ".style"
-		styles = _subConfig.GetStyles()
+		styles = _subtitleConfig.GetStyles()
 		content =\
 """
 [Script Info]

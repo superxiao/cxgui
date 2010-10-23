@@ -18,7 +18,7 @@ class X264ConfigNode:
 	_name as string
 	
 	[Property(Locked)]
-	_enabled as bool
+	_locked as bool
 	
 	[Property(InUse)]
 	_inUse as bool

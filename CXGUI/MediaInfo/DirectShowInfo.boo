@@ -15,5 +15,3 @@ class DirectShowInfo:
 		except:
 			MessageBox.Show("")
 
-def drtest():
-	t = DirectShowInfo("""C:\Windows\winsxs\x86_microsoft-windows-wmvdspa_31bf3856ad364e35_6.1.7600.16385_none_e6522b866608b0b7\wmvdspa.dll""")

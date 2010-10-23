@@ -549,16 +549,16 @@ class X264Config(VideoEncConfigBase):
 			node.Str = value
 			node.DefaultStr = node.Str
 			
-	private def SetOption(name as string, value as object):
-		node = self._optionDict[name]
-		if node.Type == NodeType.Bool:
-			node.Bool = value
-		elif node.Type == NodeType.Num:
-			node.Num = value
-		elif node.Type == NodeType.StrOptionIndex:
-			node.StrOptionIndex = value
-		elif node.Type == NodeType.Str:
-			node.Str = value
+#	private def SetOption(name as string, value as object):
+#		node = self._optionDict[name]
+#		if node.Type == NodeType.Bool:
+#			node.Bool = value
+#		elif node.Type == NodeType.Num:
+#			node.Num = value
+#		elif node.Type == NodeType.StrOptionIndex:
+#			node.StrOptionIndex = value
+#		elif node.Type == NodeType.Str:
+#			node.Str = value
 			
 	private def RestoreDefault(name as string):
 		node = self._optionDict[name]

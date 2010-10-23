@@ -24,7 +24,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.inputPage = System.Windows.Forms.TabPage()
 		self.label10 = System.Windows.Forms.Label()
 		self.profileBox = System.Windows.Forms.ComboBox()
-		self.listView1 = System.Windows.Forms.ListView()
+		self.jobItemListView = System.Windows.Forms.ListView()
 		self.stateColumn = System.Windows.Forms.ColumnHeader()
 		self.sourceFileColumn = System.Windows.Forms.ColumnHeader()
 		self.destinationFileColumn = System.Windows.Forms.ColumnHeader()
@@ -134,7 +134,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		self.inputPage.Controls.Add(self.label10)
 		self.inputPage.Controls.Add(self.profileBox)
-		self.inputPage.Controls.Add(self.listView1)
+		self.inputPage.Controls.Add(self.jobItemListView)
 		self.inputPage.Controls.Add(self.settingButton)
 		self.inputPage.Controls.Add(self.startButton)
 		self.inputPage.Controls.Add(self.clearButton)
@@ -171,26 +171,26 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		# listView1
 		# 
-		self.listView1.Activation = System.Windows.Forms.ItemActivation.OneClick
-		self.listView1.AllowColumnReorder = true
-		self.listView1.AllowDrop = true
-		self.listView1.Anchor = cast(System.Windows.Forms.AnchorStyles,(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+		self.jobItemListView.Activation = System.Windows.Forms.ItemActivation.OneClick
+		self.jobItemListView.AllowColumnReorder = true
+		self.jobItemListView.AllowDrop = true
+		self.jobItemListView.Anchor = cast(System.Windows.Forms.AnchorStyles,(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 						| System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
-		self.listView1.Columns.AddRange((of System.Windows.Forms.ColumnHeader: self.stateColumn, self.sourceFileColumn, self.destinationFileColumn))
-		self.listView1.ContextMenuStrip = self.listViewMenu
-		self.listView1.FullRowSelect = true
-		self.listView1.Location = System.Drawing.Point(8, 26)
-		self.listView1.Name = "listView1"
-		self.listView1.Size = System.Drawing.Size(499, 324)
-		self.listView1.TabIndex = 3
-		self.listView1.UseCompatibleStateImageBehavior = false
-		self.listView1.View = System.Windows.Forms.View.Details
-		self.listView1.DoubleClick += self.ListView1DoubleClick as System.EventHandler
-		self.listView1.DragDrop += self.ListView1DragDrop as System.Windows.Forms.DragEventHandler
-		self.listView1.ItemSelectionChanged += self.ListView1ItemSelectionChanged as System.Windows.Forms.ListViewItemSelectionChangedEventHandler
-		self.listView1.DragEnter += self.ListView1DragEnter as System.Windows.Forms.DragEventHandler
-		self.listView1.ItemDrag += self.ListView1ItemDrag as System.Windows.Forms.ItemDragEventHandler
+		self.jobItemListView.Columns.AddRange((of System.Windows.Forms.ColumnHeader: self.stateColumn, self.sourceFileColumn, self.destinationFileColumn))
+		self.jobItemListView.ContextMenuStrip = self.listViewMenu
+		self.jobItemListView.FullRowSelect = true
+		self.jobItemListView.Location = System.Drawing.Point(8, 26)
+		self.jobItemListView.Name = "listView1"
+		self.jobItemListView.Size = System.Drawing.Size(499, 324)
+		self.jobItemListView.TabIndex = 3
+		self.jobItemListView.UseCompatibleStateImageBehavior = false
+		self.jobItemListView.View = System.Windows.Forms.View.Details
+		self.jobItemListView.DoubleClick += self.ListView1DoubleClick as System.EventHandler
+		self.jobItemListView.DragDrop += self.ListView1DragDrop as System.Windows.Forms.DragEventHandler
+		self.jobItemListView.ItemSelectionChanged += self.JobItemListViewItemSelectionChanged as System.Windows.Forms.ListViewItemSelectionChangedEventHandler
+		self.jobItemListView.DragEnter += self.ListView1DragEnter as System.Windows.Forms.DragEventHandler
+		self.jobItemListView.ItemDrag += self.ListView1ItemDrag as System.Windows.Forms.ItemDragEventHandler
 		# 
 		# stateColumn
 		# 
@@ -512,7 +512,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.backgroundWorker1.WorkerReportsProgress = true
 		self.backgroundWorker1.WorkerSupportsCancellation = true
 		self.backgroundWorker1.DoWork += self.BackgroundWorker1DoWork as System.ComponentModel.DoWorkEventHandler
-		self.backgroundWorker1.RunWorkerCompleted += self.NextJob as System.ComponentModel.RunWorkerCompletedEventHandler
+		self.backgroundWorker1.RunWorkerCompleted += self.NextJobOrExist as System.ComponentModel.RunWorkerCompletedEventHandler
 		self.backgroundWorker1.ProgressChanged += self.BackgroundWorker1ProgressChanged as System.ComponentModel.ProgressChangedEventHandler
 		# 
 		# MainForm
@@ -588,7 +588,7 @@ partial class MainForm(System.Windows.Forms.Form):
 	private label1 as System.Windows.Forms.Label
 	private label2 as System.Windows.Forms.Label
 	private tabControl1 as System.Windows.Forms.TabControl
-	private listView1 as System.Windows.Forms.ListView
+	private jobItemListView as System.Windows.Forms.ListView
 
 
 

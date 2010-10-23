@@ -26,12 +26,14 @@ import My
 
 partial class MainForm(System.Windows.Forms.Form):
 	_configForm as ProgramConfigForm
-	_mediaSettingForm as MediaSettingForm
+	_jobSettingForm as JobSettingForm
 	_programConfig as ProgramConfig
-	_jobItems = Dictionary[of ListViewItem, JobItem]()
-	_workingItem as JobItem 
-	_workingItems as Boo.Lang.List[of JobItem]
+	_workingJobItem as JobItem
+	"""仅在StartButtonClick和NextJobOrExist方法中更改"""
+	_workingJobItems as Boo.Lang.List[of JobItem]
+	"""在StartButtonClick方法中创建，在NextJobOrExist方法中清空。其他位置不允许修改。"""
 	_workerReporting as bool
+	
 
 	public def constructor():
 		self.InitializeComponent()
@@ -53,16 +55,16 @@ partial class MainForm(System.Windows.Forms.Form):
 			if firstAddedItem == null and item != null:
 				firstAddedItem = item
 		if firstAddedItem != null:
-			self.listView1.SelectedItems.Clear()
+			self.jobItemListView.SelectedItems.Clear()
 			firstAddedItem.Selected = true
 
 	private def AddNewItem(filePath as string) as ListViewItem:
-		if _configForm.chbInputDir.Checked:
+		if _configForm.chbInputDir.Checked: //TODO 显示输入路径还是文件名
 			fileName = filePath
 		else:
 			fileName = Path.GetFileName(filePath)
-		item as ListViewItem
-
+		
+		jobItem as JobItem
 		addFile = do:
 			profile = Profile(self.profileBox.Text)
 			ext = ".mp4"
@@ -74,10 +76,9 @@ partial class MainForm(System.Windows.Forms.Form):
 			else:
 				destFile = Path.ChangeExtension(filePath, ext)
 			destFile = GetUniqueName(destFile)
-			item = ListViewItem(("等待", fileName, destFile))
-			self.listView1.Items.Add(item)
-			jobItem = JobItem(filePath, destFile, item, self.profileBox.Text)
-			self._jobItems.Add(item, jobItem)
+			
+			jobItem = JobItem(filePath, destFile, self.profileBox.Text)
+			self.jobItemListView.Items.Add(jobItem.CxListViewItem)
 				
 		o as IMediaDet = MediaDet()
 		errorCode as int = o.put_Filename(filePath)
@@ -89,24 +90,43 @@ partial class MainForm(System.Windows.Forms.Form):
 			"检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
 			if result == DialogResult.OK:
 				addFile()
-		return item
+		return jobItem.CxListViewItem
 			
 	private def StartButtonClick(sender as object, e as EventArgs):
-		_workingItems = GetWorkingJobItems()
-		SetUpItems(_workingItems.ToArray())
-		if _workingItems.Count > 0:
-			self.backgroundWorker1.RunWorkerAsync(_workingItems[0])
+		_workingJobItems = GetWorkingJobItems()
+
+		unavailableFiles = ""
+		for item in _workingJobItems:
+			if not File.Exists(item.SourceFile):
+				unavailableFiles += "\n${item.SourceFile}"
+				item.State = JobState.Error
+				_workingJobItems.Remove(item)
+				
+		if unavailableFiles != "":
+			result = MessageBox.Show("以下媒体文件不存在：${unavailableFiles}\n单击“确定”将处理其他文件。", "错误", MessageBoxButtons.OKCancel,
+			MessageBoxIcon.Warning)
+			if result == DialogResult.Cancel:
+				_workingJobItems.Clear()
+				return
+
+		if _workingJobItems.Count > 0:
+					
+			SetUpJobItems(_workingJobItems.ToArray())
+			self._workingJobItem = _workingJobItems[0]
+			self.backgroundWorker1.RunWorkerAsync(self._workingJobItem)
 			self.tabControl1.SelectTab(self.progressPage)
+			
+
+		
 
 	private def ClearButtonClick(sender as object, e as EventArgs):
-		self.listView1.Items.Clear()
-		self._jobItems.Clear()
+		self.jobItemListView.Items.Clear()
 		self.settingButton.Enabled = false
 	
 	private def ContextMenuStrip1Opening(sender as object, e as CancelEventArgs):
-		if self.listView1.SelectedItems.Count == 0:
+		if self.jobItemListView.SelectedItems.Count == 0:
 			e.Cancel = true
-		elif self.listView1.SelectedItems.Count == 1:
+		elif self.jobItemListView.SelectedItems.Count == 1:
 			self.listViewMenu.Items['设置ToolStripMenuItem'].Enabled = true
 			self.listViewMenu.Items['打开目录ToolStripMenuItem'].Enabled = true
 		else:
@@ -114,20 +134,20 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.listViewMenu.Items['打开目录ToolStripMenuItem'].Enabled = false
 	
 	private def DelButtonClick(sender as object, e as EventArgs):
-		for item as ListViewItem in self.listView1.SelectedItems:
-			self.listView1.Items.Remove(item)
-			self._jobItems.Remove(item)
+		for item as ListViewItem in self.jobItemListView.SelectedItems:
+			self.jobItemListView.Items.Remove(item)
 	
 	private def MainFormActivated(sender as object, e as System.EventArgs):
-		if _configForm.chbInputDir.Checked:
-			for item as ListViewItem in self.listView1.Items:
-				item.SubItems[1].Text = self._jobItems[item].SourceFile
-		else:
-			for item as ListViewItem in self.listView1.Items:
-				item.SubItems[1].Text = Path.GetFileName(self._jobItems[item].SourceFile)
-			
-	private def ListView1ItemSelectionChanged(sender as object, e as ListViewItemSelectionChangedEventArgs):
-		if self.listView1.SelectedItems.Count == 1:
+		pass
+#		if _configForm.chbInputDir.Checked:
+#			for item as ListViewItem in self.jobItemListView.Items:
+#				item.SubItems[1].Text = self._jobItems[item].SourceFile
+#		else:
+#			for item as ListViewItem in self.jobItemListView.Items:
+#				item.SubItems[1].Text = Path.GetFileName(self._jobItems[item].SourceFile)
+#			
+	private def JobItemListViewItemSelectionChanged(sender as object, e as ListViewItemSelectionChangedEventArgs):
+		if self.jobItemListView.SelectedItems.Count == 1:
 			self.settingButton.Enabled = true
 		else:
 			self.settingButton.Enabled = false
@@ -144,34 +164,34 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.muxTimeUsed.Text = string.Empty
 
 	private def SettingButtonClick(sender as object, e as EventArgs):
-		item as ListViewItem = self.listView1.SelectedItems[0]
-		jobItem = self._jobItems[item]
-		SetUpItems((jobItem,))
-		if self._mediaSettingForm == null:
-			self._mediaSettingForm = MediaSettingForm()
-		self._mediaSettingForm.ImportProfiles(array(string, self.profileBox.Items), jobItem.ProfileName)
-		self._mediaSettingForm.SetUpForItem(jobItem)
-		result = self._mediaSettingForm.ShowDialog()
-		if result == DialogResult.OK and self._mediaSettingForm.Changed:
-			self._mediaSettingForm.Changed = false
-			jobItem.State = JobState.Waiting
-			jobItem.DestFile = self._mediaSettingForm.DestFile
-			jobItem.UIItem.SubItems[2].Text = jobItem.DestFile
-			jobItem.UIItem.SubItems[0].Text = "等待"
-			jobItem.AvsConfig = self._mediaSettingForm.AvsConfig
-			jobItem.VideoEncConfig = self._mediaSettingForm.VideoEncConfig
-			jobItem.AudioEncConfig = self._mediaSettingForm.AudioEncConfig
-			jobItem.JobConfig = self._mediaSettingForm.JobConfig
-			jobItem.ProfileName = self._mediaSettingForm.UsingProfile
-			jobItem.KeepingCfg = true
-			if jobItem.JobConfig.UseSeparateAudio:
-				jobItem.SeparateAudio = self._mediaSettingForm.SepAudio
-			jobItem.Subtitle = self._mediaSettingForm.Subtitle
-		else:
-			jobItem.Clear()
-		UpdateProfileBox(self._mediaSettingForm.GetProfiles(), self.profileBox.Text)
-		self._mediaSettingForm.Clear()
+		item as CxListViewItem = self.jobItemListView.SelectedItems[0]
+		jobItem = item.JobItem
+		SetUpJobItems((jobItem,))
+		if self._jobSettingForm == null:
+			self._jobSettingForm = JobSettingForm()
+		self._jobSettingForm.UpdateProfiles(array(string, self.profileBox.Items), jobItem.ProfileName)
+		self._jobSettingForm.SetUpFormForItem(jobItem)
+		result = self._jobSettingForm.ShowDialog()
 		
+		if result == DialogResult.OK and self._jobSettingForm.Changed:
+			self._jobSettingForm.Changed = false
+			jobItem.State = JobState.Waiting
+			jobItem.DestFile = self._jobSettingForm.DestFile
+			jobItem.AvsConfig = self._jobSettingForm.AvsConfig
+			jobItem.VideoEncConfig = self._jobSettingForm.VideoEncConfig
+			jobItem.AudioEncConfig = self._jobSettingForm.AudioEncConfig
+			jobItem.JobConfig = self._jobSettingForm.JobConfig
+			jobItem.SubtitleConfig = self._jobSettingForm.SubtitleConfig
+			jobItem.ProfileName = self._jobSettingForm.UsingProfileName
+			if jobItem.JobConfig.UseSeparateAudio:
+				jobItem.ExternalAudio = self._jobSettingForm.SepAudio
+			jobItem.Subtitle = self._jobSettingForm.Subtitle
+			
+		self.UpdateProfileBox(self._jobSettingForm.GetProfiles(), self.profileBox.Text)
+		self._jobSettingForm.Clear()
+		
+
+
 	private def UpdateProfileBox(newProfileNames as (string), selectedProfile as string):
 		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
 		self.profileBox.Items.Clear()
@@ -192,9 +212,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			pass
 
 	private def 等待ToolStripMenuItemClick(sender as object, e as EventArgs):
-		for item as ListViewItem in self.listView1.SelectedItems:
-			self._jobItems[item].State = JobState.Waiting
-			item.SubItems[0].Text = '等待'
+		for item as CxListViewItem in self.jobItemListView.SelectedItems:
+			item.JobItem.State = JobState.Waiting
 
 	
 	private def 清空ToolStripMenuItemClick(sender as object, e as EventArgs):
@@ -219,11 +238,11 @@ partial class MainForm(System.Windows.Forms.Form):
 		self._configForm.ShowDialog()
 	
 	private def 打开目录ToolStripMenuItemClick(sender as object, e as System.EventArgs):
-		jobItem = self._jobItems[self.listView1.SelectedItems[0]]
+		jobItem = (self.jobItemListView.SelectedItems[0] as CxListViewItem).JobItem
 		System.Diagnostics.Process.Start("explorer.exe", "/select, " + jobItem.SourceFile)
 	
 	private def ListView1ItemDrag(sender as object, e as System.Windows.Forms.ItemDragEventArgs):
-		self.listView1.DoDragDrop(listView1.SelectedItems, DragDropEffects.Move)
+		self.jobItemListView.DoDragDrop(jobItemListView.SelectedItems, DragDropEffects.Move)
 		
 	private def ListView1DragEnter(sender as object, e as System.Windows.Forms.DragEventArgs):
 		if e.Data.GetDataPresent(ListView.SelectedListViewItemCollection) or e.Data.GetDataPresent(DataFormats.FileDrop):
@@ -231,7 +250,7 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	private def ListView1DragDrop(sender as object, e as System.Windows.Forms.DragEventArgs):
 		if e.Data.GetDataPresent(DataFormats.FileDrop):
-			self.listView1.SelectedItems.Clear()
+			self.jobItemListView.SelectedItems.Clear()
 			for path in (e.Data.GetData(DataFormats.FileDrop) as (string)):
 				if IO.File.Exists(path):
 					addItem = AddNewItem(path)
@@ -244,23 +263,23 @@ partial class MainForm(System.Windows.Forms.Form):
 							addItem.Selected = true
 			return
 
-		dragItems = array(self.listView1.SelectedItems)
-		cp as Point = listView1.PointToClient(Point(e.X, e.Y))
-		dragToItem = self.listView1.GetItemAt(cp.X, cp.Y)
+		dragItems = array(self.jobItemListView.SelectedItems)
+		cp as Point = jobItemListView.PointToClient(Point(e.X, e.Y))
+		dragToItem = self.jobItemListView.GetItemAt(cp.X, cp.Y)
 		if dragToItem == null:
 			return
 		dragToIndex = dragToItem.Index
 		for item as ListViewItem in dragItems:
-			self.listView1.Items.Remove(item)
-		if self.listView1.Items.Count < dragToIndex:
-			dragToIndex = self.listView1.Items.Count
+			self.jobItemListView.Items.Remove(item)
+		if self.jobItemListView.Items.Count < dragToIndex:
+			dragToIndex = self.jobItemListView.Items.Count
 		for item as ListViewItem in dragItems:
-			self.listView1.Items.Insert(dragToIndex, item)
+			self.jobItemListView.Items.Insert(dragToIndex, item)
 			dragToIndex++
 	
 	private def MainFormLoad(sender as object, e as System.EventArgs):
-		self.UpdateProfileBox(Profile.GetProfileNames(), _programConfig.ProfileName)
-		jobItems as Dictionary[of ListViewItem, JobItem]
+		self.UpdateProfileBox(Profile.GetExistingProfilesNamesOnHardDisk(), _programConfig.ProfileName)
+		jobItems as List[of JobItem]
 		formater = BinaryFormatter()
 		if not File.Exists("JobItems.bin"):
 			return
@@ -272,12 +291,12 @@ partial class MainForm(System.Windows.Forms.Form):
 			stream.Close()
 			return
 		if jobItems != null:
-			for jobItem as JobItem in jobItems.Values:
-				self.listView1.Items.Add(jobItem.UIItem)
-				self._jobItems.Add(jobItem.UIItem, jobItem)
+			for jobItem as JobItem in jobItems:
+				self.jobItemListView.Items.Add(jobItem.CxListViewItem)
+				
 			
 	private def MainFormFormClosing(sender as object, e as System.Windows.Forms.FormClosingEventArgs):
-		if self._workingItem != null and self._workingItem.State == JobState.Working:
+		if self._workingJobItem != null and self._workingJobItem.State == JobState.Working:
 			result = MessageBox.Show("正在工作中，是否中止并退出？", "工作中", MessageBoxButtons.YesNo, 
 			MessageBoxIcon.Information)
 			if result == DialogResult.Yes:
@@ -285,13 +304,17 @@ partial class MainForm(System.Windows.Forms.Form):
 			else:
 				e.Cancel = true
 				return
-		for item in self._jobItems.Values:
-			item.VideoEncoder = null
-			item.AudioEncoder = null
-			item.Muxer = null
+		
+		jobItems = List[of JobItem]()
+		for item as CxListViewItem in self.jobItemListView.Items:
+			jobItem = item.JobItem
+			jobItem.VideoEncoder = null
+			jobItem.AudioEncoder = null
+			jobItem.Muxer = null
+			jobItems.Add(jobItem)
 		formater = BinaryFormatter()
 		stream = FileStream("JobItems.bin", FileMode.Create)
-		formater.Serialize(stream, self._jobItems)
+		formater.Serialize(stream, jobItems)
 		stream.Close()
 		SaveProfileSelection()
 	
@@ -305,12 +328,12 @@ partial class MainForm(System.Windows.Forms.Form):
 			ext = ""
 			if profile != null:
 				ext = profile.GetExtByMuxer()
-			for item in self._jobItems.Values:
-				item.ProfileName = self.profileBox.Text
+			for item as CxListViewItem in self.jobItemListView.Items:
+				jobItem = item.JobItem
+				jobItem.ProfileName = self.profileBox.Text
 				if ext != "":
-					item.DestFile = Path.ChangeExtension(item.DestFile, ext)
-					item.DestFile = GetUniqueName(item.DestFile)
-					item.UIItem.SubItems[2].Text = item.DestFile
+					jobItem.DestFile = Path.ChangeExtension(jobItem.DestFile, ext)
+					jobItem.DestFile = GetUniqueName(jobItem.DestFile)
 
 [STAThread]
 public def Main(argv as (string)) as void:
@@ -328,3 +351,4 @@ public def Main(argv as (string)) as void:
 	//CXGUI.StreamMuxer.fftest()
 	//CXGUI.StreamMuxer.MKVtest()
 	//My.FileModule.MyTest()
+	

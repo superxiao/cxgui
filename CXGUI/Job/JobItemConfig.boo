@@ -2,8 +2,6 @@
 
 import System
 import System.Windows.Forms//test
-import System.Configuration
-import CXGUI.Avisynth
 import CXGUI.StreamMuxer
 	
 enum StreamProcessMode:

@@ -16,8 +16,8 @@ import CXGUI.Config
 import CXGUI.Job
 import My
 
-partial class MediaSettingForm:
-"""Description of MediaSettingForm."""
+partial class JobSettingForm:
+"""Description of JobSettingForm."""
 
 	_videoInfo as VideoInfo
 	_audioInfo as AudioInfo
@@ -48,13 +48,13 @@ partial class MediaSettingForm:
 	[Property(JobConfig)]
 	_jobConfig as JobItemConfig
 
-	[Property(SubConfig)]
-	_subConfig as SubtitleConfig
+	[Property(SubtitleConfig)]
+	_subtitleConfig as SubtitleConfig
 
 	[Property(Changed)]
 	_changed as bool
 	
-	[Property(UsingProfile)]
+	[Property(UsingProfileName)]
 	_usingProfile as string
 
 	[Property(Subtitle)]
@@ -64,13 +64,13 @@ partial class MediaSettingForm:
 	public def constructor():
 		InitializeComponent()
 		
-	public def SetUpForItem(jobItem as JobItem):
+	public def SetUpFormForItem(jobItem as JobItem):
 		_usingProfile = jobItem.ProfileName
 		_sourceFile = jobItem.SourceFile
 		_destFile = jobItem.DestFile
 		self.destFileBox.Text = _destFile
 
-		_sepAudio = jobItem.SeparateAudio
+		_sepAudio = jobItem.ExternalAudio
 		self.tbSepAudio.Text = _sepAudio
 		_subtitle = jobItem.Subtitle
 		self.subtitleTextBox.Text = jobItem.Subtitle
@@ -79,13 +79,14 @@ partial class MediaSettingForm:
 		self._avsConfig = jobItem.AvsConfig
 		self._videoEncConfig = jobItem.VideoEncConfig
 		self._audioEncConfig = jobItem.AudioEncConfig
-		self._subConfig = jobItem.SubConfig
+		self._subtitleConfig = jobItem.SubtitleConfig
 		_videoInfo = VideoInfo(_sourceFile)
 		_audioInfo = AudioInfo(_sourceFile)
 		InitializeJobConfig(_jobConfig)
 		InitializeAvsConfig(_avsConfig)
-		InitializeSubConfig(_subConfig)
+		InitializeSubtitleConfig(_subtitleConfig)
 		InitializeEncConfig()
+
 
 	private def InitializeJobConfig(jobConfig as JobItemConfig):
 		self.cbVideoMode.SelectedIndex = 1
@@ -163,7 +164,11 @@ partial class MediaSettingForm:
 			for control as Control in self.gbResolution.Controls:
 				control.Enabled = true
 		self.allowAutoChangeARCheckBox.Checked = not avsConfig.LockAspectRatio
+		
+		self.lockToSourceARCheckBox.CheckedChanged -= self.UseSourceARCheckedChanged
 		self.lockToSourceARCheckBox.Checked = avsConfig.LockToSourceAR
+		self.lockToSourceARCheckBox.CheckedChanged += self.UseSourceARCheckedChanged
+		
 		if avsConfig.LockToSourceAR or self.sourceResolutionCheckBox.Checked:
 			self.aspectRatioBox.Enabled = false
 		else:
@@ -220,12 +225,11 @@ partial class MediaSettingForm:
 		self.aspectRatioBox.Text = _resolutionCal.AspectRatio.ToString() if caller is not self.aspectRatioBox
 		self.modBox.Text = _resolutionCal.Mod.ToString()
 
-	private def InitializeSubConfig(subConfig as SubtitleConfig):
-		
-		self.fontButton.Text = subConfig.Fontname
-		self.fontSizeBox.Text = subConfig.Fontsize.ToString()
-		self.fontBottomBox.Text = subConfig.MarginV.ToString()
-		self.customSubCheckBox.Checked = subConfig.UsingStyle
+	private def InitializeSubtitleConfig(subtitleConfig as SubtitleConfig):
+		self.fontButton.Text = subtitleConfig.Fontname
+		self.fontSizeBox.Text = subtitleConfig.Fontsize.ToString()
+		self.fontBottomBox.Text = subtitleConfig.MarginV.ToString()
+		self.customSubCheckBox.Checked = subtitleConfig.UsingStyle
 		self.CustomSubCheckBoxCheckedChanged(null, null)
 
 
@@ -518,11 +522,11 @@ partial class MediaSettingForm:
 		else:
 			jobConfig.Muxer = Muxer.None
 	
-	private def SaveToSubConfig(subConfig as SubtitleConfig):
-		subConfig.Fontname = self.fontDialog1.Font.Name
-		int.TryParse(self.fontSizeBox.Text, subConfig.Fontsize)
-		int.TryParse(self.fontBottomBox.Text, subConfig.MarginV)
-		subConfig.UsingStyle = self.customSubCheckBox.Checked
+	private def SaveToSubtitleConfig(subtitleConfig as SubtitleConfig):
+		subtitleConfig.Fontname = self.fontDialog1.Font.Name
+		int.TryParse(self.fontSizeBox.Text, subtitleConfig.Fontsize)
+		int.TryParse(self.fontBottomBox.Text, subtitleConfig.MarginV)
+		subtitleConfig.UsingStyle = self.customSubCheckBox.Checked
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):		
 		try:
@@ -565,11 +569,12 @@ partial class MediaSettingForm:
 		if self.subtitleTextBox.Text != "":
 			self._subtitle = self.subtitleTextBox.Text
 		
-		if _resetter.Changed:
-			_changed = true
+		if _resetter.Changed():
+			self._changed = true
+			
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
-		SaveToSubConfig(_subConfig)
+		SaveToSubtitleConfig(_subtitleConfig)
 		_resetter.Clear()
 		self.DialogResult = DialogResult.OK
 		self.Close()
@@ -613,7 +618,7 @@ partial class MediaSettingForm:
 		self._videoEncConfig = null
 		self._audioEncConfig = null
 		self._jobConfig = null
-		self._subConfig = null
+		self._subtitleConfig = null
 		self._videoInfo = null
 		self._audioInfo = null
 		self._resolutionCal = null
@@ -625,6 +630,7 @@ partial class MediaSettingForm:
 		self.heightBox.Text = ""
 		self.aspectRatioBox.Text = ""
 		self.frameRateBox.Text = ""
+		self.subtitleTextBox.Text = ""
 	
 	private def CbVideoModeSelectedIndexChanged(sender as object, e as System.EventArgs):
 		if self.cbVideoMode.SelectedIndex == 0:
@@ -642,7 +648,8 @@ partial class MediaSettingForm:
 				self.gbVideoSource.Enabled = false
 
 	private def CbAudioModeSelectedIndexChanged(sender as object, e as System.EventArgs):
-		if self.cbAudioMode.SelectedIndex == 2:
+			
+		if self.Created and self.cbAudioMode.SelectedIndex == 2:
 			if self.cbVideoMode.SelectedIndex in (-1, 2):
 				MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 				self.cbAudioMode.SelectedIndex = 0
@@ -709,7 +716,7 @@ partial class MediaSettingForm:
 
 			self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
 			self.profileBox.Items.Clear()
-			self.profileBox.Items.AddRange(Profile.GetProfileNames())
+			self.profileBox.Items.AddRange(Profile.GetExistingProfilesNamesOnHardDisk())
 			if not self.profileBox.Items.Contains("Default"):
 				Profile.RebuildDefault("Default")
 				self.profileBox.Items.Add("Default")
@@ -733,12 +740,12 @@ partial class MediaSettingForm:
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
 		SaveToAvsConfig(_avsConfig)
 		SaveToJobConfig(_jobConfig)
-		SaveToSubConfig(_subConfig)
-		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig, _subConfig)
+		SaveToSubtitleConfig(_subtitleConfig)
+		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig, _subtitleConfig)
 		self.profileBox.Items.Add(self.profileBox.Text) if self.profileBox.Text not in self.profileBox.Items
 		self._usingProfile = self.profileBox.Text
 		
-	public def ImportProfiles(profileNames as (string), selectedProfile as string):
+	public def UpdateProfiles(profileNames as (string), selectedProfile as string):
 		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
 		self.profileBox.Items.Clear()
 		self.profileBox.Items.AddRange(profileNames)
@@ -797,9 +804,9 @@ partial class MediaSettingForm:
 		self.subtitleTextBox.Text = self.openFileDialog2.FileName
 	
 	private def FontButtonClick(sender as object, e as System.EventArgs):
-		self.fontDialog1.Font = Font(self._subConfig.Fontname, 100) //TODO
+		self.fontDialog1.Font = Font(self._subtitleConfig.Fontname, 100) //TODO
 		self.fontDialog1.ShowDialog()
-		self._subConfig.Fontname = self.fontDialog1.Font.Name
+		self._subtitleConfig.Fontname = self.fontDialog1.Font.Name
 		self.fontButton.Text = self.fontDialog1.Font.Name
 	
 	private def CustomSubCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
@@ -817,6 +824,7 @@ partial class MediaSettingForm:
 			self.RefreshResolution(self.aspectRatioBox)
 		else:
 			self.aspectRatioBox.Enabled = true
+
 
 		
 

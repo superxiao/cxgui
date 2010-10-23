@@ -1,7 +1,6 @@
 ﻿namespace CXGUI.VideoEncoding
 
 import System
-import System.IO
 import System.Threading
 import CXGUI
 import System.Windows.Forms
