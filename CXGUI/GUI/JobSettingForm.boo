@@ -72,8 +72,8 @@ partial class JobSettingForm:
 
 		_sepAudio = jobItem.ExternalAudio
 		self.tbSepAudio.Text = _sepAudio
-		_subtitle = jobItem.Subtitle
-		self.subtitleTextBox.Text = jobItem.Subtitle
+		_subtitle = jobItem.SubtitleFile
+		self.subtitleTextBox.Text = jobItem.SubtitleFile
 
 		self._jobConfig = jobItem.JobConfig
 		self._avsConfig = jobItem.AvsConfig

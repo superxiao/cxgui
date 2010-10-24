@@ -5,7 +5,7 @@ import System.IO
 import System.Diagnostics
 import System.Windows.Forms
 import CXGUI
-import MeGUI
+import CXGUI.External
 import My
 
 class VideoEncoderBase(IEncoder):

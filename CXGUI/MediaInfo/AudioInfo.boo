@@ -2,8 +2,7 @@
 
 import System
 import System.IO
-import MeGUI
-import MediaInfoLib
+import CXGUI.External
 
 class AudioInfo():
 """
@@ -21,7 +20,7 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 		if Path.GetExtension(path).ToLower() == ".avs":
 			self.AvisynthInfo(path)
 			return
-		info = MediaInfoLib.MediaInfo()
+		info = MediaInfo()
 		info.Open(path)
 		_filePath = path
 		_format = info.Get(StreamKind.Audio, streamNum, "Format")
@@ -59,9 +58,9 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 	Param audioParameter: 音频参数名。参见MediaInfo相关文档。
 	Returns: 音频信息的字符串形式。
 	"""
-		MI = MediaInfoLib.MediaInfo()
+		MI = MediaInfo()
 		MI.Open(path)
-		audioinfo = MI.Get(StreamKind.Audio, streamNumber, audioParameter, MediaInfoLib.InfoKind.Text)
+		audioinfo = MI.Get(StreamKind.Audio, streamNumber, audioParameter, InfoKind.Text)
 		MI.Close()
 		return audioinfo
 	public static def GetAudioInfo(path as string, streamNumber as int, *audioParameters as (string)) as Hash:

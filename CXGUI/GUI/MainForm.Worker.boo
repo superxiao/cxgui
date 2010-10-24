@@ -97,10 +97,10 @@ partial class MainForm(System.Windows.Forms.Form):
 			return false
 				
 	private def ProcessVideo(jobItem as JobItem, e as DoWorkEventArgs):
-		AvisynthWriter.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.Subtitle, jobItem.AvsConfig)
+		AvisynthWriter.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.SubtitleFile, jobItem.AvsConfig)
 		usingSubStyleWriter = false
-		if File.Exists(jobItem.Subtitle) and jobItem.SubtitleConfig.UsingStyle:
-			substyleWriter = SubStyleWriter(jobItem.Subtitle, jobItem.SubtitleConfig)
+		if File.Exists(jobItem.SubtitleFile) and jobItem.SubtitleConfig.UsingStyle:
+			substyleWriter = SubStyleWriter(jobItem.SubtitleFile, jobItem.SubtitleConfig)
 			substyleWriter.Write()
 			usingSubStyleWriter = true
 				

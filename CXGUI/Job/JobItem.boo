@@ -30,7 +30,10 @@ enum JobEvent:
 
 [Serializable()]
 class JobItem():
-"""Description of JobItem"""
+"""]
+创建一个JobItem实例，将附送一个CxListViewItem实例，可添加到ListView中。
+更改JobItem的源文件、目标文件、工作状态，CxListViewItem相应自动更改。
+"""
 	
 	
 	_sourceFile as string
@@ -119,12 +122,9 @@ class JobItem():
 
 	[Property(ProfileName)]
 	_profileName as string
-
-	[Property(UsingCustomCfgInsteadOfProfile)]
-	_usingCustomCfgInsteadOfProfile as bool
 	
-	[Property(Subtitle)]
-	_subtitle as string
+	[Property(SubtitleFile)]
+	_subtitleFile as string
 
 	[Property(FilesToDeleteWhenProcessingFails)]
 	_createdFiles = List[of string](3)

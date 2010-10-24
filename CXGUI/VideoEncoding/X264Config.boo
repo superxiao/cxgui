@@ -7,7 +7,7 @@ import System.Collections
 import System.Collections.Specialized
 import System.Collections.Generic
 import System.Windows.Forms //test
-import CommonGenius.Collections
+import CXGUI.External
 
 class X264Config(VideoEncConfigBase):
 """Description of X264Config"""

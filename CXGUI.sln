@@ -6,6 +6,8 @@ Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "CXGUI", "CXGUI\CXGUI.boopro
 EndProject
 Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "Test", "Test\Test.booproj", "{47518928-C91C-499D-AEEA-AE7C0AC2254B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "External", "External\External.csproj", "{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -20,5 +22,9 @@ Global
 		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Debug|x86.ActiveCfg = Debug|x86
 		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Release|x86.Build.0 = Release|x86
 		{47518928-C91C-499D-AEEA-AE7C0AC2254B}.Release|x86.ActiveCfg = Release|x86
+		{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}.Debug|x86.Build.0 = Debug|x86
+		{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}.Debug|x86.ActiveCfg = Debug|x86
+		{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}.Release|x86.Build.0 = Release|x86
+		{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

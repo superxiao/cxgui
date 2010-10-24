@@ -4,7 +4,7 @@ import System
 import System.IO
 import System.Windows.Forms
 import System.Runtime.InteropServices
-import MeGUI
+import CXGUI.External
 
 class NeroAac(AudioEncoderBase):
 """Description of NeroAAC"""
@@ -21,7 +21,7 @@ class NeroAac(AudioEncoderBase):
 		_encodingProcess.StartInfo.Arguments = "${_config.GetSettings()} -if - -of \"${_destinationFile}\""
 		_encodingProcess.Start()
 		target = _encodingProcess.StandardInput.BaseStream
-		WriteWaveHeader().writeHeader(target, _scriptInfo)
+		WriteWavHeader.Write(target, _scriptInfo)
 		currentSample = 0
 		bufferSize = 4096 * _scriptInfo.ChannelsCount * _scriptInfo.BytesPerSample
 		buffer as (byte) = array(byte, bufferSize)

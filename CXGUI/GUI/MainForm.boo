@@ -51,14 +51,14 @@ partial class MainForm(System.Windows.Forms.Form):
 	private def OpenFileDialog1FileOk(sender as object, e as CancelEventArgs):
 		firstAddedItem as ListViewItem
 		for fileName in self.openFileDialog1.FileNames:
-			item = AddNewItem(fileName)
+			item as ListViewItem = AddNewJobItem(fileName)
 			if firstAddedItem == null and item != null:
 				firstAddedItem = item
 		if firstAddedItem != null:
 			self.jobItemListView.SelectedItems.Clear()
 			firstAddedItem.Selected = true
 
-	private def AddNewItem(filePath as string) as ListViewItem:
+	private def AddNewJobItem(filePath as string) as ListViewItem:
 		if _configForm.chbInputDir.Checked: //TODO 显示输入路径还是文件名
 			fileName = filePath
 		else:
@@ -185,7 +185,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.ProfileName = self._jobSettingForm.UsingProfileName
 			if jobItem.JobConfig.UseSeparateAudio:
 				jobItem.ExternalAudio = self._jobSettingForm.SepAudio
-			jobItem.Subtitle = self._jobSettingForm.Subtitle
+			jobItem.SubtitleFile = self._jobSettingForm.Subtitle
 			
 		self.UpdateProfileBox(self._jobSettingForm.GetProfiles(), self.profileBox.Text)
 		self._jobSettingForm.Clear()
@@ -253,12 +253,12 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.jobItemListView.SelectedItems.Clear()
 			for path in (e.Data.GetData(DataFormats.FileDrop) as (string)):
 				if IO.File.Exists(path):
-					addItem = AddNewItem(path)
+					addItem = AddNewJobItem(path)
 					if addItem != null:
 						addItem.Selected = true
 				elif IO.Directory.Exists(path):
 					for file in IO.Directory.GetFiles(path):
-						addItem = AddNewItem(file)
+						addItem = AddNewJobItem(file)
 						if addItem != null:
 							addItem.Selected = true
 			return

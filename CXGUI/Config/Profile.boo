@@ -66,7 +66,7 @@ class Profile:
 		self._audioEncConfig = profile._audioEncConfig
 		self._jobConfig = profile._jobConfig
 		self._subtitleConfig = profile._subtitleConfig
-				
+		
 	public static def GetExistingProfilesNamesOnHardDisk() as (string):
 		profileNames = List[of string]()
 		files = Directory.GetFiles(_profileDir, "*.profile")

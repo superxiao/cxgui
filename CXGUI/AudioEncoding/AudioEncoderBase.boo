@@ -6,7 +6,7 @@ import System.Diagnostics
 import System.Windows.Forms
 import CXGUI
 import My
-import MeGUI
+import CXGUI.External
 
 
 public abstract class AudioEncoderBase(IEncoder):

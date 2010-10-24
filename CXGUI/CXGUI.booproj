@@ -34,24 +34,12 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvisynthWrapperDotNet">
-      <HintPath>bin\Debug\tools\AvisynthWrapperDotNet.dll</HintPath>
-    </Reference>
     <Reference Include="DirectShowLib-2005">
       <HintPath>bin\Debug\DirectShowLib-2005.dll</HintPath>
-    </Reference>
-    <Reference Include="GenericOrderedDictionary">
-      <HintPath>bin\Release\GenericOrderedDictionary.dll</HintPath>
-    </Reference>
-    <Reference Include="MediaInfoLib">
-      <HintPath>bin\Debug\MediaInfoLib.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="WriteWaveHeader">
-      <HintPath>bin\Debug\WriteWaveHeader.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioEncoding\AudioEncConfigBase.boo" />
@@ -63,6 +51,7 @@
     <Compile Include="Avisynth\AudioScriptConfig.boo" />
     <Compile Include="Avisynth\AvisynthConfig.boo" />
     <Compile Include="Avisynth\AvisynthWriter.boo" />
+    <Compile Include="Avisynth\FrameReader.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
     <Compile Include="Avisynth\SubStyleWriter.boo" />
     <Compile Include="Avisynth\SubtitleConfig.boo">
@@ -140,7 +129,6 @@
     <EmbeddedResource Include="GUI\X264ConfigForm.resx">
       <DependentUpon>X264ConfigForm.boo</DependentUpon>
     </EmbeddedResource>
-    <None Include="External\BackgroundWorkerEx.cs" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -149,14 +137,13 @@
     <Folder Include="GUI" />
     <Folder Include="MediaInfo" />
     <Folder Include="My" />
-    <Folder Include="External" />
     <Folder Include="StreamMuxer" />
     <Folder Include="VideoEncoding" />
     <Folder Include="Job" />
     <Folder Include="Config" />
-    <ProjectReference Include="..\AviInfo\AviInfo.csproj">
-      <Project>{2D9FF0D3-7984-4E8F-A52A-A2013006741D}</Project>
-      <Name>AviInfo</Name>
+    <ProjectReference Include="..\External\External.csproj">
+      <Project>{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}</Project>
+      <Name>External</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />

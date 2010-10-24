@@ -3,8 +3,8 @@
 import System
 import System.IO
 import System.Windows.Forms
-import MediaInfoLib
-import MeGUI
+import CXGUI.External
+import System.Drawing
 
 
 [Serializable]
@@ -39,7 +39,7 @@ public class VideoInfo:
 		if Path.GetExtension(path).ToLower() == ".avs":
 			self.AvisynthInfo(path)
 			return
-		info = MediaInfoLib.MediaInfo()
+		info = MediaInfo()
 		info.Open(path)
 		self._filePath = path
 		if info.Count_Get(StreamKind.Video) > 0:
@@ -85,6 +85,7 @@ public class VideoInfo:
 		self._length = cast(double, info.num_frames) / self._frameRate
 		self._id = 0
 		
+
 		
 		
 		
@@ -101,11 +102,14 @@ public class VideoInfo:
 
 	
 	public static def GetVideoInfo(path as string, videoParameter as string) as string:
-		info = MediaInfoLib.MediaInfo()
+		info = MediaInfo()
 		info.Open(path)
 		str as string = info.Get(StreamKind.Video, 0, videoParameter, InfoKind.Text)
 		info.Close()
 		return str
+		
+		
+		
 
 	
 

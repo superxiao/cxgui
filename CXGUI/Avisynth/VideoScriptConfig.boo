@@ -257,6 +257,8 @@ class VideoScriptConfig():
 		set:
 			if _sourceFilter == VideoSourceFilter.DSS2:
 				pass
+			else:
+				_convertFPS = value
 	_convertFPS as bool
 	WithAudio as bool:
 	"""
