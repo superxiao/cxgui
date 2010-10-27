@@ -38,6 +38,7 @@ partial class JobSettingForm:
 	
 	[Property(AvsConfig)]
 	_avsConfig as AvisynthConfig
+	"""来源：JobItem对象。导入GUI：InitializeAvsConfig函数。从GUI导入：SaveToAvsConfig函数。"""
 	
 	[Property(VideoEncConfig)]
 	_videoEncConfig as VideoEncConfigBase
@@ -147,14 +148,15 @@ partial class JobSettingForm:
 			InitializeFrameRate(avsConfig, _videoInfo)
 
 		//Audio
-		self.audioSourceComboBox.Text = avsConfig.AudioSource.ToString()
+		self.audioSourceComboBox.Text = avsConfig.AudioSourceFilter.ToString()
 		self.downMixBox.Checked = avsConfig.DownMix
 		self.normalizeBox.Checked = avsConfig.Normalize
 
 		 //TODO
 
 	private def InitializeResolutionCfg(avsConfig as AvisynthConfig):
-		if avsConfig.Width == 0 and avsConfig.Height == 0:
+		self.sourceResolutionCheckBox.CheckedChanged -= self.SourceResolutionCheckBoxCheckedChanged
+		if avsConfig.UsingSourceResolution:
 			self.sourceResolutionCheckBox.Checked = true
 			for control as Control in self.gbResolution.Controls:
 				control.Enabled = false
@@ -163,8 +165,8 @@ partial class JobSettingForm:
 			self.sourceResolutionCheckBox.Checked = false
 			for control as Control in self.gbResolution.Controls:
 				control.Enabled = true
+		self.sourceResolutionCheckBox.CheckedChanged += self.SourceResolutionCheckBoxCheckedChanged
 		self.allowAutoChangeARCheckBox.Checked = not avsConfig.LockAspectRatio
-		
 		self.lockToSourceARCheckBox.CheckedChanged -= self.UseSourceARCheckedChanged
 		self.lockToSourceARCheckBox.Checked = avsConfig.LockToSourceAR
 		self.lockToSourceARCheckBox.CheckedChanged += self.UseSourceARCheckedChanged
@@ -199,31 +201,29 @@ partial class JobSettingForm:
 		RefreshResolution(null)
 
 	private def InitializeFrameRateCfg(avsConfig as AvisynthConfig):
-		self.videoSourceBox.Text = avsConfig.VideoSource.ToString()
+		self.videoSourceBox.Text = avsConfig.VideoSourceFilter.ToString()
 		if self.videoSourceBox.SelectedIndex == -1:
 			self.videoSourceBox.SelectedIndex = 0				
 		self.convertFPSCheckBox.Checked = avsConfig.ConvertFPS
-		if sourceFrameRateCheckBox.Checked or not self.videoSourceBox.Text == "DirectShowSource" :
-			self.convertFPSCheckBox.Enabled = false
-		else:
-			self.convertFPSCheckBox.Enabled = true
+		//TODO sourceResolutionCheckBox convertFPSCheckBox sourceFrameRateCheckBox的相关方法要改
 	
 	private def InitializeFrameRate(avsConfig as AvisynthConfig, videoInfo as VideoInfo):
-		if avsConfig.FrameRate > 0:
-#			MessageBox.Show("avsConfig.FrameRate > 0")
+		if self._avsConfig.UsingSourceFrameRate:
+			self.frameRateBox.Text = videoInfo.FrameRate.ToString()
+			//引发事件
+			self.sourceFrameRateCheckBox.Checked = true
+		else:
 			self.frameRateBox.Text = avsConfig.FrameRate.ToString()
 			self.sourceFrameRateCheckBox.Checked = false
-			self.frameRateBox.Enabled = true
-		else:
-			self.frameRateBox.Text = videoInfo.FrameRate.ToString()
-			self.sourceFrameRateCheckBox.Checked = true
-			self.frameRateBox.Enabled = false
+		
 
 	private def RefreshResolution(caller as object):
 		self.heightBox.Text = _resolutionCal.Height.ToString() if caller is not self.heightBox
 		self.widthBox.Text = _resolutionCal.Width.ToString() if caller is not self.widthBox
 		self.aspectRatioBox.Text = _resolutionCal.AspectRatio.ToString() if caller is not self.aspectRatioBox
+		self.modBox.SelectedIndexChanged -= self.ModBoxSelectedIndexChanged
 		self.modBox.Text = _resolutionCal.Mod.ToString()
+		self.modBox.SelectedIndexChanged += self.ModBoxSelectedIndexChanged
 
 	private def InitializeSubtitleConfig(subtitleConfig as SubtitleConfig):
 		self.fontButton.Text = subtitleConfig.Fontname
@@ -231,7 +231,7 @@ partial class JobSettingForm:
 		self.fontBottomBox.Text = subtitleConfig.MarginV.ToString()
 		self.customSubCheckBox.Checked = subtitleConfig.UsingStyle
 		self.CustomSubCheckBoxCheckedChanged(null, null)
-
+		
 
 	private def WidthBoxKeyUp(sender as object, e as System.Windows.Forms.KeyEventArgs):
 		width as int
@@ -285,17 +285,7 @@ partial class JobSettingForm:
 			self.convertFPSCheckBox.Enabled = false
 		else:
 			self.frameRateBox.Enabled = true
-			if self.videoSourceBox.Text != "DSS2":
-				self.convertFPSCheckBox.Enabled = true
-			
-	private def VideoSourceBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
-		if not self.videoSourceBox.Text == "DirectShowSource":
-			self.convertFPSCheckBox.Checked = true
-			self.convertFPSCheckBox.Enabled = false
-		else:
-			self.convertFPSCheckBox.Checked = _avsConfig.ConvertFPS
-			if not self.sourceFrameRateCheckBox.Checked:
-				self.convertFPSCheckBox.Enabled = true
+			self.convertFPSCheckBox.Enabled = true
 		
 	private def SourceResolutionCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
 		if self.sourceResolutionCheckBox.Checked == true:
@@ -338,7 +328,6 @@ partial class JobSettingForm:
 	private def RefreshX264UI(): 
 	
 		x264config = _videoEncConfig as X264Config
-		
 		for control as Control in self.groupBox4.Controls:
 			node = x264config.GetNode(control.Name.Replace(char('_'), char('-')))
 			if node == null:
@@ -349,13 +338,16 @@ partial class JobSettingForm:
 				checkBox.CheckedChanged -= self.BoolChanged
 				checkBox.Checked = node.Bool
 				checkBox.CheckedChanged += self.BoolChanged
-			elif node.Type == NodeType.Num or node.Type == NodeType.Str:
+			elif node.Type == NodeType.Num:
 				control.Text = node.Num.ToString()
+			elif node.Type == NodeType.Str:
+				control.Text = node.Str
 			elif node.Type == NodeType.StrOptionIndex:
 				comboBox = control as ComboBox
 				comboBox.SelectedIndexChanged -= self.StringOptionChanged
 				comboBox.SelectedIndex = node.StrOptionIndex
 				comboBox.SelectedIndexChanged += self.StringOptionChanged
+		self.rateControlBox.SelectedIndexChanged -= self.RateControlBoxSelectedIndexChanged
 		if x264config.GetNode("crf").InUse:
 			self.rateControlBox.SelectedIndex = 0
 			self.rateFactorBox.Text = x264config.GetNode("crf").Num.ToString()
@@ -368,6 +360,7 @@ partial class JobSettingForm:
 			self.rateControlBox.SelectedIndex = 2
 			self.rateFactorBox.Text = x264config.GetNode("bitrate").Num.ToString()
 			self.label9.Text = "码率"
+		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged
 			
 		self.useCustomCmdBox.Checked = _videoEncConfig.UsingCustomCmd
 		UseCustomCmdBoxCheckedChanged(null, null)
@@ -481,11 +474,13 @@ partial class JobSettingForm:
 	"""
 		if _videoInfo.HasVideo:
 			if self.sourceResolutionCheckBox.Checked:
+				avsConfig.UsingSourceResolution = true
 				avsConfig.Width = 0
 				avsConfig.Height = 0
 				avsConfig.AspectRatio = 0
 			else:
 				//未处理可能的错误
+				avsConfig.UsingSourceResolution = false
 				avsConfig.Width = int.Parse(self.widthBox.Text)
 				avsConfig.Height = int.Parse(self.heightBox.Text)
 				avsConfig.AspectRatio = double.Parse(self.aspectRatioBox.Text)
@@ -493,15 +488,17 @@ partial class JobSettingForm:
 			avsConfig.LockToSourceAR = self.lockToSourceARCheckBox.Checked
 			avsConfig.Mod = int.Parse(self.modBox.Text)
 			avsConfig.Resizer = Enum.Parse(ResizeFilter, self.resizerBox.Text)
-			avsConfig.VideoSource = Enum.Parse(VideoSourceFilter, self.videoSourceBox.Text)
+			avsConfig.VideoSourceFilter = Enum.Parse(VideoSourceFilter, self.videoSourceBox.Text)
 			if self.sourceFrameRateCheckBox.Checked:
+				avsConfig.UsingSourceFrameRate = true
 				avsConfig.FrameRate = 0
 			else:
+				avsConfig.UsingSourceFrameRate = false
 				avsConfig.FrameRate = double.Parse(self.frameRateBox.Text)
 			avsConfig.ConvertFPS = self.convertFPSCheckBox.Checked
 
 		if _audioInfo.StreamsCount:
-			avsConfig.AudioSource = Enum.Parse(AudioSourceFilter, self.audioSourceComboBox.Text)
+			avsConfig.AudioSourceFilter = Enum.Parse(AudioSourceFilter, self.audioSourceComboBox.Text)
 			avsConfig.DownMix = self.downMixBox.Checked
 			avsConfig.Normalize = self.normalizeBox.Checked	
 		
@@ -826,7 +823,53 @@ partial class JobSettingForm:
 			self.aspectRatioBox.Enabled = true
 
 
+
 		
+#	private def EnableTroubleMakingEvents():
+#		
+#		self.customSubCheckBox.CheckedChanged += self.CustomSubCheckBoxCheckedChanged as System.EventHandler
+#		self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged as System.EventHandler
+#		self.cbAudioMode.SelectedIndexChanged += self.CbAudioModeSelectedIndexChanged as System.EventHandler
+#		self.cbVideoMode.SelectedIndexChanged += self.CbVideoModeSelectedIndexChanged as System.EventHandler
+#		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged as System.EventHandler
+#		self.chbSepAudio.CheckedChanged += self.ChbSepAudioCheckedChanged as System.EventHandler
+#		self.sourceFrameRateCheckBox.CheckedChanged += self.SourceFrameRateCheckBoxCheckedChanged as System.EventHandler
+#		self.videoSourceBox.SelectedIndexChanged += self.VideoSourceBoxSelectedIndexChanged as System.EventHandler
+#		self.lockToSourceARCheckBox.CheckedChanged += self.UseSourceARCheckedChanged as System.EventHandler
+#		self.sourceResolutionCheckBox.CheckedChanged += self.SourceResolutionCheckBoxCheckedChanged as System.EventHandler
+#		self.modBox.SelectedIndexChanged += self.ModBoxSelectedIndexChanged as System.EventHandler
+#		self.allowAutoChangeARCheckBox.CheckedChanged += self.AllowAutoChangeARCheckBoxCheckedChanged as System.EventHandler
+#		self.preset.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
+#		self.muxerComboBox.SelectedIndexChanged += self.MuxerComboBoxSelectedIndexChanged as System.EventHandler
+#		self.neroAacRateControlBox.SelectedIndexChanged += self.NeroAacRateControlBoxSelectedIndexChanged as System.EventHandler
+#		self.useCustomCmdBox.CheckedChanged += self.UseCustomCmdBoxCheckedChanged as System.EventHandler
+#		self.slow_firstpass.CheckedChanged += self.BoolChanged as System.EventHandler
+#		self.tune.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
+#		self.level.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
+#		self.profile.SelectedIndexChanged += self.StringOptionChanged as System.EventHandler
+#		
+#	private def DisableTroubleMakingSomeEvents():
+#		
+#		self.customSubCheckBox.CheckedChanged -= self.CustomSubCheckBoxCheckedChanged as System.EventHandler
+#		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged as System.EventHandler
+#		self.cbAudioMode.SelectedIndexChanged -= self.CbAudioModeSelectedIndexChanged as System.EventHandler
+#		self.cbVideoMode.SelectedIndexChanged -= self.CbVideoModeSelectedIndexChanged as System.EventHandler
+#		self.rateControlBox.SelectedIndexChanged -= self.RateControlBoxSelectedIndexChanged as System.EventHandler
+#		self.chbSepAudio.CheckedChanged -= self.ChbSepAudioCheckedChanged as System.EventHandler
+#		self.sourceFrameRateCheckBox.CheckedChanged -= self.SourceFrameRateCheckBoxCheckedChanged as System.EventHandler
+#		self.videoSourceBox.SelectedIndexChanged -= self.VideoSourceBoxSelectedIndexChanged as System.EventHandler
+#		self.lockToSourceARCheckBox.CheckedChanged -= self.UseSourceARCheckedChanged as System.EventHandler
+#		self.sourceResolutionCheckBox.CheckedChanged -= self.SourceResolutionCheckBoxCheckedChanged as System.EventHandler
+#		self.modBox.SelectedIndexChanged -= self.ModBoxSelectedIndexChanged as System.EventHandler
+#		self.allowAutoChangeARCheckBox.CheckedChanged -= self.AllowAutoChangeARCheckBoxCheckedChanged as System.EventHandler
+#		self.preset.SelectedIndexChanged -= self.StringOptionChanged as System.EventHandler
+#		self.muxerComboBox.SelectedIndexChanged -= self.MuxerComboBoxSelectedIndexChanged as System.EventHandler
+#		self.neroAacRateControlBox.SelectedIndexChanged -= self.NeroAacRateControlBoxSelectedIndexChanged as System.EventHandler
+#		self.useCustomCmdBox.CheckedChanged -= self.UseCustomCmdBoxCheckedChanged as System.EventHandler
+#		self.slow_firstpass.CheckedChanged -= self.BoolChanged as System.EventHandler
+#		self.tune.SelectedIndexChanged -= self.StringOptionChanged as System.EventHandler
+#		self.level.SelectedIndexChanged -= self.StringOptionChanged as System.EventHandler
+#		self.profile.SelectedIndexChanged -= self.StringOptionChanged as System.EventHandler
 
 		
 

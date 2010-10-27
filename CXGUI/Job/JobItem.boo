@@ -97,7 +97,7 @@ class JobItem():
 	_videoEncoder as VideoEncoderBase
 
 	[Property(AudioEncoder)]
-	_audioEncoder as AudioEncoderBase
+	_audioEncoder as AudioEncoderHandler
 
 	[Property(Muxer)]
 	_muxer as MuxerBase
@@ -137,10 +137,11 @@ class JobItem():
 	_videoInfo as VideoInfo
 	
 	public def constructor(sourceFile as string, destFile as string, profileName as string):
+	"""创建对象时内部各设置属性都为null，要用必须SetUp()一下"""
 		self._sourceFile = sourceFile
 		self._destFile = destFile
 		self._profileName = profileName
-		_videoInfo = VideoInfo(sourceFile)
+		self._videoInfo = VideoInfo(sourceFile)
 		self._cxListViewItem = CxListViewItem(("等待", sourceFile, destFile))
 		self._cxListViewItem.JobItem = self
 	

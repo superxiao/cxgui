@@ -43,21 +43,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioEncoding\AudioEncConfigBase.boo" />
-    <Compile Include="AudioEncoding\AudioEncoderBase.boo" />
-    <Compile Include="AudioEncoding\NeroAAC.boo" />
+    <Compile Include="AudioEncoding\AudioEncoderHandler.boo" />
+    <Compile Include="AudioEncoding\NeroAacHandler.boo" />
     <Compile Include="AudioEncoding\NeroAacConfig.boo">
-      <DependentUpon>NeroAAC.boo</DependentUpon>
+      <DependentUpon>NeroAacHandler.boo</DependentUpon>
     </Compile>
-    <Compile Include="Avisynth\AudioScriptConfig.boo" />
+    <Compile Include="Avisynth\AudioAvsWriter.boo">
+    </Compile>
     <Compile Include="Avisynth\AvisynthConfig.boo" />
-    <Compile Include="Avisynth\AvisynthWriter.boo" />
     <Compile Include="Avisynth\FrameReader.boo" />
     <Compile Include="Avisynth\ResolutionCalculator.boo" />
     <Compile Include="Avisynth\SubStyleWriter.boo" />
     <Compile Include="Avisynth\SubtitleConfig.boo">
       <DependentUpon>SubStyleWriter.boo</DependentUpon>
     </Compile>
-    <Compile Include="Avisynth\VideoScriptConfig.boo" />
+    <Compile Include="Avisynth\VideoAvsWriter.boo">
+    </Compile>
     <Compile Include="Config\Profile.boo" />
     <Compile Include="Config\ProgramConfig.boo" />
     <Compile Include="Exception.boo" />
@@ -96,7 +97,7 @@
     <Compile Include="MediaInfo\DirectShowInfo.boo" />
     <Compile Include="MediaInfo\VideoInfo.boo" />
     <Compile Include="My\File.boo" />
-    <Compile Include="My\IEncoder.boo" />
+    <Compile Include="My\IMediaProcessor.boo" />
     <Compile Include="My\Math.boo" />
     <Compile Include="StreamMuxer\FFMP4.boo" />
     <Compile Include="StreamMuxer\MKVMerge.boo" />

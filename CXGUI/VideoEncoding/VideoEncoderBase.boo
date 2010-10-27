@@ -8,7 +8,7 @@ import CXGUI
 import CXGUI.External
 import My
 
-class VideoEncoderBase(IEncoder):
+class VideoEncoderBase(IMediaProcessor):
 """Description of VideoEncoder"""
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
 		if not File.Exists(avisynthScriptFile):

@@ -6,7 +6,7 @@ import System
 import System.Collections
 import System.Collections.Specialized
 import System.Collections.Generic
-import System.Windows.Forms //test
+import System.Windows.Forms
 import CXGUI.External
 
 class X264Config(VideoEncConfigBase):

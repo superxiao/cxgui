@@ -10,7 +10,7 @@ enum Muxer:
 	MKVMerge
 	None
 
-class MuxerBase(IEncoder):
+class MuxerBase(IMediaProcessor):
 """Description of Class1"""
 	public def constructor():
 		pass

@@ -93,17 +93,17 @@ partial class MainForm(System.Windows.Forms.Form):
 		return jobItem.CxListViewItem
 			
 	private def StartButtonClick(sender as object, e as EventArgs):
-		_workingJobItems = GetWorkingJobItems()
+		self._workingJobItems = GetWorkingJobItems()
 
-		unavailableFiles = ""
-		for item in _workingJobItems:
+		filesNotExist = ""
+		for item in self._workingJobItems:
 			if not File.Exists(item.SourceFile):
-				unavailableFiles += "\n${item.SourceFile}"
+				filesNotExist += "\n${item.SourceFile}"
 				item.State = JobState.Error
-				_workingJobItems.Remove(item)
+				self._workingJobItems.Remove(item)
 				
-		if unavailableFiles != "":
-			result = MessageBox.Show("以下媒体文件不存在：${unavailableFiles}\n单击“确定”将处理其他文件。", "错误", MessageBoxButtons.OKCancel,
+		if filesNotExist != "":
+			result = MessageBox.Show("以下媒体文件不存在：${filesNotExist}\n单击“确定”将处理其他文件。", "错误", MessageBoxButtons.OKCancel,
 			MessageBoxIcon.Warning)
 			if result == DialogResult.Cancel:
 				_workingJobItems.Clear()

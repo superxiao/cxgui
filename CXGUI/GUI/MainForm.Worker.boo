@@ -5,6 +5,7 @@ import System.IO
 import System.Windows.Forms
 import System.ComponentModel
 import CXGUI.Job
+import CXGUI.Avisynth
 
 partial class MainForm(System.Windows.Forms.Form):
 
@@ -97,7 +98,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			return false
 				
 	private def ProcessVideo(jobItem as JobItem, e as DoWorkEventArgs):
-		AvisynthWriter.WriteVideoAvs(jobItem.SourceFile, 'video.avs', jobItem.SubtitleFile, jobItem.AvsConfig)
+		VideoAvsWriter(jobItem.SourceFile, jobItem.AvsConfig, jobItem.SubtitleFile).WriteScript('video.avs')
 		usingSubStyleWriter = false
 		if File.Exists(jobItem.SubtitleFile) and jobItem.SubtitleConfig.UsingStyle:
 			substyleWriter = SubStyleWriter(jobItem.SubtitleFile, jobItem.SubtitleConfig)
@@ -114,7 +115,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			raise e
 		if usingSubStyleWriter:
 			substyleWriter.CleanUp()
-		if jobItem.AvsConfig.VideoSource == VideoSourceFilter.FFVideoSource:
+		if jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.FFVideoSource:
 			File.Delete(jobItem.SourceFile+'.ffindex')
 			
 	private def ProcessAudio(jobItem as JobItem, e as DoWorkEventArgs):
@@ -122,7 +123,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			sourceAudio = jobItem.ExternalAudio
 		else:
 			sourceAudio = jobItem.SourceFile
-		AvisynthWriter.WriteAudioAvs(sourceAudio, 'audio.avs', jobItem.AvsConfig)
+		AudioAvsWriter(jobItem.SourceFile, jobItem.AvsConfig).WriteScript('audio.avs')
 		if jobItem.JobConfig.VideoMode != StreamProcessMode.None:
 			destAudio = Path.ChangeExtension(jobItem.DestFile, 'm4a')
 			destAudio = GetUniqueName(destAudio)
@@ -135,10 +136,10 @@ partial class MainForm(System.Windows.Forms.Form):
 			jobItem.EncodedAudio = destAudio
 		except as InvalidAudioAvisynthScriptException:
 			ChangeSourceAndRetry = do:
-				source = jobItem.AvsConfig.AudioSource
+				source = jobItem.AvsConfig.AudioSourceFilter
 				source = source + 1 if source == 0
 				source = source - 1 if source == 1 
-				AvisynthWriter.WriteAudioAvs(jobItem.SourceFile, 'audio.avs', jobItem.AvsConfig)
+				AudioAvsWriter(jobItem.SourceFile, jobItem.AvsConfig).WriteScript('audio.avs')
 				try:
 					self.EncodeAudio('audio.avs', destAudio, jobItem.AudioEncConfig, e)
 					jobItem.EncodedAudio = destAudio
@@ -156,7 +157,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				else:
 					jobItem.Event = JobEvent.Error
 					JobEventReport(jobItem)
-		if jobItem.AvsConfig.AudioSource == AudioSourceFilter.FFAudioSource:
+		if jobItem.AvsConfig.AudioSourceFilter == AudioSourceFilter.FFAudioSource:
 			File.Delete(sourceAudio + '.ffindex')
 			
 	private def DoMuxStuff(jobItem as JobItem, e as DoWorkEventArgs):
@@ -189,7 +190,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			Threading.Thread.Sleep(1)
 	
 	private def BackgroundWorker1ProgressChanged(sender as object, e as ProgressChangedEventArgs):
-		try:
+#		try:
 			jobItem = cast(JobItem, e.UserState)
 			//video
 			if jobItem.Event == JobEvent.VideoEncoding:
@@ -252,8 +253,8 @@ partial class MainForm(System.Windows.Forms.Form):
 					File.Delete(file)
 				jobItem.FilesToDeleteWhenProcessingFails.Clear()
 			self._workerReporting = false
-		except e:
-			MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n"+e.ToString())
+#		except e:
+#			MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n"+e.ToString())
 
 	private def EncodeVideo(avsFile as string, destFile as string, config as VideoEncConfigBase, e as DoWorkEventArgs):
 		try:
@@ -276,7 +277,7 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	private def EncodeAudio(avsFile as string, destFile as string, config as AudioEncConfigBase, e as DoWorkEventArgs):
 		jobItem = cast(JobItem, e.Argument)
-		encoder = NeroAac(avsFile, destFile)
+		encoder = NeroAacHandler(avsFile, destFile)
 		encoder.Config = config as NeroAacConfig
 		jobItem.AudioEncoder = encoder
 		jobItem.Event = JobEvent.AudioEncoding
@@ -319,7 +320,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode and not IsSameFile(audio, dstFile):
 				File.Delete(audio)
 		
-	private def EncodingReport(jobItem as JobItem, encoder as IEncoder, e as DoWorkEventArgs):
+	private def EncodingReport(jobItem as JobItem, encoder as IMediaProcessor, e as DoWorkEventArgs):
 		
 		while true:
 			Thread.Sleep(500)
@@ -333,7 +334,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				break
 			JobEventReport(jobItem)
 	
-	private def StopWorker(encoder as IEncoder, e as DoWorkEventArgs):
+	private def StopWorker(encoder as IMediaProcessor, e as DoWorkEventArgs):
 			jobItem = cast(JobItem, e.Argument)
 			encoder.Stop()
 			jobItem.Event = JobEvent.QuitAllProcessing

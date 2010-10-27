@@ -51,7 +51,7 @@ class Profile:
 		path = Path.Combine(_profileDir, profileName+".profile") //TODO profile文件夹
 		formater = BinaryFormatter()
 		if not File.Exists(path):
-			raise ProfileNotFoundException("文件未找到")
+			raise ProfileNotFoundException("profile文件未找到")
 		else:
 			try:
 				stream = FileStream(path, FileMode.Open)

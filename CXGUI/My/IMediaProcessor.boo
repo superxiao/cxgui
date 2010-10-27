@@ -2,8 +2,8 @@
 
 import System
 
-interface IEncoder:
-"""Description of IEncoder"""
+interface IMediaProcessor:
+"""Description of IMediaProcessor"""
 	
 	Progress as int:
 		get

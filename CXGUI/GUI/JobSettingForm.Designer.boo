@@ -352,7 +352,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.videoSourceBox.Name = "videoSourceBox"
 		self.videoSourceBox.Size = System.Drawing.Size(121, 20)
 		self.videoSourceBox.TabIndex = 0
-		self.videoSourceBox.SelectedIndexChanged += self.VideoSourceBoxSelectedIndexChanged as System.EventHandler
 		# 
 		# gbResolution
 		# 
@@ -776,7 +775,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.customSubCheckBox.TabIndex = 10
 		self.customSubCheckBox.Text = "自定义字幕风格"
 		self.customSubCheckBox.UseVisualStyleBackColor = true
-		self.customSubCheckBox.CheckedChanged += self.CustomSubCheckBoxCheckedChanged as System.EventHandler
 		# 
 		# customSubGroupBox
 		# 
