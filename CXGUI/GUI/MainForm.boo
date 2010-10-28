@@ -134,8 +134,12 @@ partial class MainForm(System.Windows.Forms.Form):
 			self.listViewMenu.Items['打开目录ToolStripMenuItem'].Enabled = false
 	
 	private def DelButtonClick(sender as object, e as EventArgs):
-		for item as ListViewItem in self.jobItemListView.SelectedItems:
+		for item as CxListViewItem in self.jobItemListView.SelectedItems:
 			self.jobItemListView.Items.Remove(item)
+			if self._workingJobItems.Contains(item.JobItem):
+				if self._workingJobItems.IndexOf(item.JobItem) > self._workingJobItems.IndexOf(self._workingJobItem):
+					self._workingJobItems.Remove(item.JobItem)
+				
 	
 	private def MainFormActivated(sender as object, e as System.EventArgs):
 		pass
@@ -175,7 +179,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		
 		if result == DialogResult.OK and self._jobSettingForm.Changed:
 			self._jobSettingForm.Changed = false
-			jobItem.State = JobState.Waiting
+			jobItem.State = JobState.NotProccessed
 			jobItem.DestFile = self._jobSettingForm.DestFile
 			jobItem.AvsConfig = self._jobSettingForm.AvsConfig
 			jobItem.VideoEncConfig = self._jobSettingForm.VideoEncConfig
@@ -211,9 +215,9 @@ partial class MainForm(System.Windows.Forms.Form):
 		except:
 			pass
 
-	private def 等待ToolStripMenuItemClick(sender as object, e as EventArgs):
+	private def 未处理ToolStripMenuItemClick(sender as object, e as EventArgs):
 		for item as CxListViewItem in self.jobItemListView.SelectedItems:
-			item.JobItem.State = JobState.Waiting
+			item.JobItem.State = JobState.NotProccessed
 
 	
 	private def 清空ToolStripMenuItemClick(sender as object, e as EventArgs):
@@ -276,6 +280,14 @@ partial class MainForm(System.Windows.Forms.Form):
 		for item as ListViewItem in dragItems:
 			self.jobItemListView.Items.Insert(dragToIndex, item)
 			dragToIndex++
+		
+		if self._workingJobItems.Count > 1:
+			newWorkingItems = Boo.Lang.List[of JobItem](self._workingJobItems.Count)
+			for jobItem in self._workingJobItems:
+				newWorkingItems[jobItem.CxListViewItem.Index] = jobItem
+			self._workingJobItems = newWorkingItems
+		
+			
 	
 	private def MainFormLoad(sender as object, e as System.EventArgs):
 		self.UpdateProfileBox(Profile.GetExistingProfilesNamesOnHardDisk(), _programConfig.ProfileName)

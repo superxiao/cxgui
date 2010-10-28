@@ -30,7 +30,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.destinationFileColumn = System.Windows.Forms.ColumnHeader()
 		self.listViewMenu = System.Windows.Forms.ContextMenuStrip(self.components)
 		self.设置ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
-		self.等待ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
+		self.未处理ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self.添加ToolStripMenuItem1 = System.Windows.Forms.ToolStripMenuItem()
 		self.删除ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
 		self.清空ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()
@@ -208,7 +208,7 @@ partial class MainForm(System.Windows.Forms.Form):
 		# 
 		# listViewMenu
 		# 
-		self.listViewMenu.Items.AddRange((of System.Windows.Forms.ToolStripItem: self.设置ToolStripMenuItem, self.等待ToolStripMenuItem, self.添加ToolStripMenuItem1, self.删除ToolStripMenuItem, self.清空ToolStripMenuItem, self.打开目录ToolStripMenuItem))
+		self.listViewMenu.Items.AddRange((of System.Windows.Forms.ToolStripItem: self.设置ToolStripMenuItem, self.未处理ToolStripMenuItem, self.添加ToolStripMenuItem1, self.删除ToolStripMenuItem, self.清空ToolStripMenuItem, self.打开目录ToolStripMenuItem))
 		self.listViewMenu.Name = "contextMenuStrip1"
 		self.listViewMenu.Size = System.Drawing.Size(125, 136)
 		self.listViewMenu.Opening += self.ContextMenuStrip1Opening as System.ComponentModel.CancelEventHandler
@@ -220,12 +220,12 @@ partial class MainForm(System.Windows.Forms.Form):
 		self.设置ToolStripMenuItem.Text = "设置"
 		self.设置ToolStripMenuItem.Click += self.设置ToolStripMenuItemClick as System.EventHandler
 		# 
-		# 等待ToolStripMenuItem
+		# 未处理ToolStripMenuItem
 		# 
-		self.等待ToolStripMenuItem.Name = "等待ToolStripMenuItem"
-		self.等待ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
-		self.等待ToolStripMenuItem.Text = "等待"
-		self.等待ToolStripMenuItem.Click += self.等待ToolStripMenuItemClick as System.EventHandler
+		self.未处理ToolStripMenuItem.Name = "未处理ToolStripMenuItem"
+		self.未处理ToolStripMenuItem.Size = System.Drawing.Size(124, 22)
+		self.未处理ToolStripMenuItem.Text = "未处理"
+		self.未处理ToolStripMenuItem.Click += self.未处理ToolStripMenuItemClick as System.EventHandler
 		# 
 		# 添加ToolStripMenuItem1
 		# 
@@ -549,7 +549,7 @@ partial class MainForm(System.Windows.Forms.Form):
 	private 清空ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private 删除ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private 设置ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
-	private 等待ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
+	private 未处理ToolStripMenuItem as System.Windows.Forms.ToolStripMenuItem
 	private listViewMenu as System.Windows.Forms.ContextMenuStrip
 	private backgroundWorker1 as System.ComponentModel.BackgroundWorker
 	private label3 as System.Windows.Forms.Label

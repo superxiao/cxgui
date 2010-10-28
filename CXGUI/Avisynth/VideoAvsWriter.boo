@@ -66,9 +66,6 @@ class VideoAvsWriter():
 		if File.Exists(subtitleFile):
 			SetImport("VSFilter.dll")
 			SetFilter("TextSub", "TextSub(\"${subtitleFile}\")")
-		
-
-	#region methods
 	
 	//Methods
 	def GetScriptContent() as string:
@@ -125,12 +122,7 @@ class VideoAvsWriter():
 				_loadingsAndImportings.AddUnique("LoadPlugin(\"${externalFilter}\")")
 			elif ext == ".avs" or ext == "avis":
 				_loadingsAndImportings.AddUnique("Import(\"${externalFilter}\")")
-
-			
-	#endregion
-	
-	//Properties(Filters)
-				
+		
 	def SetSourceFilter(sourceFilter as VideoSourceFilter):
 		if sourceFilter == VideoSourceFilter.DirectShowSource:
 			SetFilter("SourceFilter", "DirectShowSource(\"${self._videoInfo.FilePath}\", audio = false)")

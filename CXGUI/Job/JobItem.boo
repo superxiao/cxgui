@@ -10,8 +10,11 @@ import CXGUI.StreamMuxer
 import CXGUI.Config
 
 enum JobState:
+	//工作队列中，等待编码
 	Waiting
 	Working
+	//不在工作队列
+	NotProccessed
 	Done
 	Stop
 	Error
@@ -60,15 +63,17 @@ class JobItem():
 			return _state
 		set:
 			_state = value
-			if value == JobState.Waiting:
+			if value == JobState.NotProccessed:
+				_cxListViewItem.SubItems[0].Text = "未处理"
+			elif value == JobState.Waiting:
 				_cxListViewItem.SubItems[0].Text = "等待"
 			elif value == JobState.Working:
 				_cxListViewItem.SubItems[0].Text = "工作中"
-			if value == JobState.Done:
+			elif value == JobState.Done:
 				_cxListViewItem.SubItems[0].Text = "完成"
-			if value == JobState.Stop:
+			elif value == JobState.Stop:
 				_cxListViewItem.SubItems[0].Text = "中止"
-			if value == JobState.Error:
+			elif value == JobState.Error:
 				_cxListViewItem.SubItems[0].Text = "错误"
 
 	[Property(AvsConfig)]
@@ -142,8 +147,9 @@ class JobItem():
 		self._destFile = destFile
 		self._profileName = profileName
 		self._videoInfo = VideoInfo(sourceFile)
-		self._cxListViewItem = CxListViewItem(("等待", sourceFile, destFile))
+		self._cxListViewItem = CxListViewItem(("未处理", sourceFile, destFile))
 		self._cxListViewItem.JobItem = self
+		self._state = JobState.NotProccessed
 	
 	public def SetUp():
 	"""

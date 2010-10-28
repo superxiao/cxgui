@@ -17,7 +17,8 @@ public class AvisynthConfig():
 		self._downMix = true
 		self._usingSourceFrameRate = true
 		self._usingSourceResolution = true
-		
+	
+	//Properties
 	[Property(Width)]
 	_width as int
 	

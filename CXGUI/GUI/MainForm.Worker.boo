@@ -27,6 +27,8 @@ partial class MainForm(System.Windows.Forms.Form):
 		
 		for listItem as CxListViewItem in self.jobItemListView.Items:
 			jobItem = listItem.JobItem
+			if jobItem.State == JobState.NotProccessed:
+				jobItem.State = JobState.Waiting
 			if jobItem.State == JobState.Stop:
 				if _configForm.chbSilentRestart.Checked:
 					jobItem.State = JobState.Waiting
