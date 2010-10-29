@@ -66,14 +66,14 @@ partial class JobSettingForm:
 		InitializeComponent()
 		
 	public def SetUpFormForItem(jobItem as JobItem):
-		_usingProfile = jobItem.ProfileName
-		_sourceFile = jobItem.SourceFile
-		_destFile = jobItem.DestFile
-		self.destFileBox.Text = _destFile
+		self._usingProfile = jobItem.ProfileName
+		self._sourceFile = jobItem.SourceFile
+		self._destFile = jobItem.DestFile
+		self.destFileBox.Text = self._destFile
 
-		_sepAudio = jobItem.ExternalAudio
-		self.tbSepAudio.Text = _sepAudio
-		_subtitle = jobItem.SubtitleFile
+		self._sepAudio = jobItem.ExternalAudio
+		self.tbSepAudio.Text = self._sepAudio
+		self._subtitle = jobItem.SubtitleFile
 		self.subtitleTextBox.Text = jobItem.SubtitleFile
 
 		self._jobConfig = jobItem.JobConfig
@@ -81,14 +81,29 @@ partial class JobSettingForm:
 		self._videoEncConfig = jobItem.VideoEncConfig
 		self._audioEncConfig = jobItem.AudioEncConfig
 		self._subtitleConfig = jobItem.SubtitleConfig
-		_videoInfo = VideoInfo(_sourceFile)
-		_audioInfo = AudioInfo(_sourceFile)
-		InitializeJobConfig(_jobConfig)
-		InitializeAvsConfig(_avsConfig)
-		InitializeSubtitleConfig(_subtitleConfig)
+		self._videoInfo = VideoInfo(self._sourceFile)
+		self._audioInfo = AudioInfo(self._sourceFile)
+		
+		if not _videoInfo.Format == "avs":
+			if self.tabControl1.Controls.Count != 3:
+				self.tabControl1.Controls.Clear()
+				self.tabControl1.Controls.AddRange((self.editTabPage, self.encTabPage, self.subtitleTabPage))
+			InitializeJobConfig(self._jobConfig)
+			InitializeAvsConfig(self._avsConfig)
+			InitializeSubtitleConfig(self._subtitleConfig)
+		else:
+			if self.tabControl1.Controls.Count != 2:
+				self.tabControl1.Controls.Clear()
+				self.tabControl1.Controls.AddRange((self.avsInputTabPage, self.encTabPage))
+				AvsInputInitializeConfig(jobItem)
 		InitializeEncConfig()
 
-
+	private def AvsInputInitializeConfig(jobItem as JobItem):
+		if jobItem.JobConfig.Muxer == Muxer.MKVMerge:
+			self.muxerComboBox.Text = "MKV"
+		else:
+			self.muxerComboBox.Text = "MP4"
+	
 	private def InitializeJobConfig(jobConfig as JobItemConfig):
 		self.cbVideoMode.SelectedIndex = 1
 		self.cbAudioMode.SelectedIndex = 1
@@ -316,7 +331,7 @@ partial class JobSettingForm:
 
 	#endregion
 
-	#region TabPage2 X264Config
+	#region EncTabPage X264Config
 
 	private def InitializeEncConfig():
 	"""
@@ -411,7 +426,7 @@ partial class JobSettingForm:
 			RefreshX264UI()
 	#endregion
 	
-	#region TabPage2 NeroAacConfig
+	#region EncTabPage NeroAacConfig
 
 	private def RefreshNeroAac():
 		neroAacConfig = _audioEncConfig as NeroAacConfig
@@ -526,55 +541,64 @@ partial class JobSettingForm:
 		subtitleConfig.UsingStyle = self.customSubCheckBox.Checked
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):		
-		try:
-			dir = Path.GetDirectoryName(self.destFileBox.Text)
-			if dir == "" or dir == null:
-				self.destFileBox.Text = self._destFile			
-				
-			elif IsSameFile(self._sourceFile, saveFileDialog1.FileName):
-				MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-				return
-			elif Exists(saveFileDialog1.FileName):
-				result = MessageBox.Show("${Path.GetFileName(saveFileDialog1.FileName)} 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-				if result == DialogResult.No:
+		if self._videoInfo.Format == "avs":
+			//TODO
+			pass
+		else:
+			try:
+				dir = Path.GetDirectoryName(self.destFileBox.Text)
+				if dir == "" or dir == null:
+					self.destFileBox.Text = self._destFile			
+					
+				elif IsSameFile(self._sourceFile, saveFileDialog1.FileName):
+					MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 					return
-			elif Directory.Exists(dir):
-				self._destFile = self.destFileBox.Text
-			elif not Directory.Exists(dir):
-				result = MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
-				if result == DialogResult.OK:
-					Directory.CreateDirectory(Path.GetDirectoryName(self.destFileBox.Text))
+				elif Exists(saveFileDialog1.FileName):
+					result = MessageBox.Show("${Path.GetFileName(saveFileDialog1.FileName)} 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+					if result == DialogResult.No:
+						return
+				elif Directory.Exists(dir):
 					self._destFile = self.destFileBox.Text
+				elif not Directory.Exists(dir):
+					result = MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
+					if result == DialogResult.OK:
+						Directory.CreateDirectory(Path.GetDirectoryName(self.destFileBox.Text))
+						self._destFile = self.destFileBox.Text
+					else:
+						self.destFileBox.Text = self._destFile
 				else:
-					self.destFileBox.Text = self._destFile
-			else:
-				self._destFile = self.destFileBox.Text
-		except:
-			self.destFileBox.Text = self._destFile
-
-		if self.chbSepAudio.Checked:
-			if self.tbSepAudio.Text != "":
-				self._sepAudio = self.tbSepAudio.Text
-			else:
-				result = MessageBox.Show("未指定外挂音轨。确定退出吗？", "", MessageBoxButtons.YesNo,
-				MessageBoxIcon.Information)
-				if result == DialogResult.No:
-					return
-				elif result == DialogResult.Yes:
-					self.chbSepAudio.Checked = false //TODO
-
-		if self.subtitleTextBox.Text != "":
-			self._subtitle = self.subtitleTextBox.Text
+					self._destFile = self.destFileBox.Text
+			except:
+				self.destFileBox.Text = self._destFile
+	
+			if self.chbSepAudio.Checked:
+				if self.tbSepAudio.Text != "":
+					self._sepAudio = self.tbSepAudio.Text
+				else:
+					result = MessageBox.Show("未指定外挂音轨。确定退出吗？", "", MessageBoxButtons.YesNo,
+					MessageBoxIcon.Information)
+					if result == DialogResult.No:
+						return
+					elif result == DialogResult.Yes:
+						self.chbSepAudio.Checked = false //TODO
+	
+			if self.subtitleTextBox.Text != "":
+				self._subtitle = self.subtitleTextBox.Text
+			SaveToAvsConfig(_avsConfig)
+			SaveToJobConfig(_jobConfig)
+			SaveToSubtitleConfig(_subtitleConfig)
 		
 		if _resetter.Changed():
 			self._changed = true
-			
-		SaveToAvsConfig(_avsConfig)
-		SaveToJobConfig(_jobConfig)
-		SaveToSubtitleConfig(_subtitleConfig)
 		_resetter.Clear()
 		self.DialogResult = DialogResult.OK
 		self.Close()
+		
+	private def AvsInputSaveConfig():
+		if self.muxerComboBox.Text == "MKV":
+			self._jobConfig.Muxer = Muxer.MKVMerge
+		else:
+			self._jobConfig.Muxer = Muxer.MP4Box
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
 		_resetter.ResetControls()
@@ -592,6 +616,8 @@ partial class JobSettingForm:
 	private def MediaSettingFormFormClosed(sender as object, e as System.Windows.Forms.FormClosedEventArgs):
 		if e.CloseReason == System.Windows.Forms.CloseReason.UserClosing:
 			if _resetter.Changed():
+#				for control in _resetter.GetChangedControls():
+#					MessageBox.Show(control.Name)
 				result = MessageBox.Show("保存更改吗？", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
 				if result == DialogResult.Yes:
 					self.OkButtonClick(null, null)

@@ -26,7 +26,7 @@ partial class X264ConfigForm(System.Windows.Forms.Form):
 		self.qpmax = System.Windows.Forms.DomainUpDown()
 		self.qpmin = System.Windows.Forms.DomainUpDown()
 		self.label1 = System.Windows.Forms.Label()
-		self.tabPage2 = System.Windows.Forms.TabPage()
+		self.EncTabPage = System.Windows.Forms.TabPage()
 		self.tabPage3 = System.Windows.Forms.TabPage()
 		self.tabPage4 = System.Windows.Forms.TabPage()
 		self.label4 = System.Windows.Forms.Label()
@@ -41,7 +41,7 @@ partial class X264ConfigForm(System.Windows.Forms.Form):
 		self.tabControl1.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.tabControl1.Controls.Add(self.tabPage1)
-		self.tabControl1.Controls.Add(self.tabPage2)
+		self.tabControl1.Controls.Add(self.EncTabPage)
 		self.tabControl1.Controls.Add(self.tabPage3)
 		self.tabControl1.Controls.Add(self.tabPage4)
 		self.tabControl1.Location = System.Drawing.Point(12, 12)
@@ -160,15 +160,15 @@ partial class X264ConfigForm(System.Windows.Forms.Form):
 		self.label1.Text = "qpmin/qpmax/qmstep"
 		self.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		# 
-		# tabPage2
+		# EncTabPage
 		# 
-		self.tabPage2.Location = System.Drawing.Point(4, 22)
-		self.tabPage2.Name = "tabPage2"
-		self.tabPage2.Padding = System.Windows.Forms.Padding(3)
-		self.tabPage2.Size = System.Drawing.Size(549, 306)
-		self.tabPage2.TabIndex = 1
-		self.tabPage2.Text = "帧"
-		self.tabPage2.UseVisualStyleBackColor = true
+		self.EncTabPage.Location = System.Drawing.Point(4, 22)
+		self.EncTabPage.Name = "EncTabPage"
+		self.EncTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.EncTabPage.Size = System.Drawing.Size(549, 306)
+		self.EncTabPage.TabIndex = 1
+		self.EncTabPage.Text = "帧"
+		self.EncTabPage.UseVisualStyleBackColor = true
 		# 
 		# tabPage3
 		# 
@@ -233,7 +233,7 @@ partial class X264ConfigForm(System.Windows.Forms.Form):
 	private groupBox1 as System.Windows.Forms.GroupBox
 	private tabPage4 as System.Windows.Forms.TabPage
 	private tabPage3 as System.Windows.Forms.TabPage
-	private tabPage2 as System.Windows.Forms.TabPage
+	private EncTabPage as System.Windows.Forms.TabPage
 	private tabPage1 as System.Windows.Forms.TabPage
 	private tabControl1 as System.Windows.Forms.TabControl
 

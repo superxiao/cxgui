@@ -2,6 +2,7 @@
 
 import System
 import System.Windows.Forms
+import System.Runtime.Serialization
 import CXGUI
 import CXGUI.Avisynth
 import CXGUI.VideoEncoding
@@ -31,9 +32,8 @@ enum JobEvent:
 	QuitAllProcessing
 	Error
 
-[Serializable()]
 class JobItem():
-"""]
+"""
 创建一个JobItem实例，将附送一个CxListViewItem实例，可添加到ListView中。
 更改JobItem的源文件、目标文件、工作状态，CxListViewItem相应自动更改。
 """
@@ -199,3 +199,7 @@ class JobItem():
 			self._videoEncConfig = null
 			self._jobConfig = null
 			self._subtitleConfig = null
+
+	[OnDeserialized]	
+	private def OnDeserialize(context as StreamingContext):
+		self.CxListViewItem.JobItem = self

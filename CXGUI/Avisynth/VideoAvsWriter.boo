@@ -29,7 +29,9 @@ enum ResizeFilter:
 	Spline36Resize
 	Spline64Resize
 	None
-		
+
+
+//TODO 对avs脚本源，重新做一个路径	
 class VideoAvsWriter():
 """用于AvisynthWriter类的VideoConfig属性。"""	
 

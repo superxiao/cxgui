@@ -7,7 +7,6 @@ import CXGUI.External
 import System.Drawing
 
 
-[Serializable]
 public class VideoInfo:
 
 	// Fields

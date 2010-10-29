@@ -46,6 +46,15 @@ class ControlResetter:
 				return true
 		return false
 		
+	def GetChangedControls() as (Control):
+		changedList = List[of Control]()
+		for checkBox as CheckBox in _savedCheckBox.Keys:
+			if checkBox.Checked != _savedCheckBox[checkBox]:
+				changedList.Add(checkBox)
+		for control as Control in _savedTextControl.Keys:
+			if control.Text != _savedTextControl[control]:
+				changedList.Add(control)
+		return changedList.ToArray()
 
 	def ResetControls(controls as IEnumerable) as int:
 	"""

@@ -48,7 +48,8 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.label1 = System.Windows.Forms.Label()
 		self.heightBox = System.Windows.Forms.TextBox()
 		self.widthBox = System.Windows.Forms.TextBox()
-		self.tabPage2 = System.Windows.Forms.TabPage()
+		self.avsInputTabPage = System.Windows.Forms.TabPage()
+		self.encTabPage = System.Windows.Forms.TabPage()
 		self.groupBox6 = System.Windows.Forms.GroupBox()
 		self.muxerComboBox = System.Windows.Forms.ComboBox()
 		self.groupBox5 = System.Windows.Forms.GroupBox()
@@ -93,13 +94,12 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.label15 = System.Windows.Forms.Label()
 		self.openFileDialog2 = System.Windows.Forms.OpenFileDialog()
 		self.fontDialog1 = System.Windows.Forms.FontDialog()
-		self.avsInputTabPage = System.Windows.Forms.TabPage()
 		self.tabControl1.SuspendLayout()
 		self.editTabPage.SuspendLayout()
 		self.gbAudioAvs.SuspendLayout()
 		self.gbVideoSource.SuspendLayout()
 		self.gbResolution.SuspendLayout()
-		self.tabPage2.SuspendLayout()
+		self.encTabPage.SuspendLayout()
 		self.groupBox6.SuspendLayout()
 		self.groupBox5.SuspendLayout()
 		self.groupBox4.SuspendLayout()
@@ -114,7 +114,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.tabControl1.Controls.Add(self.editTabPage)
 		self.tabControl1.Controls.Add(self.avsInputTabPage)
-		self.tabControl1.Controls.Add(self.tabPage2)
+		self.tabControl1.Controls.Add(self.encTabPage)
 		self.tabControl1.Controls.Add(self.subtitleTabPage)
 		self.tabControl1.Location = System.Drawing.Point(12, 12)
 		self.tabControl1.Name = "tabControl1"
@@ -122,7 +122,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.tabControl1.Size = System.Drawing.Size(440, 489)
 		self.tabControl1.TabIndex = 0
 		# 
-		# tabPage1
+		# editTabPage
 		# 
 		self.editTabPage.Controls.Add(self.cbAudioMode)
 		self.editTabPage.Controls.Add(self.cbVideoMode)
@@ -135,7 +135,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.editTabPage.Controls.Add(self.gbVideoSource)
 		self.editTabPage.Controls.Add(self.gbResolution)
 		self.editTabPage.Location = System.Drawing.Point(4, 22)
-		self.editTabPage.Name = "tabPage1"
+		self.editTabPage.Name = "editTabPage"
 		self.editTabPage.Padding = System.Windows.Forms.Padding(3)
 		self.editTabPage.Size = System.Drawing.Size(432, 463)
 		self.editTabPage.TabIndex = 0
@@ -497,18 +497,28 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.widthBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
 		self.widthBox.Validating += self.ResolutionValidating as System.ComponentModel.CancelEventHandler
 		# 
-		# tabPage2
+		# avsInputTabPage
 		# 
-		self.tabPage2.Controls.Add(self.groupBox6)
-		self.tabPage2.Controls.Add(self.groupBox5)
-		self.tabPage2.Controls.Add(self.groupBox4)
-		self.tabPage2.Location = System.Drawing.Point(4, 22)
-		self.tabPage2.Name = "tabPage2"
-		self.tabPage2.Padding = System.Windows.Forms.Padding(3)
-		self.tabPage2.Size = System.Drawing.Size(432, 463)
-		self.tabPage2.TabIndex = 1
-		self.tabPage2.Text = "编码器"
-		self.tabPage2.UseVisualStyleBackColor = true
+		self.avsInputTabPage.Location = System.Drawing.Point(4, 22)
+		self.avsInputTabPage.Name = "avsInputTabPage"
+		self.avsInputTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.avsInputTabPage.Size = System.Drawing.Size(432, 463)
+		self.avsInputTabPage.TabIndex = 3
+		self.avsInputTabPage.Text = "avs输入"
+		self.avsInputTabPage.UseVisualStyleBackColor = true
+		# 
+		# EncTabPage
+		# 
+		self.encTabPage.Controls.Add(self.groupBox6)
+		self.encTabPage.Controls.Add(self.groupBox5)
+		self.encTabPage.Controls.Add(self.groupBox4)
+		self.encTabPage.Location = System.Drawing.Point(4, 22)
+		self.encTabPage.Name = "EncTabPage"
+		self.encTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.encTabPage.Size = System.Drawing.Size(432, 463)
+		self.encTabPage.TabIndex = 1
+		self.encTabPage.Text = "编码器"
+		self.encTabPage.UseVisualStyleBackColor = true
 		# 
 		# groupBox6
 		# 
@@ -753,7 +763,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.rateControlBox.TabIndex = 0
 		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged as System.EventHandler
 		# 
-		# tabPage3
+		# subtitleTabPage
 		# 
 		self.subtitleTabPage.Controls.Add(self.customSubCheckBox)
 		self.subtitleTabPage.Controls.Add(self.customSubGroupBox)
@@ -761,7 +771,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTabPage.Controls.Add(self.subtitleButton)
 		self.subtitleTabPage.Controls.Add(self.label18)
 		self.subtitleTabPage.Location = System.Drawing.Point(4, 22)
-		self.subtitleTabPage.Name = "tabPage3"
+		self.subtitleTabPage.Name = "subtitleTabPage"
 		self.subtitleTabPage.Size = System.Drawing.Size(432, 463)
 		self.subtitleTabPage.TabIndex = 2
 		self.subtitleTabPage.Text = "字幕"
@@ -775,6 +785,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.customSubCheckBox.TabIndex = 10
 		self.customSubCheckBox.Text = "自定义字幕风格"
 		self.customSubCheckBox.UseVisualStyleBackColor = true
+		self.customSubCheckBox.CheckedChanged += self.CustomSubCheckBoxCheckedChanged as System.EventHandler
 		# 
 		# customSubGroupBox
 		# 
@@ -945,17 +956,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.openFileDialog2.FileName = "openFileDialog2"
 		self.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*,ssa|srt|*.srt|ass|*.ass|ssa|*.ssa"
 		# 
-		# tabPage4
-		# 
-		self.avsInputTabPage.Location = System.Drawing.Point(4, 22)
-		self.avsInputTabPage.Name = "tabPage4"
-		self.avsInputTabPage.Padding = System.Windows.Forms.Padding(3)
-		self.avsInputTabPage.Size = System.Drawing.Size(432, 463)
-		self.avsInputTabPage.TabIndex = 3
-		self.avsInputTabPage.Text = "avs输入"
-		self.avsInputTabPage.UseVisualStyleBackColor = true
-		# 
-		# MediaSettingForm
+		# JobSettingForm
 		# 
 		self.AcceptButton = self.okButton
 		self.AutoScaleDimensions = System.Drawing.SizeF(6, 12)
@@ -969,7 +970,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.Controls.Add(self.okButton)
 		self.Controls.Add(self.cancelButton)
 		self.MinimumSize = System.Drawing.Size(480, 580)
-		self.Name = "MediaSettingForm"
+		self.Name = "JobSettingForm"
 		self.Text = "设置"
 		self.Load += self.MediaSettingFormLoad as System.EventHandler
 		self.FormClosed += self.MediaSettingFormFormClosed as System.Windows.Forms.FormClosedEventHandler
@@ -980,7 +981,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.gbVideoSource.ResumeLayout(false)
 		self.gbResolution.ResumeLayout(false)
 		self.gbResolution.PerformLayout()
-		self.tabPage2.ResumeLayout(false)
+		self.encTabPage.ResumeLayout(false)
 		self.groupBox6.ResumeLayout(false)
 		self.groupBox5.ResumeLayout(false)
 		self.groupBox4.ResumeLayout(false)
@@ -988,6 +989,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTabPage.PerformLayout()
 		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private encTabPage as System.Windows.Forms.TabPage
 	private avsInputTabPage as System.Windows.Forms.TabPage
 	private lockToSourceARCheckBox as System.Windows.Forms.CheckBox
 	private customSubGroupBox as System.Windows.Forms.GroupBox
@@ -1066,7 +1068,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 	private widthBox as System.Windows.Forms.TextBox
 	private label1 as System.Windows.Forms.Label
 	private label2 as System.Windows.Forms.Label
-	private tabPage2 as System.Windows.Forms.TabPage
 	private editTabPage as System.Windows.Forms.TabPage
 	private tabControl1 as System.Windows.Forms.TabControl
 

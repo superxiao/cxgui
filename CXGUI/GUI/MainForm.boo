@@ -299,9 +299,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			stream = FileStream("JobItems.bin", FileMode.Open)
 			jobItems = formater.Deserialize(stream)
 			stream.Close()
-		except:
+		except e:
 			stream.Close()
-			return
 		if jobItems != null:
 			for jobItem as JobItem in jobItems:
 				self.jobItemListView.Items.Add(jobItem.CxListViewItem)
