@@ -81,7 +81,6 @@ public class VideoInfo:
 			self._width = info.VideoWidth
 			self._height = info.VideoHeight
 			self._displayAspectRatio = (cast(double, self._width) / self._height)
-			self._format = "avs"
 			self._frameRate = Math.Round(cast(double, info.raten) / info.rated, 3 , MidpointRounding.AwayFromZero)
 			self._frameCount = info.num_frames
 			self._streamID = 0
@@ -89,6 +88,8 @@ public class VideoInfo:
 			self._id = 0
 		else:
 			self._hasVideo = false
+		if info.HasVideo or info.ChannelsCount:
+			self._format = "avs"
 		
 	public static def GetVideoInfo(path as string, *videoParameters as (string)) as Hash:
 		hash = Hash()

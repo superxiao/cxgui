@@ -113,7 +113,6 @@ partial class MainForm(System.Windows.Forms.Form):
 					
 			SetUpJobItems(_workingJobItems.ToArray())
 			self._workingJobItem = _workingJobItems[0]
-			MessageBox.Show(self._workingJobItem.JobConfig.Muxer.ToString())
 			self.backgroundWorker1.RunWorkerAsync(self._workingJobItem)
 			self.tabControl1.SelectTab(self.progressPage)
 			

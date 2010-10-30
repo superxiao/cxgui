@@ -756,7 +756,6 @@ partial class JobSettingForm:
 	
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
 		if self._videoInfo.Format == "avs":
-			MessageBox.Show("fuck")
 			self.AvsInputSaveConfig()
 		else:
 			SaveToAvsConfig(_avsConfig)

@@ -172,6 +172,13 @@ class JobItem():
 			self._jobConfig.VideoMode = StreamProcessMode.None
 		if not self._videoInfo.AudioStreamsCount:
 			self._jobConfig.AudioMode = StreamProcessMode.None
+			
+		if self._videoInfo.Format == "avs":
+			if self._jobConfig.VideoMode == StreamProcessMode.Copy:
+				self._jobConfig.VideoMode = StreamProcessMode.Encode
+			if self._jobConfig.AudioMode == StreamProcessMode.Copy:
+				self._jobConfig.AudioMode = StreamProcessMode.Encode
+		
 		self._jobConfig.SetContainer(self._jobConfig.Container, self._destFile)
 
 	private def ReadProfile(profileName as string):

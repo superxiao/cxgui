@@ -57,6 +57,8 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 			self._id  = 0
 			self._length = (cast(double, info.SamplesCount) / cast(double, info.AudioSampleRate))
 			self._hasVideo = info.HasVideo
+		if info.HasVideo or info.ChannelsCount:
+			self._format = "avs"
 			
 	public static def GetAudioInfo(path as string, streamNumber as int, audioParameter as string) as string:
 	"""
