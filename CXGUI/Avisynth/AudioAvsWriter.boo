@@ -33,17 +33,24 @@ class AudioAvsWriter():
 	
 	_avsConfig as AvisynthConfig
 
+
+	//Methods
 	public def constructor(sourceFile as string, avsConfig as AvisynthConfig):
 		self._avsConfig = avsConfig
 		self._filters = OrderedDictionary[of string, string]()
 		self._loadingsAndImportings = List[of string]()
 		self._audioInfo = AudioInfo(sourceFile)
-		self.SourceFilter = self._avsConfig.AudioSourceFilter
-		self.DownMix = self._avsConfig.DownMix
-		self.Normalize = self._avsConfig.Normalize
+		if self._audioInfo.Format == "avs":
+			self.AvsInputInitialize(sourceFile)
+		else:
+			self.SourceFilter = self._avsConfig.AudioSourceFilter
+			self.DownMix = self._avsConfig.DownMix
+			self.Normalize = self._avsConfig.Normalize
+		
+	private def AvsInputInitialize(sourceFile as string):
+		self.SetImport(sourceFile)
+		self.SetFilter("KillVideo", "KillVideo()")
 
-
-	//Methods
 	def GetScriptContent() as string:
 	"""
 	使用这个方法来获取avs脚本内容。
@@ -54,7 +61,8 @@ class AudioAvsWriter():
 			content += "${loadingAndImporting}\r\n"
 		for filter in self._filters:
 			content += "${filter.Value}\r\n"
-		content += "audio\r\n"
+		if self._audioInfo.Format != "avs":
+			content += "audio\r\n"
 		return content
 		
 	def WriteScript(avsDestFile as string):
@@ -99,6 +107,8 @@ class AudioAvsWriter():
 			elif ext == ".avs" or ext == "avis":
 				_loadingsAndImportings.AddUnique("Import(\"${externalFilter}\")")
 	
+
+
 	//Properties
 	SourceFilter as AudioSourceFilter:
 		get:

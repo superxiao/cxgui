@@ -63,30 +63,32 @@ public class VideoInfo:
 				self._displayAspectRatio = (double.Parse(s.Split(char(':'))[0]) / (double.Parse(s.Split(char(':'))[1])))
 			if self._width != 0 and self._displayAspectRatio == 0:
 				self._displayAspectRatio = (cast(double, self._width) / cast(double, self._height))
+		else:
+			self._hasVideo = false
+
 		self._audioStreamsCount = info.Count_Get(StreamKind.Audio)
 		info.Close()
 		
 	private def AvisynthInfo(path as string):
 		using info = AviSynthScriptEnvironment().OpenScriptFile(path)
-		if info.ChannelsCount:
-			self._audioStreamsCount = 1
-		else:
-			self._audioStreamsCount = 0
-		self._width = info.VideoWidth
-		self._height = info.VideoHeight
-		self._displayAspectRatio = (cast(double, self._width) / self._height)
-		self._filePath = path
-		self._format = "avs"
-		self._frameRate = Math.Round(cast(double, info.raten) / info.rated, 3 , MidpointRounding.AwayFromZero)
 		self._hasVideo = info.HasVideo
-		self._frameCount = info.num_frames
-		self._streamID = 0
-		self._length = cast(double, info.num_frames) / self._frameRate
-		self._id = 0
-		
-
-		
-		
+		self._filePath = path
+		if info.HasVideo:
+			if info.ChannelsCount:
+				self._audioStreamsCount = 1
+			else:
+				self._audioStreamsCount = 0
+			self._width = info.VideoWidth
+			self._height = info.VideoHeight
+			self._displayAspectRatio = (cast(double, self._width) / self._height)
+			self._format = "avs"
+			self._frameRate = Math.Round(cast(double, info.raten) / info.rated, 3 , MidpointRounding.AwayFromZero)
+			self._frameCount = info.num_frames
+			self._streamID = 0
+			self._length = cast(double, info.num_frames) / self._frameRate
+			self._id = 0
+		else:
+			self._hasVideo = false
 		
 	public static def GetVideoInfo(path as string, *videoParameters as (string)) as Hash:
 		hash = Hash()

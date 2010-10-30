@@ -69,7 +69,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			profile = Profile(self.profileBox.Text)
 			ext = ".mp4"
 			if profile != null:
-				ext = profile.GetExtByMuxer()
+				ext = profile.GetExtByContainer()
 				
 			if self._configForm.destDirComboBox.Text != "":
 				destFile = Path.Combine(self._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(fileName)+ext)
@@ -113,6 +113,7 @@ partial class MainForm(System.Windows.Forms.Form):
 					
 			SetUpJobItems(_workingJobItems.ToArray())
 			self._workingJobItem = _workingJobItems[0]
+			MessageBox.Show(self._workingJobItem.JobConfig.Muxer.ToString())
 			self.backgroundWorker1.RunWorkerAsync(self._workingJobItem)
 			self.tabControl1.SelectTab(self.progressPage)
 			
@@ -338,7 +339,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			profile = Profile(self.profileBox.Text)
 			ext = ""
 			if profile != null:
-				ext = profile.GetExtByMuxer()
+				ext = profile.GetExtByContainer()
 			for item as CxListViewItem in self.jobItemListView.Items:
 				jobItem = item.JobItem
 				jobItem.ProfileName = self.profileBox.Text

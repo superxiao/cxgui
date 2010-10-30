@@ -167,6 +167,12 @@ class JobItem():
 		if self.SubtitleConfig == null:
 			_readSubCfg = true
 		ReadProfile(self._profileName)
+		
+		if not self._videoInfo.HasVideo:
+			self._jobConfig.VideoMode = StreamProcessMode.None
+		if not self._videoInfo.AudioStreamsCount:
+			self._jobConfig.AudioMode = StreamProcessMode.None
+		self._jobConfig.SetContainer(self._jobConfig.Container, self._destFile)
 
 	private def ReadProfile(profileName as string):
 	"""

@@ -104,10 +104,10 @@ class Profile:
 		formater.Serialize(stream, profile)
 		stream.Close()
 		
-	public def GetExtByMuxer() as string:
-		if self.JobConfig.Muxer in (Muxer.FFMP4, Muxer.MP4Box, Muxer.None):
+	public def GetExtByContainer() as string:
+		if self.JobConfig.Container == OutputContainer.MP4:
 			ext = ".mp4"
-		elif self.JobConfig.Muxer == Muxer.MKVMerge:
+		elif self.JobConfig.Container == OutputContainer.MKV:
 			ext = ".mkv"
 		return ext
 		

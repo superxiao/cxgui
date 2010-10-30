@@ -524,15 +524,10 @@ partial class JobSettingForm:
 		jobConfig.VideoMode = StreamProcessMode.None if jobConfig.VideoMode == -1
 		jobConfig.AudioMode = StreamProcessMode.None if jobConfig.AudioMode == -1
 		if self.muxerComboBox.Text == "MKV":
-			jobConfig.Muxer = Muxer.MKVMerge
-		elif jobConfig.VideoMode == StreamProcessMode.Copy or jobConfig.AudioMode == StreamProcessMode.Copy:
-			jobConfig.Muxer = Muxer.FFMP4
-		elif Path.GetExtension(self._destFile).ToLower() not in ('.mp4', '.m4v', '.m4a'):
-			jobConfig.Muxer = Muxer.FFMP4
-		elif jobConfig.VideoMode == StreamProcessMode.Encode and jobConfig.AudioMode == StreamProcessMode.Encode:
-			jobConfig.Muxer = Muxer.MP4Box
-		else:
-			jobConfig.Muxer = Muxer.None
+			jobConfig.SetContainer(OutputContainer.MKV, self._destFile)
+		elif self.muxerComboBox.Text == "MP4":
+			jobConfig.SetContainer(OutputContainer.MP4, self._destFile)
+		
 	
 	private def SaveToSubtitleConfig(subtitleConfig as SubtitleConfig):
 		subtitleConfig.Fontname = self.fontDialog1.Font.Name
@@ -542,8 +537,7 @@ partial class JobSettingForm:
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):		
 		if self._videoInfo.Format == "avs":
-			//TODO
-			pass
+			self.AvsInputSaveConfig()
 		else:
 			try:
 				dir = Path.GetDirectoryName(self.destFileBox.Text)
@@ -596,9 +590,9 @@ partial class JobSettingForm:
 		
 	private def AvsInputSaveConfig():
 		if self.muxerComboBox.Text == "MKV":
-			self._jobConfig.Muxer = Muxer.MKVMerge
-		else:
-			self._jobConfig.Muxer = Muxer.MP4Box
+			self._jobConfig.SetContainer(OutputContainer.MKV, self._destFile)
+		elif self.muxerComboBox.Text == "MP4":
+			self._jobConfig.SetContainer(OutputContainer.MP4, self._destFile)
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
 		_resetter.ResetControls()
@@ -761,9 +755,13 @@ partial class JobSettingForm:
 		InitializeEncConfig()
 	
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
-		SaveToAvsConfig(_avsConfig)
-		SaveToJobConfig(_jobConfig)
-		SaveToSubtitleConfig(_subtitleConfig)
+		if self._videoInfo.Format == "avs":
+			MessageBox.Show("fuck")
+			self.AvsInputSaveConfig()
+		else:
+			SaveToAvsConfig(_avsConfig)
+			SaveToJobConfig(_jobConfig)
+			SaveToSubtitleConfig(_subtitleConfig)
 		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig, _subtitleConfig)
 		self.profileBox.Items.Add(self.profileBox.Text) if self.profileBox.Text not in self.profileBox.Items
 		self._usingProfile = self.profileBox.Text
@@ -847,6 +845,10 @@ partial class JobSettingForm:
 			self.RefreshResolution(self.aspectRatioBox)
 		else:
 			self.aspectRatioBox.Enabled = true
+	
+	private def FrameRateBoxValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
+		if self.frameRateBox.Text == '0':
+			self.frameRateBox.Text = '1'
 
 
 

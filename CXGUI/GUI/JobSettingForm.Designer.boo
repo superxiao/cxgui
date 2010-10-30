@@ -341,6 +341,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.frameRateBox.Name = "frameRateBox"
 		self.frameRateBox.Size = System.Drawing.Size(67, 20)
 		self.frameRateBox.TabIndex = 1
+		self.frameRateBox.Validating += self.FrameRateBoxValidating as System.ComponentModel.CancelEventHandler
 		self.frameRateBox.KeyPress += self.AllowFloat as System.Windows.Forms.KeyPressEventHandler
 		# 
 		# videoSourceBox
@@ -507,13 +508,13 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.avsInputTabPage.Text = "avs输入"
 		self.avsInputTabPage.UseVisualStyleBackColor = true
 		# 
-		# EncTabPage
+		# encTabPage
 		# 
 		self.encTabPage.Controls.Add(self.groupBox6)
 		self.encTabPage.Controls.Add(self.groupBox5)
 		self.encTabPage.Controls.Add(self.groupBox4)
 		self.encTabPage.Location = System.Drawing.Point(4, 22)
-		self.encTabPage.Name = "EncTabPage"
+		self.encTabPage.Name = "encTabPage"
 		self.encTabPage.Padding = System.Windows.Forms.Padding(3)
 		self.encTabPage.Size = System.Drawing.Size(432, 463)
 		self.encTabPage.TabIndex = 1

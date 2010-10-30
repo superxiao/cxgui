@@ -45,31 +45,37 @@ class VideoAvsWriter():
 	_avsConfig as AvisynthConfig
 
 
-
+	//Methods
 	public def constructor(sourceFile as string, avsConfig as AvisynthConfig, subtitleFile as string):
 		self._filters = OrderedDictionary[of string, string]()
 		self._loadingsAndImportings = List[of string]()
 		self._avsConfig = avsConfig
 		self._videoInfo = VideoInfo(sourceFile)
 		
-		self.SetSourceFilter(self._avsConfig.VideoSourceFilter)
-		
-		if not self._avsConfig.UsingSourceFrameRate:
-			self.SetFrameRate(self._avsConfig.FrameRate, self._avsConfig.ConvertFPS)
+		if self._videoInfo.Format == "avs":
+			AvsInputInitialize(sourceFile)
+		else:
+			self.SetSourceFilter(self._avsConfig.VideoSourceFilter)
 			
-		SetFilter("ConvertToYV12", "IsYV12 ? Last : ConvertToYV12()")
-		
-		if not self._avsConfig.UsingSourceResolution and (self._avsConfig.Width != self._videoInfo.Width or self._avsConfig.Height != self._videoInfo.Height):
-			if self._avsConfig.Width <= 1000 and self._videoInfo.Width >= 1280: 
-				SetImport("ColorMatrix.dll")
-				SetFilter("ColorMatrix", "ColorMatrix()")
-			SetFilter("Resizer", "${self._avsConfig.Resizer}(${self._avsConfig.Width},${self._avsConfig.Height})")
-		
-		if File.Exists(subtitleFile):
-			SetImport("VSFilter.dll")
-			SetFilter("TextSub", "TextSub(\"${subtitleFile}\")")
+			if not self._avsConfig.UsingSourceFrameRate:
+				self.SetFrameRate(self._avsConfig.FrameRate, self._avsConfig.ConvertFPS)
+				
+			SetFilter("ConvertToYV12", "IsYV12 ? Last : ConvertToYV12()")
+			
+			if not self._avsConfig.UsingSourceResolution and (self._avsConfig.Width != self._videoInfo.Width or self._avsConfig.Height != self._videoInfo.Height):
+				if self._avsConfig.Width <= 1000 and self._videoInfo.Width >= 1280: 
+					SetImport("ColorMatrix.dll")
+					SetFilter("ColorMatrix", "ColorMatrix()")
+				SetFilter("Resizer", "${self._avsConfig.Resizer}(${self._avsConfig.Width},${self._avsConfig.Height})")
+			
+			if File.Exists(subtitleFile):
+				SetImport("VSFilter.dll")
+				SetFilter("TextSub", "TextSub(\"${subtitleFile}\")")
 	
-	//Methods
+	private def AvsInputInitialize(sourceFile as string):
+		self.SetImport(sourceFile)
+		self.SetFilter("KillAudio", "KillAudio()")
+
 	def GetScriptContent() as string:
 	"""
 	使用这个方法来获取avs脚本内容。

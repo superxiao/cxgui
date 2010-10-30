@@ -9,6 +9,12 @@ class AudioInfo():
 获取媒体文件的音频信息。
 Remarks: 可以创建对象并访问其属性，也可以使用静态方法来获取信息。
 """
+	//Fields
+	_hasVideo as bool
+	
+	
+	
+	//Methods
 	public def constructor(path as string):
 	"""
 	Remarks: 从本类申请对象时，须以媒体文件路径作为实参。之后即可访问对象属性以
@@ -23,33 +29,35 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 		info = MediaInfo()
 		info.Open(path)
 		_filePath = path
-		_format = info.Get(StreamKind.Audio, streamNum, "Format")
-
-		audioID = info.Get(StreamKind.Audio, 0, "ID")
-		videoID = info.Get(StreamKind.Video, 0, "ID")
-		if audioID == "0" or videoID == "0":
-			_id = 0
-		elif audioID == "1" or videoID == "1":
-			_id = 1
-		int.TryParse(info.Get(StreamKind.Audio, streamNum, "ID"), _streamID)
-		_streamID = _streamID - _id if _streamID > 0
-		double.TryParse(info.Get(StreamKind.Audio, streamNum, "Duration"), _length)
-		_length = _length / 1000
-		_streamsCount = info.Count_Get(StreamKind.Audio)
+		if info.Count_Get(StreamKind.Audio) > 0:
+			_format = info.Get(StreamKind.Audio, streamNum, "Format")
+	
+			audioID = info.Get(StreamKind.Audio, 0, "ID")
+			videoID = info.Get(StreamKind.Video, 0, "ID")
+			if audioID == "0" or videoID == "0":
+				_id = 0
+			elif audioID == "1" or videoID == "1":
+				_id = 1
+			int.TryParse(info.Get(StreamKind.Audio, streamNum, "ID"), _streamID)
+			_streamID = _streamID - _id if _streamID > 0
+			double.TryParse(info.Get(StreamKind.Audio, streamNum, "Duration"), _length)
+			_length = _length / 1000
+			_streamsCount = info.Count_Get(StreamKind.Audio)
+			self._hasVideo = true if info.Count_Get(StreamKind.Video)
 		info.Close()
 		
 	private def AvisynthInfo(path as string):
 		using info = AviSynthScriptEnvironment().OpenScriptFile(path)
 		self._filePath = path
-		self._currentStream = 0
-		self._streamsCount = 1
-		self._format = "avs"
-		self._streamID = 0
-		self._id  = 0
-		self._length = (cast(double, info.SamplesCount) / cast(double, info.AudioSampleRate))
-		
-
-	//Methods
+		if info.ChannelsCount > 0:
+			self._currentStream = 0
+			self._streamsCount = 1
+			self._format = "avs"
+			self._streamID = 0
+			self._id  = 0
+			self._length = (cast(double, info.SamplesCount) / cast(double, info.AudioSampleRate))
+			self._hasVideo = info.HasVideo
+			
 	public static def GetAudioInfo(path as string, streamNumber as int, audioParameter as string) as string:
 	"""
 	静态方法,获取音频信息的字符串形式。
@@ -77,12 +85,16 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 			audioinfo.Add(audioParameter, infovalue)
 		return audioinfo
 
+
+
+
 	//Properties
 	[Getter(FilePath)]
 	_filePath as string
 	"""
 	媒体文件路径。
 	"""
+	
 	CurrentStream as int:
 	"""音频流的序号，不计视频流。
 	Remarks: 创建对象时默认为0，重设时将为新流更新对象属性。"""
@@ -91,18 +103,29 @@ Remarks: 可以创建对象并访问其属性，也可以使用静态方法来�
 		set:
 			InitializeProperties(_filePath, value)
 	_currentStream as int
+	
 	[Getter(StreamsCount)]
 	_streamsCount as int
 	"""音频流的数量，不计视频流。"""
+	
 	[Getter(Format)]
 	_format as string
 	"""音频格式。"""
+	
 	[Getter(StreamID)]
 	_streamID as int
+	
 	[Getter(Length)]
 	_length as double
+	
 	[Getter(ID)]
 	_id as int
 	"""
 	流ID，mkv和mp4从1起，其他多从0起。
 	"""
+	
+	HasVideo as bool:
+		get:
+			return _hasVideo
+	
+	
