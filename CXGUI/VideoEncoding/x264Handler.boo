@@ -5,8 +5,8 @@ import System.Threading
 import CXGUI
 import System.Windows.Forms
 
-class X264(VideoEncoderBase):
-"""Description of X264"""
+class x264Handler(VideoEncoderHandler):
+"""Description of x264Handler"""
 	_startTime as date
 	_errOccured = false
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
@@ -75,10 +75,10 @@ class X264(VideoEncoderBase):
 			pass
 	//Properties
 	[Property(Config)]
-	_config as X264Config
+	_config as x264Config
 	
 	
 public def vetest():
-	t = X264("""C:\Users\Public\Videos\Sample Videos\Wildlife.avs""", """c:\.mp4""")
+	t = x264Handler("""C:\Users\Public\Videos\Sample Videos\Wildlife.avs""", """c:\.mp4""")
 	t.Start()
 

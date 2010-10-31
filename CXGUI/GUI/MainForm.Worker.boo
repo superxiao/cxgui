@@ -6,6 +6,9 @@ import System.Windows.Forms
 import System.ComponentModel
 import CXGUI.Job
 import CXGUI.Avisynth
+import CXGUI.VideoEncoding
+import CXGUI.AudioEncoding
+import CXGUI.StreamMuxer
 
 partial class MainForm(System.Windows.Forms.Form):
 
@@ -69,8 +72,8 @@ partial class MainForm(System.Windows.Forms.Form):
 			if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode:
 				ProcessAudio(jobItem, e)
 				return if DidUserPressStopButton(jobItem, e)
-	
-			if jobItem.JobConfig.Muxer != Muxer.None:
+			
+			if jobItem.Muxer != null:
 				DoMuxStuff(jobItem, e)
 				return if DidUserPressStopButton(jobItem, e)
 
@@ -192,7 +195,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			Threading.Thread.Sleep(1)
 	
 	private def BackgroundWorker1ProgressChanged(sender as object, e as ProgressChangedEventArgs):
-#		try:
+		try:
 			jobItem = cast(JobItem, e.UserState)
 			//video
 			if jobItem.Event == JobEvent.VideoEncoding:
@@ -231,9 +234,6 @@ partial class MainForm(System.Windows.Forms.Form):
 			elif jobItem.Event == JobEvent.QuitAllProcessing:
 				ResetProgress()
 				jobItem.State = JobState.Stop
-				jobItem.VideoEncoder = null
-				jobItem.AudioEncoder = null
-				jobItem.Muxer = null
 				self.startButton.Enabled = true
 				self.statusLable.Text = "中止"
 				self.tabControl1.SelectTab(self.inputPage)
@@ -255,14 +255,14 @@ partial class MainForm(System.Windows.Forms.Form):
 					File.Delete(file)
 				jobItem.FilesToDeleteWhenProcessingFails.Clear()
 			self._workerReporting = false
-#		except e:
-#			MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n"+e.ToString())
+		except e:
+			MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n"+e.ToString())
 
 	private def EncodeVideo(avsFile as string, destFile as string, config as VideoEncConfigBase, e as DoWorkEventArgs):
 		try:
 			jobItem = cast(JobItem, e.Argument)
-			encoder = X264(avsFile, destFile)
-			encoder.Config = config as X264Config
+			encoder = x264Handler(avsFile, destFile)
+			encoder.Config = config as x264Config
 			jobItem.VideoEncoder = encoder
 			jobItem.Event = JobEvent.VideoEncoding
 			result = EncodingReport.BeginInvoke(jobItem, encoder, e)
@@ -291,36 +291,25 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	private def Mux(video as string, audio as string, dstFile as string, e as DoWorkEventArgs):
 		jobItem = cast(JobItem, e.Argument)
-		
-		muxer as MuxerBase
-		if jobItem.JobConfig.Muxer == Muxer.MP4Box:
-			muxer = MP4Box()
-		elif jobItem.JobConfig.Muxer == Muxer.FFMP4:
-			muxer = FFMP4()
-		elif jobItem.JobConfig.Muxer == Muxer.MKVMerge:
-			muxer = MKVMerge()
-		if muxer != null:
-			muxer.VideoFile = video
-			muxer.AudioFile = audio
-			muxer.DstFile = dstFile
-			jobItem.Muxer = muxer
-			jobItem.Event = JobEvent.Muxing
-			result = EncodingReport.BeginInvoke(jobItem, muxer, e)
-			if not self.backgroundWorker1.CancellationPending:
-				try:
-					muxer.Start()
-				except exc as FormatNotSupportedException:
-					MessageBox.Show("合成MP4失败。可能源媒体流中有不支持的格式。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-					jobItem.Event = JobEvent.Error
-					JobEventReport(jobItem)
-				except exc as FFmpegBugException:
-					MessageBox.Show("合成MP4失败。这是由于FFmpeg的一些Bug, 对某些流无法使用复制。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-					jobItem.Event = JobEvent.Error
-					JobEventReport(jobItem)
-			result.AsyncWaitHandle.WaitOne()
-			jobItem.Muxer = null
-			if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode and not IsSameFile(audio, dstFile):
-				File.Delete(audio)
+		jobItem.Muxer.VideoFile = video
+		jobItem.Muxer.AudioFile = audio
+		jobItem.Muxer.DstFile = dstFile
+		jobItem.Event = JobEvent.Muxing
+		result = EncodingReport.BeginInvoke(jobItem, jobItem.Muxer, e)
+		if not self.backgroundWorker1.CancellationPending:
+			try:
+				jobItem.Muxer.Start()
+			except exc as FormatNotSupportedException:
+				MessageBox.Show("合成MP4失败。可能源媒体流中有不支持的格式。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+				jobItem.Event = JobEvent.Error
+				JobEventReport(jobItem)
+			except exc as FFmpegBugException:
+				MessageBox.Show("合成MP4失败。这是由于FFmpeg的一些Bug, 对某些流无法使用复制。", "合成失败", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+				jobItem.Event = JobEvent.Error
+				JobEventReport(jobItem)
+		result.AsyncWaitHandle.WaitOne()
+		if jobItem.JobConfig.AudioMode == StreamProcessMode.Encode and not IsSameFile(audio, dstFile):
+			File.Delete(audio)
 		
 	private def EncodingReport(jobItem as JobItem, encoder as IMediaProcessor, e as DoWorkEventArgs):
 		

@@ -1,14 +1,8 @@
 ﻿namespace CXGUI.StreamMuxer
 
 import System
-import  System.Diagnostics
+import System.Diagnostics
 import My
-
-enum Muxer:
-	MP4Box
-	FFMP4
-	MKVMerge
-	None
 
 class MuxerBase(IMediaProcessor):
 """Description of Class1"""

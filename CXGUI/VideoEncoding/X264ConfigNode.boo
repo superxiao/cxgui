@@ -8,8 +8,8 @@ enum NodeType:
 	Bool
 	Str
 	
-class X264ConfigNode:
-"""Description of X264ConfigNode"""
+class x264ConfigNode:
+"""Description of x264ConfigNode"""
 	public def constructor():
 		_locked = false
 		_inUse = true

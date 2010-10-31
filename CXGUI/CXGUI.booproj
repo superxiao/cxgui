@@ -104,13 +104,13 @@
     <Compile Include="StreamMuxer\MP4Box.boo" />
     <Compile Include="StreamMuxer\MuxerBase.boo" />
     <Compile Include="VideoEncoding\VideoEncConfigBase.boo" />
-    <Compile Include="VideoEncoding\VideoEncoderBase.boo" />
-    <Compile Include="VideoEncoding\X264.boo" />
+    <Compile Include="VideoEncoding\VideoEncoderHandler.boo" />
+    <Compile Include="VideoEncoding\x264Handler.boo" />
     <Compile Include="VideoEncoding\X264Config.boo">
-      <DependentUpon>X264.boo</DependentUpon>
+      <DependentUpon>x264Handler.boo</DependentUpon>
     </Compile>
     <Compile Include="VideoEncoding\X264ConfigNode.boo">
-      <DependentUpon>X264.boo</DependentUpon>
+      <DependentUpon>x264Handler.boo</DependentUpon>
     </Compile>
     <EmbeddedResource Include="GUI\CommandLineBox.resx">
       <DependentUpon>CommandLineBox.Designer.boo</DependentUpon>

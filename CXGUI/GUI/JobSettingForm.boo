@@ -99,7 +99,7 @@ partial class JobSettingForm:
 		InitializeEncConfig()
 
 	private def AvsInputInitializeConfig(jobItem as JobItem):
-		if jobItem.JobConfig.Muxer == Muxer.MKVMerge:
+		if jobItem.JobConfig.Container == OutputContainer.MKV:
 			self.muxerComboBox.Text = "MKV"
 		else:
 			self.muxerComboBox.Text = "MP4"
@@ -142,7 +142,7 @@ partial class JobSettingForm:
 			self.gbResolution.Enabled = true
 			self.gbVideoSource.Enabled = true
 			
-		if jobConfig.Muxer == Muxer.MKVMerge:
+		if jobConfig.Container == OutputContainer.MKV:
 			self.muxerComboBox.Text = "MKV"
 		else:
 			self.muxerComboBox.Text = "MP4"
@@ -331,18 +331,18 @@ partial class JobSettingForm:
 
 	#endregion
 
-	#region EncTabPage X264Config
+	#region EncTabPage x264Config
 
 	private def InitializeEncConfig():
 	"""
-	从X264Config和NeroAacConfig的对象导入到UI。此后任何操作都是同步的。
+	从x264Config和NeroAacConfig的对象导入到UI。此后任何操作都是同步的。
 	"""
 		RefreshX264UI()
 		RefreshNeroAac()
 
 	private def RefreshX264UI(): 
 	
-		x264config = _videoEncConfig as X264Config
+		x264config = _videoEncConfig as x264Config
 		for control as Control in self.groupBox4.Controls:
 			node = x264config.GetNode(control.Name.Replace(char('_'), char('-')))
 			if node == null:
@@ -382,7 +382,7 @@ partial class JobSettingForm:
 			
 
 	private def RateControlBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
-		_x264config = _videoEncConfig as X264Config
+		_x264config = _videoEncConfig as x264Config
 		if self.rateControlBox.SelectedIndex == 0:
 			_x264config.SetNumOption("crf", 23)
 		elif self.rateControlBox.SelectedIndex == 1:
@@ -394,7 +394,7 @@ partial class JobSettingForm:
 		RefreshX264UI()
 	
 	private def RateFactorBoxValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
-		config = _videoEncConfig as X264Config
+		config = _videoEncConfig as x264Config
 		if self.rateControlBox.SelectedIndex == 0:
 			name = "crf"
 		elif self.rateControlBox.SelectedIndex == 1:
@@ -415,14 +415,14 @@ partial class JobSettingForm:
 		checkBox as CheckBox = sender
 		if checkBox.Enabled:
 			name = checkBox.Name.Replace(char('_'), char('-'))
-			(_videoEncConfig as X264Config).SetBooleanOption(name, checkBox.Checked)
+			(_videoEncConfig as x264Config).SetBooleanOption(name, checkBox.Checked)
 			RefreshX264UI()	
 
 	private def StringOptionChanged(sender as object, e as System.EventArgs):
 		box as ComboBox = sender
 		if box.Enabled:
 			name = box.Name.Replace(char('_'), char('-'))
-			(_videoEncConfig as X264Config).SelectStringOption(name, box.SelectedIndex)
+			(_videoEncConfig as x264Config).SelectStringOption(name, box.SelectedIndex)
 			RefreshX264UI()
 	#endregion
 	
@@ -524,9 +524,9 @@ partial class JobSettingForm:
 		jobConfig.VideoMode = StreamProcessMode.None if jobConfig.VideoMode == -1
 		jobConfig.AudioMode = StreamProcessMode.None if jobConfig.AudioMode == -1
 		if self.muxerComboBox.Text == "MKV":
-			jobConfig.SetContainer(OutputContainer.MKV, self._destFile)
+			jobConfig.Container = OutputContainer.MKV
 		elif self.muxerComboBox.Text == "MP4":
-			jobConfig.SetContainer(OutputContainer.MP4, self._destFile)
+			jobConfig.Container = OutputContainer.MP4
 		
 	
 	private def SaveToSubtitleConfig(subtitleConfig as SubtitleConfig):
@@ -590,9 +590,9 @@ partial class JobSettingForm:
 		
 	private def AvsInputSaveConfig():
 		if self.muxerComboBox.Text == "MKV":
-			self._jobConfig.SetContainer(OutputContainer.MKV, self._destFile)
+			self._jobConfig.Container = OutputContainer.MKV
 		elif self.muxerComboBox.Text == "MP4":
-			self._jobConfig.SetContainer(OutputContainer.MP4, self._destFile)
+			self._jobConfig.Container = OutputContainer.MP4
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
 		_resetter.ResetControls()

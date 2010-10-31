@@ -9,13 +9,13 @@ import System.Collections.Generic
 import System.Windows.Forms
 import CXGUI.External
 
-class X264Config(VideoEncConfigBase):
-"""Description of X264Config"""
+class x264Config(VideoEncConfigBase):
+"""Description of x264Config"""
 	//variables
 	_presets = {}
 	
 	
-	_optionDict = OrderedDictionary[of string, X264ConfigNode]()
+	_optionDict = OrderedDictionary[of string, x264ConfigNode]()
 	
 	TotalPass as int:
 		set:
@@ -124,7 +124,7 @@ class X264Config(VideoEncConfigBase):
 		//(loseless,(false,)),
 		//...
 		):
-			node = X264ConfigNode()
+			node = x264ConfigNode()
 			node.Name = nodeData[0]
 			node.Type = Enum.Parse(NodeType, nodeData[1].ToString())
 
@@ -164,7 +164,7 @@ class X264Config(VideoEncConfigBase):
 						"subme":7, "trellis":1, "no-weightb":false, "weightp":2}
 	//methods
 	
-	def GetNode(name as string) as X264ConfigNode:
+	def GetNode(name as string) as x264ConfigNode:
 		try:
 			return _optionDict[name]
 		except:
@@ -185,7 +185,7 @@ class X264Config(VideoEncConfigBase):
 			passNode.Num = 2 if passNode.Num == 3
 			passNode.Num = 3 if passNode.Num == 2
 
-		for node as X264ConfigNode in self._optionDict.Values:
+		for node as x264ConfigNode in self._optionDict.Values:
 			
 			try:
 				if not node.Locked and node.InUse:

@@ -1,6 +1,6 @@
 ﻿namespace CXGUI.GUI
 
-partial class X264ConfigForm(System.Windows.Forms.Form):
+partial class x264ConfigForm(System.Windows.Forms.Form):
 	private components as System.ComponentModel.IContainer = null
 	
 	protected override def Dispose(disposing as bool) as void:
@@ -206,14 +206,14 @@ partial class X264ConfigForm(System.Windows.Forms.Form):
 		self.chroma_qp_offset.Size = System.Drawing.Size(50, 21)
 		self.chroma_qp_offset.TabIndex = 11
 		# 
-		# X264ConfigForm
+		# x264ConfigForm
 		# 
 		self.AutoScaleDimensions = System.Drawing.SizeF(6, 12)
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.ClientSize = System.Drawing.Size(581, 531)
 		self.Controls.Add(self.tabControl1)
-		self.Name = "X264ConfigForm"
-		self.Text = "X264ConfigForm"
+		self.Name = "x264ConfigForm"
+		self.Text = "x264ConfigForm"
 		self.tabControl1.ResumeLayout(false)
 		self.tabPage1.ResumeLayout(false)
 		self.groupBox1.ResumeLayout(false)

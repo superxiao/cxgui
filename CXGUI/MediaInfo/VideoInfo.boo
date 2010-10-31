@@ -110,13 +110,6 @@ public class VideoInfo:
 		info.Close()
 		return str
 		
-		
-		
-
-	
-
-
-	
 	// Properties
 	public AudioStreamsCount as int:
 		get:
@@ -134,6 +127,7 @@ public class VideoInfo:
 
 	
 	public Format as string:
+	"""流格式。如为avs脚本，不论是含视频或音频，统一为'avs'"""
 		get:
 			return self._format
 

@@ -16,7 +16,7 @@ class Profile:
 	[Property(AvsConfig)]
 	_avsConfig as AvisynthConfig
 	[Property(VideoEncConfig)]
-	_videoEncConfig as X264Config
+	_videoEncConfig as x264Config
 	[Property(AudioEncConfig)]
 	_audioEncConfig as NeroAacConfig
 	[Property(JobConfig)]
@@ -39,7 +39,7 @@ class Profile:
 	"""
 		if initializeConfig:
 			_avsConfig = AvisynthConfig()
-			_videoEncConfig = X264Config()
+			_videoEncConfig = x264Config()
 			_audioEncConfig = NeroAacConfig()
 			_jobConfig = JobItemConfig()
 			_subtitleConfig = SubtitleConfig()

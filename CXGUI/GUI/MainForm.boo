@@ -319,9 +319,6 @@ partial class MainForm(System.Windows.Forms.Form):
 		jobItems = List[of JobItem]()
 		for item as CxListViewItem in self.jobItemListView.Items:
 			jobItem = item.JobItem
-			jobItem.VideoEncoder = null
-			jobItem.AudioEncoder = null
-			jobItem.Muxer = null
 			jobItems.Add(jobItem)
 		formater = BinaryFormatter()
 		stream = FileStream("JobItems.bin", FileMode.Create)

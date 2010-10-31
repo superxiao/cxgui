@@ -1,6 +1,7 @@
 ﻿namespace CXGUI.Job
 
 import System
+import System.IO
 import System.Windows.Forms
 import System.Runtime.Serialization
 import CXGUI
@@ -37,18 +38,29 @@ class JobItem():
 创建一个JobItem实例，将附送一个CxListViewItem实例，可添加到ListView中。
 更改JobItem的源文件、目标文件、工作状态，CxListViewItem相应自动更改。
 """
-	
-	
+
+	//Fields	
 	_sourceFile as string
+	
+	_destFile as string
+	
+	[NonSerialized]
+	_videoEncoder as VideoEncoderHandler
+	
+	[NonSerialized]
+	_audioEncoder as AudioEncoderHandler
+	
+	[NonSerialized]
+	_muxer as MuxerBase
+	
+	_state as JobState
+	
+	
 	SourceFile as string:
 		get:
 			return _sourceFile
-		set:
-			_sourceFile = value
-			_cxListViewItem.SubItems[1].Text = value
 			
 
-	_destFile as string
 	DestFile as string:
 		get:
 			return _destFile
@@ -57,7 +69,6 @@ class JobItem():
 			_cxListViewItem.SubItems[2].Text = value
 	
 
-	_state as JobState
 	State as JobState:
 		get:
 			return _state
@@ -97,15 +108,31 @@ class JobItem():
 					raise ArgumentException("Incorrect JobMode.")
 			_jobConfig = value
 	_jobConfig as JobItemConfig
+	
 
-	[Property(VideoEncoder)]
-	_videoEncoder as VideoEncoderBase
+	VideoEncoder as VideoEncoderHandler:
+		get:
+			return self._videoEncoder
+		set:
+			self._videoEncoder = value
+			
 
-	[Property(AudioEncoder)]
-	_audioEncoder as AudioEncoderHandler
-
-	[Property(Muxer)]
-	_muxer as MuxerBase
+	AudioEncoder as AudioEncoderHandler:
+		get:
+			return self._audioEncoder
+		set:
+			self._audioEncoder = value
+	
+	
+	Muxer as MuxerBase:
+	"""
+	使用此属性前应先JobItem.SetUp()，否则返回null。
+	如不需要混流器，仍返回null。
+	可能保留有上此混流过程的信息，调用JobItem.SetUp()
+	可以清除这些信息。
+	"""
+		get:
+			return self._muxer
 
 	[Property(Event)]
 	_event as JobEvent
@@ -142,7 +169,7 @@ class JobItem():
 	_videoInfo as VideoInfo
 	
 	public def constructor(sourceFile as string, destFile as string, profileName as string):
-	"""创建对象时内部各设置属性都为null，要用必须SetUp()一下"""
+	"""创建对象时内部各设置属性都为null，要用必须SetUp()一下。"""
 		self._sourceFile = sourceFile
 		self._destFile = destFile
 		self._profileName = profileName
@@ -153,7 +180,8 @@ class JobItem():
 	
 	public def SetUp():
 	"""
-	根据JobItem对象的ProfileName属性为其读取各设置实例，并应用到值为null的设置属性。
+	仅对于值为null的设置属性，根据JobItem.ProfileName属性为其读取各设置实例。
+	并且根据JobItem.JobConfig.Container和JobItem.DestFile，创建新的JobItem.Muxer实例。
 	如对应Profile文件不存在，则报错。
 	"""
 		if self._avsConfig == null:
@@ -178,8 +206,7 @@ class JobItem():
 				self._jobConfig.VideoMode = StreamProcessMode.Encode
 			if self._jobConfig.AudioMode == StreamProcessMode.Copy:
 				self._jobConfig.AudioMode = StreamProcessMode.Encode
-		
-		self._jobConfig.SetContainer(self._jobConfig.Container, self._destFile)
+		self.CreateNewMuxer()
 
 	private def ReadProfile(profileName as string):
 	"""
@@ -202,17 +229,28 @@ class JobItem():
 		if self._readSubCfg:
 			_subtitleConfig = profile.SubtitleConfig
 			_readSubCfg = false
-	
-	public def Clear():
-	"""
-	将内部各设置属性设为null。
-	"""
-			self._avsConfig = null
-			self._audioEncConfig = null
-			self._videoEncConfig = null
-			self._jobConfig = null
-			self._subtitleConfig = null
+
+	private def CreateNewMuxer():
+		if self._jobConfig == null:
+			self._muxer = null
+		else:
+			container = self.JobConfig.Container
+			if container == OutputContainer.MKV:
+				self._muxer = MKVMerge()
+			elif container == OutputContainer.MP4:
+				if self.JobConfig.VideoMode == StreamProcessMode.Copy or self.JobConfig.AudioMode == StreamProcessMode.Copy:
+					self._muxer = FFMP4()
+				elif Path.GetExtension(self._destFile).ToLower() not in ('.mp4', '.m4v', '.m4a'):
+					self._muxer = FFMP4()
+				elif self.JobConfig.VideoMode == StreamProcessMode.Encode and self.JobConfig.AudioMode == StreamProcessMode.Encode:
+					self._muxer = MP4Box()
+				//以下条件：音频、视频处理模式都是‘None’，即源文件无媒体流；或一为编码，一为None，且输出MP4，则出品已是MP4，无需再混
+				else:
+					self._muxer = null
 
 	[OnDeserialized]	
 	private def OnDeserialize(context as StreamingContext):
 		self.CxListViewItem.JobItem = self
+
+
+	//Properties

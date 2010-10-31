@@ -5,13 +5,13 @@ import System.Collections
 import System.Drawing
 import System.Windows.Forms
 
-partial final class X264ConfigForm:
-"""Description of X264ConfigForm."""
+partial final class x264ConfigForm:
+"""Description of x264ConfigForm."""
 
-	static Instance as X264ConfigForm:
+	static Instance as x264ConfigForm:
 		get:
 			return _instance
-	static final _instance = X264ConfigForm()
+	static final _instance = x264ConfigForm()
 	static def constructor():
  		pass
 
