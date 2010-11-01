@@ -7,6 +7,9 @@ interface IMediaProcessor:
 	
 	Progress as int:
 		get
+		
+	ProcessingDone as bool:
+		get
 
 	def Start()
 	def Stop()

@@ -22,6 +22,7 @@ class MP4Box(MuxerBase):
 		_process.Start()
 		readThread.Start()
 		_process.WaitForExit()
+		self.processingDone = true
 		if _progress >= 99:
 			_progress = 100
 			_timeLeft = timespan(0)

@@ -84,7 +84,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTextBox = System.Windows.Forms.TextBox()
 		self.subtitleButton = System.Windows.Forms.Button()
 		self.label18 = System.Windows.Forms.Label()
-		self.previewButton2 = System.Windows.Forms.Button()
+		self.previewButton = System.Windows.Forms.Button()
 		self.saveProfileButton = System.Windows.Forms.Button()
 		self.cancelButton = System.Windows.Forms.Button()
 		self.okButton = System.Windows.Forms.Button()
@@ -746,7 +746,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		# 
 		self.rateControlBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
 		self.rateControlBox.FormattingEnabled = true
-		self.rateControlBox.Items.AddRange((of object: "恒定质量(crf)", "恒定量化器(qp)", "码率 1pass"))
+		self.rateControlBox.Items.AddRange((of object: "恒定质量(crf)", "恒定量化器(qp)", "码率 1pass", "码率 自动2pass", "码率 自动3pass"))
 		self.rateControlBox.Location = System.Drawing.Point(71, 14)
 		self.rateControlBox.Name = "rateControlBox"
 		self.rateControlBox.Size = System.Drawing.Size(127, 20)
@@ -877,16 +877,16 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.label18.Text = "字幕路径"
 		self.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		# 
-		# previewButton2
+		# previewButton
 		# 
-		self.previewButton2.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
-		self.previewButton2.Location = System.Drawing.Point(12, 508)
-		self.previewButton2.Name = "previewButton2"
-		self.previewButton2.Size = System.Drawing.Size(75, 23)
-		self.previewButton2.TabIndex = 12
-		self.previewButton2.Text = "预览"
-		self.previewButton2.UseVisualStyleBackColor = true
-		self.previewButton2.Click += self.PreviewButton2Click as System.EventHandler
+		self.previewButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
+		self.previewButton.Location = System.Drawing.Point(12, 508)
+		self.previewButton.Name = "previewButton"
+		self.previewButton.Size = System.Drawing.Size(75, 23)
+		self.previewButton.TabIndex = 12
+		self.previewButton.Text = "预览"
+		self.previewButton.UseVisualStyleBackColor = true
+		self.previewButton.Click += self.PreviewButtonClick as System.EventHandler
 		# 
 		# saveProfileButton
 		# 
@@ -964,7 +964,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.CancelButton = self.cancelButton
 		self.ClientSize = System.Drawing.Size(464, 576)
-		self.Controls.Add(self.previewButton2)
+		self.Controls.Add(self.previewButton)
 		self.Controls.Add(self.tabControl1)
 		self.Controls.Add(self.label15)
 		self.Controls.Add(self.profileBox)
@@ -991,7 +991,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTabPage.PerformLayout()
 		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
-	private previewButton2 as System.Windows.Forms.Button
+	private previewButton as System.Windows.Forms.Button
 	private encTabPage as System.Windows.Forms.TabPage
 	private avsInputTabPage as System.Windows.Forms.TabPage
 	private lockToSourceARCheckBox as System.Windows.Forms.CheckBox

@@ -41,6 +41,7 @@ class MKVMerge(MuxerBase):
 		_process.Start()
 		ReadStdErr()
 		_process.WaitForExit()
+		self.processingDone = true
 		File.Delete(tempFile)
 		
 	private def GetArgument(vInfo as VideoInfo, aInfo as AudioInfo) as string:

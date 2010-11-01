@@ -38,6 +38,8 @@ public abstract class AudioEncoderHandler(IMediaProcessor):
 
 	protected length as double //秒
 	
+	protected processingDone as bool
+	
 
 	public def constructor(encoderPath as string, avisynthScriptFile as string, destFile as string):
 		if not File.Exists(avisynthScriptFile):
@@ -120,6 +122,10 @@ public abstract class AudioEncoderHandler(IMediaProcessor):
 	public Length as double:
 		get:
 			return self.length
+			
+	public ProcessingDone as bool:
+		get:
+			return self.processingDone
 
 
 

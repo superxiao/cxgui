@@ -9,7 +9,6 @@ class NeroAacHandler(AudioEncoderHandler):
 
 	//Fields
 	_startTime as date
-	
 	_config as NeroAacConfig
 	
 	public def constructor(avisynthScriptFile as string, destFile as string):
@@ -46,6 +45,7 @@ class NeroAacHandler(AudioEncoderHandler):
 			target.Flush()
 			target.Close()
 		encodingProcess.WaitForExit()
+		self.processingDone = true
 
 	private def UpdateProgress(currentSample as int):
 		self.currentPosition = currentSample / self.scriptInfo.AudioSampleRate //s

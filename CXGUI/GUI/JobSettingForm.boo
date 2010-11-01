@@ -372,7 +372,7 @@ partial class JobSettingForm:
 			self.rateFactorBox.Text = x264config.GetNode("qp").Num.ToString()
 			self.label9.Text = "质量"
 		elif x264config.GetNode("bitrate").InUse:
-			self.rateControlBox.SelectedIndex = 2
+			self.rateControlBox.SelectedIndex = x264config.TotalPass+1
 			self.rateFactorBox.Text = x264config.GetNode("bitrate").Num.ToString()
 			self.label9.Text = "码率"
 		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged
@@ -389,7 +389,7 @@ partial class JobSettingForm:
 			_x264config.SetNumOption("qp", 23)
 		else:
 			_x264config.SetNumOption("bitrate", 700)
-			_x264config.TotalPass = 1
+			_x264config.TotalPass = self.rateControlBox.SelectedIndex-1
 			_x264config.CurrentPass = 1
 		RefreshX264UI()
 	
@@ -849,7 +849,7 @@ partial class JobSettingForm:
 		if self.frameRateBox.Text == '0':
 			self.frameRateBox.Text = '1'
 	
-	private def PreviewButton2Click(sender as object, e as System.EventArgs):
+	private def PreviewButtonClick(sender as object, e as System.EventArgs):
 		playerPath = ProgramConfig.Get().PlayerPath
 		if not File.Exists(playerPath):
 			MessageBox.Show("请在程序设置中指定有效的播放器路径。", "找不到播放器", MessageBoxButtons.OK, MessageBoxIcon.Error)

@@ -10,8 +10,8 @@ import CXGUI.External
 
 enum AudioSourceFilter:
 """用于AudioScriptConfig类的SourceFilter属性。"""
-	FFAudioSource
 	DirectShowSource
+	FFAudioSource
 	None
 		
 class AudioAvsWriter():

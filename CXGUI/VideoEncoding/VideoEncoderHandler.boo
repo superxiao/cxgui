@@ -71,5 +71,6 @@ class VideoEncoderHandler(IMediaProcessor):
 	_progress as int
 	[Getter(Log)]
 	_log as string
-
+	[Getter(ProcessingDone)]
+	processingDone as bool
 	

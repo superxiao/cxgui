@@ -30,6 +30,7 @@ class FFMP4(MuxerBase):
 		_process.Start()
 		ReadStdErr(length)
 		_process.WaitForExit()
+		self.processingDone = true
 		
 	private def GetArgument(vInfo as VideoInfo, aInfo as AudioInfo) as string:
 		if vInfo.HasVideo and aInfo.StreamsCount:

@@ -8,13 +8,35 @@ import System.Windows.Forms
 class x264Handler(VideoEncoderHandler):
 """Description of x264Handler"""
 	_startTime as date
-	_errOccured = false
+	
+	_errOccured as bool
+	
+	_config as x264Config
+	
 	public def constructor(avisynthScriptFile as string, destinationFile as string):
+		self._errOccured = false
+		
 		super(avisynthScriptFile, destinationFile)
 		_encoderPath = "x264.exe"
 		_encodingProcess.StartInfo.FileName = _encoderPath
-	def Start():
-		_encodingProcess.StartInfo.Arguments = "${_config.GetArgument()} --output \"${_destinationFile}\" \"${_avisynthScriptFile}\""
+
+	public def Start():
+		self.Start(1)
+		if self._config.TotalPass > 1:
+			self.Start(2)
+		if self._config.TotalPass == 3:
+			self.Start(3)
+		self.processingDone = true
+
+	private def Start(currentPass as int):
+		
+		_config.CurrentPass = currentPass
+#		MessageBox.Show(_config.GetArgument())
+		if _config.CurrentPass < _config.TotalPass:
+			output = "NUL"
+		else:
+			output = "\"${_destinationFile}\""
+		_encodingProcess.StartInfo.Arguments = "${_config.GetArgument()} --output ${output} \"${_avisynthScriptFile}\""
 		_encodingProcess.StartInfo.UseShellExecute = false
 		_encodingProcess.StartInfo.RedirectStandardError = true
 		_encodingProcess.StartInfo.CreateNoWindow = true
@@ -73,10 +95,14 @@ class x264Handler(VideoEncoderHandler):
 			_encodingProcess.WaitForExit()
 		except:
 			pass
+			
+			
 	//Properties
-	[Property(Config)]
-	_config as x264Config
-	
+	Config as x264Config:
+		get:
+			return self._config
+		set:
+			self._config = value
 	
 public def vetest():
 	t = x264Handler("""C:\Users\Public\Videos\Sample Videos\Wildlife.avs""", """c:\.mp4""")

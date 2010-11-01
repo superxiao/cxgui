@@ -20,6 +20,8 @@ class MuxerBase(IMediaProcessor):
 	_timeLeft as timespan
 	[Getter(Progress)]
 	_progress as int
+	[Getter(ProcessingDone)]
+	processingDone as bool
 	
 	_process as Process = Process()
 	

@@ -321,7 +321,7 @@ partial class MainForm(System.Windows.Forms.Form):
 				break
 			if jobItem.State == JobState.Error:
 				break
-			if encoder.Progress == 100:
+			if encoder.ProcessingDone:
 				JobEventReport(jobItem)
 				break
 			JobEventReport(jobItem)

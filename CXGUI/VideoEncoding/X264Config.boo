@@ -21,9 +21,11 @@ class x264Config(VideoEncConfigBase):
 		set:
 			_totalPass = value
 			if value > 1:
+				_optionDict["pass"].Locked = false
 				_optionDict["stats"].Locked = false
 				_optionDict["slow-firstpass"].Locked = false
 			else:
+				_optionDict["pass"].Locked = true
 				_optionDict["stats"].Locked = true
 				_optionDict["slow-firstpass"].Locked = true
 		get:
@@ -38,6 +40,7 @@ class x264Config(VideoEncConfigBase):
 		_currentPass = 1
 		for nodeData as Array in \
 		(
+		//name		type	default	range
 		("profile",		1, 0,		(null, "baseline", "main", "high")),
 		("level",		1, 0,		(null, '1', '1.1', '1.2', '1.3', '2', '2.1', '2.2', '3', '3.1', '3.2', '4', '4.1', '4.2', '5', '5.1')),
 		("preset",		1, 5,		("ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo")),
@@ -182,8 +185,10 @@ class x264Config(VideoEncConfigBase):
 			passNode.Num = self._currentPass
 		elif self._totalPass == 3:
 			passNode.Num = self._currentPass
-			passNode.Num = 2 if passNode.Num == 3
-			passNode.Num = 3 if passNode.Num == 2
+			if passNode.Num == 3:
+				passNode.Num = 2
+			elif passNode.Num == 2:
+				passNode.Num = 3
 
 		for node as x264ConfigNode in self._optionDict.Values:
 			
