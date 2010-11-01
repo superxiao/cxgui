@@ -15,7 +15,7 @@ enum AudioSourceFilter:
 	None
 		
 class AudioAvsWriter():
-"""用于AvisynthWriter类的AudioConfig属性。"""
+"""编写avs脚本。如sourceFile为avs脚本，则各滤镜设置暂时不生效。"""
 
 
 	//Fields
@@ -118,7 +118,7 @@ class AudioAvsWriter():
 			if self._sourceFilter == AudioSourceFilter.DirectShowSource:
 				SetFilter("SourceFilter", "audio=DirectShowSource(\"${_audioInfo.FilePath}\", video=false)")
 			elif self._sourceFilter == AudioSourceFilter.FFAudioSource:
-				SetImport("ffms2.dll")
+				SetImport(Path.GetFullPath("ffms2.dll"))
 				SetFilter("SourceFilter", "audio=FFAudioSource(\"${_audioInfo.FilePath}\", track=-1)")
 			elif self._sourceFilter == AudioSourceFilter.None:
 				RemoveFilter("SourceFilter")
@@ -130,7 +130,7 @@ class AudioAvsWriter():
 		set:
 			_downMix = value
 			if value:
-				SetImport(("Downmix.avs"))
+				SetImport(Path.GetFullPath("Downmix.avs"))
 				SetFilter("DownMix", "audio=(audio.AudioChannels>2) ? DownMix(audio, audio.AudioChannels) : audio")
 			else:
 				RemoveFilter("DownMix")

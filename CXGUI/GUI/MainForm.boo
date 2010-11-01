@@ -27,7 +27,6 @@ import My
 partial class MainForm(System.Windows.Forms.Form):
 	_configForm as ProgramConfigForm
 	_jobSettingForm as JobSettingForm
-	_programConfig as ProgramConfig
 	_workingJobItem as JobItem
 	"""仅在StartButtonClick和NextJobOrExist方法中更改"""
 	_workingJobItems as Boo.Lang.List[of JobItem]
@@ -37,13 +36,8 @@ partial class MainForm(System.Windows.Forms.Form):
 
 	public def constructor():
 		self.InitializeComponent()
-		config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-		_programConfig = config.Sections["programConfig"]
-		if _programConfig == null:
-			_programConfig = ProgramConfig()
-			config.Sections.Add("programConfig", _programConfig)
-			config.Save()
-		self._configForm = ProgramConfigForm(_programConfig)
+		programConfig = ProgramConfig.Get()
+		self._configForm = ProgramConfigForm(programConfig)
 
 	private def AddButtonClick(sender as object, e as EventArgs):
 		self.openFileDialog1.ShowDialog()
@@ -290,7 +284,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			
 	
 	private def MainFormLoad(sender as object, e as System.EventArgs):
-		self.UpdateProfileBox(Profile.GetExistingProfilesNamesOnHardDisk(), _programConfig.ProfileName)
+		self.UpdateProfileBox(Profile.GetExistingProfilesNamesOnHardDisk(), ProgramConfig.Get().ProfileName)
 		jobItems as List[of JobItem]
 		formater = BinaryFormatter()
 		if not File.Exists("JobItems.bin"):

@@ -9,6 +9,7 @@ import CXGUI.Avisynth
 import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
+import CXGUI.Config
 
 partial class MainForm(System.Windows.Forms.Form):
 
@@ -350,11 +351,6 @@ partial class MainForm(System.Windows.Forms.Form):
 
 
 	private def SaveProfileSelection():
-		config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-		configSection as ProgramConfig = config.Sections["programConfig"]
-		if configSection == null:
-			configSection = ProgramConfig()
-			config.Sections.Add("programConfig", configSection)
-			config.Save()
-		configSection.ProfileName = self.profileBox.Text
-		config.Save()
+		programConfig = ProgramConfig.Get()
+		programConfig.ProfileName = self.profileBox.Text
+		ProgramConfig.Save()

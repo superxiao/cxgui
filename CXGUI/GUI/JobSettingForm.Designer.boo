@@ -60,7 +60,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.groupBox4 = System.Windows.Forms.GroupBox()
 		self.useCustomCmdBox = System.Windows.Forms.CheckBox()
 		self.editCmdButton = System.Windows.Forms.Button()
-		self.slow_firstpass = System.Windows.Forms.CheckBox()
 		self.tune = System.Windows.Forms.ComboBox()
 		self.label12 = System.Windows.Forms.Label()
 		self.level = System.Windows.Forms.ComboBox()
@@ -85,6 +84,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTextBox = System.Windows.Forms.TextBox()
 		self.subtitleButton = System.Windows.Forms.Button()
 		self.label18 = System.Windows.Forms.Label()
+		self.previewButton2 = System.Windows.Forms.Button()
 		self.saveProfileButton = System.Windows.Forms.Button()
 		self.cancelButton = System.Windows.Forms.Button()
 		self.okButton = System.Windows.Forms.Button()
@@ -119,7 +119,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.tabControl1.Location = System.Drawing.Point(12, 12)
 		self.tabControl1.Name = "tabControl1"
 		self.tabControl1.SelectedIndex = 0
-		self.tabControl1.Size = System.Drawing.Size(440, 489)
+		self.tabControl1.Size = System.Drawing.Size(440, 490)
 		self.tabControl1.TabIndex = 0
 		# 
 		# editTabPage
@@ -137,7 +137,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.editTabPage.Location = System.Drawing.Point(4, 22)
 		self.editTabPage.Name = "editTabPage"
 		self.editTabPage.Padding = System.Windows.Forms.Padding(3)
-		self.editTabPage.Size = System.Drawing.Size(432, 463)
+		self.editTabPage.Size = System.Drawing.Size(432, 464)
 		self.editTabPage.TabIndex = 0
 		self.editTabPage.Text = "编辑"
 		self.editTabPage.UseVisualStyleBackColor = true
@@ -503,7 +503,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.avsInputTabPage.Location = System.Drawing.Point(4, 22)
 		self.avsInputTabPage.Name = "avsInputTabPage"
 		self.avsInputTabPage.Padding = System.Windows.Forms.Padding(3)
-		self.avsInputTabPage.Size = System.Drawing.Size(432, 463)
+		self.avsInputTabPage.Size = System.Drawing.Size(432, 464)
 		self.avsInputTabPage.TabIndex = 3
 		self.avsInputTabPage.Text = "avs输入"
 		self.avsInputTabPage.UseVisualStyleBackColor = true
@@ -516,7 +516,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.encTabPage.Location = System.Drawing.Point(4, 22)
 		self.encTabPage.Name = "encTabPage"
 		self.encTabPage.Padding = System.Windows.Forms.Padding(3)
-		self.encTabPage.Size = System.Drawing.Size(432, 463)
+		self.encTabPage.Size = System.Drawing.Size(432, 464)
 		self.encTabPage.TabIndex = 1
 		self.encTabPage.Text = "编码器"
 		self.encTabPage.UseVisualStyleBackColor = true
@@ -601,7 +601,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.groupBox4.Controls.Add(self.useCustomCmdBox)
 		self.groupBox4.Controls.Add(self.editCmdButton)
-		self.groupBox4.Controls.Add(self.slow_firstpass)
 		self.groupBox4.Controls.Add(self.tune)
 		self.groupBox4.Controls.Add(self.label12)
 		self.groupBox4.Controls.Add(self.level)
@@ -640,16 +639,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.editCmdButton.Text = "编辑命令行"
 		self.editCmdButton.UseVisualStyleBackColor = true
 		self.editCmdButton.Click += self.EditCmdButtonClick as System.EventHandler
-		# 
-		# slow_firstpass
-		# 
-		self.slow_firstpass.Location = System.Drawing.Point(152, 41)
-		self.slow_firstpass.Name = "slow_firstpass"
-		self.slow_firstpass.Size = System.Drawing.Size(111, 20)
-		self.slow_firstpass.TabIndex = 12
-		self.slow_firstpass.Text = "slow-firstpass"
-		self.slow_firstpass.UseVisualStyleBackColor = true
-		self.slow_firstpass.CheckedChanged += self.BoolChanged as System.EventHandler
 		# 
 		# tune
 		# 
@@ -773,7 +762,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTabPage.Controls.Add(self.label18)
 		self.subtitleTabPage.Location = System.Drawing.Point(4, 22)
 		self.subtitleTabPage.Name = "subtitleTabPage"
-		self.subtitleTabPage.Size = System.Drawing.Size(432, 463)
+		self.subtitleTabPage.Size = System.Drawing.Size(432, 464)
 		self.subtitleTabPage.TabIndex = 2
 		self.subtitleTabPage.Text = "字幕"
 		self.subtitleTabPage.UseVisualStyleBackColor = true
@@ -888,10 +877,21 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.label18.Text = "字幕路径"
 		self.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
 		# 
+		# previewButton2
+		# 
+		self.previewButton2.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
+		self.previewButton2.Location = System.Drawing.Point(12, 508)
+		self.previewButton2.Name = "previewButton2"
+		self.previewButton2.Size = System.Drawing.Size(75, 23)
+		self.previewButton2.TabIndex = 12
+		self.previewButton2.Text = "预览"
+		self.previewButton2.UseVisualStyleBackColor = true
+		self.previewButton2.Click += self.PreviewButton2Click as System.EventHandler
+		# 
 		# saveProfileButton
 		# 
 		self.saveProfileButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
-		self.saveProfileButton.Location = System.Drawing.Point(194, 507)
+		self.saveProfileButton.Location = System.Drawing.Point(194, 541)
 		self.saveProfileButton.Name = "saveProfileButton"
 		self.saveProfileButton.Size = System.Drawing.Size(75, 23)
 		self.saveProfileButton.TabIndex = 4
@@ -903,7 +903,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		# 
 		self.cancelButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
 		self.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-		self.cancelButton.Location = System.Drawing.Point(379, 507)
+		self.cancelButton.Location = System.Drawing.Point(379, 541)
 		self.cancelButton.Name = "cancelButton"
 		self.cancelButton.Size = System.Drawing.Size(73, 23)
 		self.cancelButton.TabIndex = 3
@@ -914,7 +914,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		# okButton
 		# 
 		self.okButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
-		self.okButton.Location = System.Drawing.Point(298, 507)
+		self.okButton.Location = System.Drawing.Point(298, 541)
 		self.okButton.Name = "okButton"
 		self.okButton.Size = System.Drawing.Size(75, 23)
 		self.okButton.TabIndex = 2
@@ -936,7 +936,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.profileBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
 		self.profileBox.FormattingEnabled = true
-		self.profileBox.Location = System.Drawing.Point(67, 509)
+		self.profileBox.Location = System.Drawing.Point(67, 543)
 		self.profileBox.Name = "profileBox"
 		self.profileBox.Size = System.Drawing.Size(121, 20)
 		self.profileBox.TabIndex = 5
@@ -945,7 +945,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		# label15
 		# 
 		self.label15.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))
-		self.label15.Location = System.Drawing.Point(12, 507)
+		self.label15.Location = System.Drawing.Point(12, 541)
 		self.label15.Name = "label15"
 		self.label15.Size = System.Drawing.Size(48, 23)
 		self.label15.TabIndex = 6
@@ -955,7 +955,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		# openFileDialog2
 		# 
 		self.openFileDialog2.FileName = "openFileDialog2"
-		self.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*,ssa|srt|*.srt|ass|*.ass|ssa|*.ssa"
+		self.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*.ssa|srt|*.srt|ass|*.ass|ssa|*.ssa"
 		# 
 		# JobSettingForm
 		# 
@@ -963,7 +963,8 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.AutoScaleDimensions = System.Drawing.SizeF(6, 12)
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.CancelButton = self.cancelButton
-		self.ClientSize = System.Drawing.Size(464, 542)
+		self.ClientSize = System.Drawing.Size(464, 576)
+		self.Controls.Add(self.previewButton2)
 		self.Controls.Add(self.tabControl1)
 		self.Controls.Add(self.label15)
 		self.Controls.Add(self.profileBox)
@@ -990,6 +991,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTabPage.PerformLayout()
 		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private previewButton2 as System.Windows.Forms.Button
 	private encTabPage as System.Windows.Forms.TabPage
 	private avsInputTabPage as System.Windows.Forms.TabPage
 	private lockToSourceARCheckBox as System.Windows.Forms.CheckBox
@@ -1036,7 +1038,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 	private profile as System.Windows.Forms.ComboBox
 	private preset as System.Windows.Forms.ComboBox
 	private rateFactorBox as System.Windows.Forms.DomainUpDown
-	private slow_firstpass as System.Windows.Forms.CheckBox
 	private rateControlBox as System.Windows.Forms.ComboBox
 	private label7 as System.Windows.Forms.Label
 	private label8 as System.Windows.Forms.Label

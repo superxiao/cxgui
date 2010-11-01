@@ -7,6 +7,7 @@ import System.Windows.Forms
 import System.Configuration
 import System.IO
 import System.Runtime.Serialization.Formatters.Binary
+import Microsoft.Win32
 import CXGUI
 import CXGUI.Avisynth
 import CXGUI.VideoEncoding
@@ -18,7 +19,6 @@ import My
 
 partial class JobSettingForm:
 """Description of JobSettingForm."""
-
 	_videoInfo as VideoInfo
 	_audioInfo as AudioInfo
 	_resolutionCal as ResolutionCalculator
@@ -537,7 +537,7 @@ partial class JobSettingForm:
 		
 	private def OkButtonClick(sender as object, e as System.EventArgs):		
 		if self._videoInfo.Format == "avs":
-			self.AvsInputSaveConfig()
+			self.AvsInputSaveConfig(self._jobConfig)
 		else:
 			try:
 				dir = Path.GetDirectoryName(self.destFileBox.Text)
@@ -588,11 +588,11 @@ partial class JobSettingForm:
 		self.DialogResult = DialogResult.OK
 		self.Close()
 		
-	private def AvsInputSaveConfig():
+	private def AvsInputSaveConfig(jobConfig as JobItemConfig):
 		if self.muxerComboBox.Text == "MKV":
-			self._jobConfig.Container = OutputContainer.MKV
+			jobConfig.Container = OutputContainer.MKV
 		elif self.muxerComboBox.Text == "MP4":
-			self._jobConfig.Container = OutputContainer.MP4
+			jobConfig.Container = OutputContainer.MP4
 
 	private def CancelButtonClick(sender as object, e as System.EventArgs):
 		_resetter.ResetControls()
@@ -756,7 +756,7 @@ partial class JobSettingForm:
 	
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
 		if self._videoInfo.Format == "avs":
-			self.AvsInputSaveConfig()
+			self.AvsInputSaveConfig(self._jobConfig)
 		else:
 			SaveToAvsConfig(_avsConfig)
 			SaveToJobConfig(_jobConfig)
@@ -848,6 +848,79 @@ partial class JobSettingForm:
 	private def FrameRateBoxValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
 		if self.frameRateBox.Text == '0':
 			self.frameRateBox.Text = '1'
+	
+	private def PreviewButton2Click(sender as object, e as System.EventArgs):
+		playerPath = ProgramConfig.Get().PlayerPath
+		if not File.Exists(playerPath):
+			MessageBox.Show("请在程序设置中指定有效的播放器路径。", "找不到播放器", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			return
+		avsConfig = AvisynthConfig()
+		jobConfig = JobItemConfig()
+		subtitleConfig = SubtitleConfig()
+		subtitle = ""
+		sepAudio = ""
+		previewContent = ""
+		hasVideo = false
+		hasAudio = false
+		if self._videoInfo.Format == "avs":
+			self.AvsInputSaveConfig(jobConfig)
+		else:
+			self.SaveToAvsConfig(avsConfig)
+			self.SaveToJobConfig(jobConfig)
+			self.SaveToSubtitleConfig(subtitleConfig)
+			if File.Exists(self.subtitleTextBox.Text):
+				subtitle = self.subtitleTextBox.Text
+			if File.Exists(self.tbSepAudio.Text):
+				sepAudio = self.tbSepAudio.Text
+		
+		if self._jobConfig.VideoMode != StreamProcessMode.None:
+			hasVideo = true
+			if self._jobConfig.VideoMode == StreamProcessMode.Encode:
+				if subtitle != "" and subtitleConfig.UsingStyle:
+					SubStyleWriter(subtitle, subtitleConfig).Write()
+			elif self._jobConfig.VideoMode == StreamProcessMode.Copy:
+				avsConfig.UsingSourceFrameRate = true
+				avsConfig.UsingSourceResolution = true
+				avsConfig.ConvertFPS = true
+			VideoAvsWriter(self._sourceFile, avsConfig, subtitle).WriteScript('video.avs')
+			previewContent += "video = import(\"video.avs\")"
+		
+		if sepAudio != "":
+			audio = sepAudio
+		else:
+			audio = self._sourceFile
+		if self._jobConfig.AudioMode != StreamProcessMode.None:
+			hasAudio = true
+			if self._jobConfig.AudioMode == StreamProcessMode.Copy:
+				avsConfig.Normalize = false
+				avsConfig.DownMix = false
+			AudioAvsWriter(audio, avsConfig).WriteScript('audio.avs')
+			previewContent += "\r\naudio = import(\"audio.avs\")"
+		if hasVideo and hasAudio:
+			previewContent += "\r\nAudioDub(video, audio)"
+		elif hasVideo:
+			previewContent += "\r\nvideo"
+		elif hasAudio:
+			previewContent += "\r\naudio"
+		if previewContent != "":
+			File.WriteAllText("preview.avs", previewContent, System.Text.Encoding.Default)
+			
+			process = System.Diagnostics.Process()
+			process.StartInfo.FileName = ProgramConfig.Get().PlayerPath
+			process.StartInfo.Arguments = Path.GetFullPath("preview.avs")
+			process.Start()
+		
+			
+		
+	
+
+#		if jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.FFVideoSource:
+#			File.Delete(jobItem.SourceFile+'.ffindex')
+#			
+#		if usingSubStyleWriter:
+#			substyleWriter.CleanUp()
+		
+		
 
 
 

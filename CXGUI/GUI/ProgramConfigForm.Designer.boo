@@ -18,14 +18,20 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.chbSilentRestart = System.Windows.Forms.CheckBox()
 		self.label1 = System.Windows.Forms.Label()
 		self.destDirComboBox = System.Windows.Forms.ComboBox()
-		self.browseButton = System.Windows.Forms.Button()
+		self.outputButton = System.Windows.Forms.Button()
 		self.OKButton = System.Windows.Forms.Button()
 		self.cacelButton = System.Windows.Forms.Button()
 		self.folderBrowserDialog1 = System.Windows.Forms.FolderBrowserDialog()
 		self.groupBox2 = System.Windows.Forms.GroupBox()
 		self.cbAudioAutoSF = System.Windows.Forms.CheckBox()
+		self.editGroupBox = System.Windows.Forms.GroupBox()
+		self.label2 = System.Windows.Forms.Label()
+		self.previewPlayerButton = System.Windows.Forms.Button()
+		self.previewPlayerComboBox = System.Windows.Forms.ComboBox()
+		self.openFileDialog1 = System.Windows.Forms.OpenFileDialog()
 		self.groupBox1.SuspendLayout()
 		self.groupBox2.SuspendLayout()
+		self.editGroupBox.SuspendLayout()
 		self.SuspendLayout()
 		# 
 		# groupBox1
@@ -36,10 +42,10 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.groupBox1.Controls.Add(self.chbSilentRestart)
 		self.groupBox1.Controls.Add(self.label1)
 		self.groupBox1.Controls.Add(self.destDirComboBox)
-		self.groupBox1.Controls.Add(self.browseButton)
+		self.groupBox1.Controls.Add(self.outputButton)
 		self.groupBox1.Location = System.Drawing.Point(12, 12)
 		self.groupBox1.Name = "groupBox1"
-		self.groupBox1.Size = System.Drawing.Size(289, 202)
+		self.groupBox1.Size = System.Drawing.Size(410, 119)
 		self.groupBox1.TabIndex = 0
 		self.groupBox1.TabStop = false
 		self.groupBox1.Text = "工作列表"
@@ -77,24 +83,24 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.destDirComboBox.FormattingEnabled = true
 		self.destDirComboBox.Location = System.Drawing.Point(87, 20)
 		self.destDirComboBox.Name = "destDirComboBox"
-		self.destDirComboBox.Size = System.Drawing.Size(115, 20)
+		self.destDirComboBox.Size = System.Drawing.Size(236, 20)
 		self.destDirComboBox.TabIndex = 2
 		# 
-		# browseButton
+		# outputButton
 		# 
-		self.browseButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
-		self.browseButton.Location = System.Drawing.Point(208, 18)
-		self.browseButton.Name = "browseButton"
-		self.browseButton.Size = System.Drawing.Size(75, 23)
-		self.browseButton.TabIndex = 1
-		self.browseButton.Text = "浏览"
-		self.browseButton.UseVisualStyleBackColor = true
-		self.browseButton.Click += self.BrowseButtonClick as System.EventHandler
+		self.outputButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
+		self.outputButton.Location = System.Drawing.Point(329, 18)
+		self.outputButton.Name = "outputButton"
+		self.outputButton.Size = System.Drawing.Size(75, 23)
+		self.outputButton.TabIndex = 1
+		self.outputButton.Text = "浏览"
+		self.outputButton.UseVisualStyleBackColor = true
+		self.outputButton.Click += self.BrowseButtonClick as System.EventHandler
 		# 
 		# OKButton
 		# 
 		self.OKButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
-		self.OKButton.Location = System.Drawing.Point(145, 313)
+		self.OKButton.Location = System.Drawing.Point(266, 313)
 		self.OKButton.Name = "OKButton"
 		self.OKButton.Size = System.Drawing.Size(75, 23)
 		self.OKButton.TabIndex = 1
@@ -106,7 +112,7 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		# 
 		self.cacelButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))
 		self.cacelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
-		self.cacelButton.Location = System.Drawing.Point(226, 313)
+		self.cacelButton.Location = System.Drawing.Point(347, 313)
 		self.cacelButton.Name = "cacelButton"
 		self.cacelButton.Size = System.Drawing.Size(75, 23)
 		self.cacelButton.TabIndex = 2
@@ -121,7 +127,7 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.groupBox2.Controls.Add(self.cbAudioAutoSF)
 		self.groupBox2.Location = System.Drawing.Point(12, 220)
 		self.groupBox2.Name = "groupBox2"
-		self.groupBox2.Size = System.Drawing.Size(289, 87)
+		self.groupBox2.Size = System.Drawing.Size(410, 87)
 		self.groupBox2.TabIndex = 3
 		self.groupBox2.TabStop = false
 		self.groupBox2.Text = "音频"
@@ -137,13 +143,61 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.cbAudioAutoSF.Text = "当音频读取有错误时自动更改源滤镜"
 		self.cbAudioAutoSF.UseVisualStyleBackColor = true
 		# 
+		# editGroupBox
+		# 
+		self.editGroupBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.editGroupBox.Controls.Add(self.label2)
+		self.editGroupBox.Controls.Add(self.previewPlayerButton)
+		self.editGroupBox.Controls.Add(self.previewPlayerComboBox)
+		self.editGroupBox.Location = System.Drawing.Point(12, 137)
+		self.editGroupBox.Name = "editGroupBox"
+		self.editGroupBox.Size = System.Drawing.Size(410, 77)
+		self.editGroupBox.TabIndex = 4
+		self.editGroupBox.TabStop = false
+		self.editGroupBox.Text = "编辑与编码"
+		# 
+		# label2
+		# 
+		self.label2.Location = System.Drawing.Point(6, 22)
+		self.label2.Name = "label2"
+		self.label2.Size = System.Drawing.Size(75, 23)
+		self.label2.TabIndex = 2
+		self.label2.Text = "预览播放器"
+		# 
+		# previewPlayerButton
+		# 
+		self.previewPlayerButton.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
+		self.previewPlayerButton.Location = System.Drawing.Point(329, 17)
+		self.previewPlayerButton.Name = "previewPlayerButton"
+		self.previewPlayerButton.Size = System.Drawing.Size(75, 23)
+		self.previewPlayerButton.TabIndex = 1
+		self.previewPlayerButton.Text = "浏览"
+		self.previewPlayerButton.UseVisualStyleBackColor = true
+		self.previewPlayerButton.Click += self.PreviewPlayerButtonClick as System.EventHandler
+		# 
+		# previewPlayerComboBox
+		# 
+		self.previewPlayerComboBox.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.previewPlayerComboBox.FormattingEnabled = true
+		self.previewPlayerComboBox.Location = System.Drawing.Point(87, 20)
+		self.previewPlayerComboBox.Name = "previewPlayerComboBox"
+		self.previewPlayerComboBox.Size = System.Drawing.Size(236, 20)
+		self.previewPlayerComboBox.TabIndex = 0
+		# 
+		# openFileDialog1
+		# 
+		self.openFileDialog1.Filter = "可执行文件|*.exe"
+		# 
 		# ProgramConfigForm
 		# 
 		self.AcceptButton = self.OKButton
 		self.AutoScaleDimensions = System.Drawing.SizeF(6, 12)
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		self.CancelButton = self.cacelButton
-		self.ClientSize = System.Drawing.Size(313, 348)
+		self.ClientSize = System.Drawing.Size(434, 348)
+		self.Controls.Add(self.editGroupBox)
 		self.Controls.Add(self.groupBox2)
 		self.Controls.Add(self.cacelButton)
 		self.Controls.Add(self.OKButton)
@@ -154,7 +208,14 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 		self.Load += self.ProgramConfigFormLoad as System.EventHandler
 		self.groupBox1.ResumeLayout(false)
 		self.groupBox2.ResumeLayout(false)
+		self.editGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private openFileDialog1 as System.Windows.Forms.OpenFileDialog
+	private previewPlayerComboBox as System.Windows.Forms.ComboBox
+	private previewPlayerButton as System.Windows.Forms.Button
+	private label2 as System.Windows.Forms.Label
+	private editGroupBox as System.Windows.Forms.GroupBox
+	private outputButton as System.Windows.Forms.Button
 	public chbSilentRestart as System.Windows.Forms.CheckBox
 	public chbInputDir as System.Windows.Forms.CheckBox
 	public cbAudioAutoSF as System.Windows.Forms.CheckBox
@@ -163,7 +224,6 @@ partial class ProgramConfigForm(System.Windows.Forms.Form):
 	public destDirComboBox as System.Windows.Forms.ComboBox
 	private cacelButton as System.Windows.Forms.Button
 	private OKButton as System.Windows.Forms.Button
-	private browseButton as System.Windows.Forms.Button
 	private label1 as System.Windows.Forms.Label
 	private groupBox1 as System.Windows.Forms.GroupBox
 

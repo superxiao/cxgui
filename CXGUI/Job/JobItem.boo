@@ -195,7 +195,6 @@ class JobItem():
 		if self.SubtitleConfig == null:
 			_readSubCfg = true
 		ReadProfile(self._profileName)
-		
 		if not self._videoInfo.HasVideo:
 			self._jobConfig.VideoMode = StreamProcessMode.None
 		if not self._videoInfo.AudioStreamsCount:

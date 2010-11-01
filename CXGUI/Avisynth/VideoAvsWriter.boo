@@ -33,7 +33,7 @@ enum ResizeFilter:
 
 //TODO 对avs脚本源，重新做一个路径	
 class VideoAvsWriter():
-"""用于AvisynthWriter类的VideoConfig属性。"""	
+"""编写avs脚本。如sourceFile为avs脚本，则各滤镜设置暂时不生效。"""
 
 	//Fields
 	_filters as OrderedDictionary[of string, string]
@@ -64,12 +64,12 @@ class VideoAvsWriter():
 			
 			if not self._avsConfig.UsingSourceResolution and (self._avsConfig.Width != self._videoInfo.Width or self._avsConfig.Height != self._videoInfo.Height):
 				if self._avsConfig.Width <= 1000 and self._videoInfo.Width >= 1280: 
-					SetImport("ColorMatrix.dll")
+					SetImport(Path.GetFullPath("ColorMatrix.dll"))
 					SetFilter("ColorMatrix", "ColorMatrix()")
 				SetFilter("Resizer", "${self._avsConfig.Resizer}(${self._avsConfig.Width},${self._avsConfig.Height})")
 			
 			if File.Exists(subtitleFile):
-				SetImport("VSFilter.dll")
+				SetImport(Path.GetFullPath("VSFilter.dll"))
 				SetFilter("TextSub", "TextSub(\"${subtitleFile}\")")
 	
 	private def AvsInputInitialize(sourceFile as string):
@@ -135,10 +135,10 @@ class VideoAvsWriter():
 		if sourceFilter == VideoSourceFilter.DirectShowSource:
 			SetFilter("SourceFilter", "DirectShowSource(\"${self._videoInfo.FilePath}\", audio = false)")
 		elif sourceFilter == VideoSourceFilter.DSS2:
-			SetImport("avss.dll")
+			SetImport(Path.GetFullPath("avss.dll"))
 			SetFilter("SourceFilter" ,"DSS2(\"${self._videoInfo.FilePath}\")")
 		elif sourceFilter == VideoSourceFilter.FFVideoSource:
-			SetImport("ffms2.dll")
+			SetImport(Path.GetFullPath("ffms2.dll"))
 			//FFVideoSource读某些RMVB，不写明帧率会不同步，写明帧率seeking会crash
 			SetFilter("SourceFilter", "FFVideoSource(\"${self._videoInfo.FilePath}\")")
 		elif sourceFilter == VideoSourceFilter.None:
