@@ -54,9 +54,3 @@ class JobItemConfig:
 			return self._audioMode
 		set:
 			self._audioMode = value
-			
-	UseSeparateAudio as bool:
-		get:
-			return self._useSepAudio
-		set:
-			self._useSepAudio = value

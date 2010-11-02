@@ -44,6 +44,18 @@ class JobItem():
 	
 	_destFile as string
 	
+	_videoInfo as VideoInfo
+	
+	_avsConfig as AvisynthConfig
+	
+	_videoEncConfig as VideoEncConfigBase
+	
+	_audioEncConfig as AudioEncConfigBase
+	
+	_subtitleConfig as SubtitleConfig
+	
+	_jobConfig as JobItemConfig
+	
 	[NonSerialized]
 	_videoEncoder as VideoEncoderHandler
 	
@@ -53,9 +65,32 @@ class JobItem():
 	[NonSerialized]
 	_muxer as MuxerBase
 	
+	_usingExternalAudio as bool
+	
+	_externalAudio as string
+	
 	_state as JobState
 	
+	_usingCustomVideoScript as bool
 	
+	_customVideoScript as string
+	
+	_usingCustomAudioScript as bool
+	
+	_customAudioScript as string
+
+	_readAvsCfg as bool
+	
+	_readVideoCfg as bool
+	
+	_readAudioCfg as bool
+	
+	_readJobCfg as bool
+	
+	_readSubCfg as bool
+	
+	
+	//Properties
 	SourceFile as string:
 		get:
 			return _sourceFile
@@ -87,17 +122,29 @@ class JobItem():
 			elif value == JobState.Error:
 				_cxListViewItem.SubItems[0].Text = "错误"
 
-	[Property(AvsConfig)]
-	_avsConfig as AvisynthConfig
+	AvsConfig as AvisynthConfig:
+		get:
+			return self._avsConfig
+		set:
+			self._avsConfig = value
 
-	[Property(VideoEncConfig)]
-	_videoEncConfig as VideoEncConfigBase
+	VideoEncConfig as VideoEncConfigBase:
+		get:
+			return self._videoEncConfig
+		set:
+			self._videoEncConfig = value
 
-	[Property(AudioEncConfig)]
-	_audioEncConfig as AudioEncConfigBase
+	AudioEncConfig as AudioEncConfigBase:
+		get:
+			return self._audioEncConfig
+		set:
+			self._audioEncConfig = value
 	
-	[Property(SubtitleConfig)]
-	_subtitleConfig as SubtitleConfig
+	SubtitleConfig as SubtitleConfig:
+		get:
+			return self._subtitleConfig
+		set:
+			self._subtitleConfig = value
 
 	JobConfig as JobItemConfig:
 		get:
@@ -107,7 +154,6 @@ class JobItem():
 				or (not _videoInfo.HasVideo and not value.VideoMode == StreamProcessMode.None):
 					raise ArgumentException("Incorrect JobMode.")
 			_jobConfig = value
-	_jobConfig as JobItemConfig
 	
 
 	VideoEncoder as VideoEncoderHandler:
@@ -141,10 +187,19 @@ class JobItem():
 	"""
 
 	[Property(CxListViewItem)]
-	_cxListViewItem as CxListViewItem
+	_cxListViewItem as CxListViewItem	
+	
+	UsingExternalAudio as bool:
+		get:
+			return self._usingExternalAudio
+		set:
+			self._usingExternalAudio = value
 
-	[Property(ExternalAudio)]
-	_externalAudio as string
+	ExternalAudio as string:
+		get:
+			return self._externalAudio
+		set:
+			self._externalAudio = value
 	
 	[Property(EncodedVideo)]
 	_encodedVideo as string
@@ -154,19 +209,46 @@ class JobItem():
 
 	[Property(ProfileName)]
 	_profileName as string
+	"""
+	当JobItem某设置属性为空时，调用SetUp()，ProfileName决定这个设置属性。
+	但当某设置属性经过更改，则与ProfileName属性失去实际关联。
+	"""
 	
 	[Property(SubtitleFile)]
 	_subtitleFile as string
 
 	[Property(FilesToDeleteWhenProcessingFails)]
 	_createdFiles = List[of string](3)
+	
+	UsingCustomVideoScript as bool:
+		get:
+			return self._usingCustomVideoScript
+		set:
+			self._usingCustomVideoScript = value
+			
+	CustomVideoScript as string:
+		get:
+			return self._customVideoScript
+		set:
+			self._customVideoScript = value
+			
+	UsingCustomAudioScript as bool:
+		get:
+			return self._usingCustomAudioScript
+		set:
+			self._usingCustomAudioScript = value
+			
+	CustomAudioScript as string:
+		get:
+			return self._customAudioScript
+		set:
+			self._customAudioScript = value
+			
 
-	_readAvsCfg as bool
-	_readVideoCfg as bool
-	_readAudioCfg as bool
-	_readJobCfg as bool
-	_readSubCfg as bool
-	_videoInfo as VideoInfo
+	
+	
+
+
 	
 	public def constructor(sourceFile as string, destFile as string, profileName as string):
 	"""创建对象时内部各设置属性都为null，要用必须SetUp()一下。"""

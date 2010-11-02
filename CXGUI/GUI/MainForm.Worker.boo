@@ -126,7 +126,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			File.Delete(jobItem.SourceFile+'.ffindex')
 			
 	private def ProcessAudio(jobItem as JobItem, e as DoWorkEventArgs):
-		if jobItem.JobConfig.UseSeparateAudio and File.Exists(jobItem.ExternalAudio):
+		if jobItem.UsingExternalAudio and File.Exists(jobItem.ExternalAudio):
 			sourceAudio = jobItem.ExternalAudio
 		else:
 			sourceAudio = jobItem.SourceFile
@@ -172,7 +172,7 @@ partial class MainForm(System.Windows.Forms.Form):
 			muxAudio = jobItem.EncodedAudio
 			jobItem.EncodedAudio = ""
 		elif jobItem.JobConfig.AudioMode == StreamProcessMode.Copy:
-			if jobItem.JobConfig.UseSeparateAudio and jobItem.ExternalAudio != "":
+			if jobItem.UsingExternalAudio and jobItem.ExternalAudio != "":
 				muxAudio = jobItem.ExternalAudio
 			else:
 				muxAudio = jobItem.SourceFile

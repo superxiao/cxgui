@@ -19,82 +19,58 @@ import Clinky.IO
 
 partial class JobSettingForm:
 """Description of JobSettingForm."""
+
+	//Fields
 	_videoInfo as VideoInfo
+	
 	_audioInfo as AudioInfo
+	
+	_jobItem as JobItem
+	"""仅允许在确认退出时更改。"""
+	
 	_resolutionCal as ResolutionCalculator
+	
 	_resetter as ControlResetter
+	
 	_usingSepAudio as bool
 	
 	_cmdLineBox as CommandLineBox
-
-	[Property(SourceFile)]
-	_sourceFile as string
 	
-	[Property(DestFile)]
-	_destFile as string
-	
-	[Property(SepAudio)]
-	_sepAudio as string
-	
-	[Property(AvsConfig)]
-	_avsConfig as AvisynthConfig
-	"""来源：JobItem对象。导入GUI：InitializeAvsConfig函数。从GUI导入：SaveToAvsConfig函数。"""
-	
-	[Property(VideoEncConfig)]
 	_videoEncConfig as VideoEncConfigBase
+	"""与UI同步，确认退出时要赋予self._jobItem"""
 	
-	[Property(AudioEncConfig)]
 	_audioEncConfig as AudioEncConfigBase
-
-	[Property(JobConfig)]
-	_jobConfig as JobItemConfig
-
-	[Property(SubtitleConfig)]
-	_subtitleConfig as SubtitleConfig
-
-	[Property(Changed)]
-	_changed as bool
-	
-	[Property(UsingProfileName)]
-	_usingProfile as string
-
-	[Property(Subtitle)]
-	_subtitle as string
-	
+	"""与UI同步，确认退出时要赋予self._jobItem"""
 
 	public def constructor():
 		InitializeComponent()
 		
 	public def SetUpFormForItem(jobItem as JobItem):
-		self._usingProfile = jobItem.ProfileName
-		self._sourceFile = jobItem.SourceFile
-		self._destFile = jobItem.DestFile
-		self.destFileBox.Text = self._destFile
+		self._jobItem = jobItem
+		self.destFileBox.Text = self._jobItem.DestFile
 
-		self._sepAudio = jobItem.ExternalAudio
-		self.tbSepAudio.Text = self._sepAudio
-		self._subtitle = jobItem.SubtitleFile
+		self.tbSepAudio.Text = self._jobItem.ExternalAudio
 		self.subtitleTextBox.Text = jobItem.SubtitleFile
 
-		self._jobConfig = jobItem.JobConfig
-		self._avsConfig = jobItem.AvsConfig
-		self._subtitleConfig = jobItem.SubtitleConfig
-		self._videoInfo = VideoInfo(self._sourceFile)
-		self._audioInfo = AudioInfo(self._sourceFile)
+		self._videoInfo = VideoInfo(self._jobItem.SourceFile)
+		self._audioInfo = AudioInfo(self._jobItem.SourceFile)
 		
 		if not _videoInfo.Format == "avs":
 			if self.tabControl1.Controls.Count != 3:
 				self.tabControl1.Controls.Clear()
-				self.tabControl1.Controls.AddRange((self.editTabPage, self.encTabPage, self.subtitleTabPage))
-			InitializeJobConfig(self._jobConfig)
-			InitializeAvsConfig(self._avsConfig)
-			InitializeSubtitleConfig(self._subtitleConfig)
+				self.tabControl1.Controls.AddRange((self.videoEditTabPage, self.audioEditTabPage, self.encTabPage, self.subtitleTabPage))
+			InitializeJobConfig(self._jobItem.JobConfig)
+			InitializeAvsConfig(self._jobItem.AvsConfig)
+			InitializeSubtitleConfig(self._jobItem.SubtitleConfig)
 		else:
 			if self.tabControl1.Controls.Count != 2:
 				self.tabControl1.Controls.Clear()
 				self.tabControl1.Controls.AddRange((self.avsInputTabPage, self.encTabPage))
 				AvsInputInitializeConfig(jobItem)
-		InitializeEncConfig(jobItem.VideoEncConfig, jobItem.AudioEncConfig)
+				
+		self._videoEncConfig = Clone[of VideoEncConfigBase](self._jobItem.VideoEncConfig)
+		self._audioEncConfig = Clone[of AudioEncConfigBase](self._jobItem.AudioEncConfig)
+		InitializeEncConfig()
 
 	private def AvsInputInitializeConfig(jobItem as JobItem):
 		if jobItem.JobConfig.Container == OutputContainer.MKV:
@@ -114,7 +90,7 @@ partial class JobSettingForm:
 		
 		if not self.cbVideoMode.SelectedIndex == -1:
 			self.chbSepAudio.Enabled = true
-			self.chbSepAudio.Checked = jobConfig.UseSeparateAudio
+			self.chbSepAudio.Checked = self._jobItem.UsingExternalAudio
 		else:
 			self.chbSepAudio.Enabled = false
 			self.chbSepAudio.Checked = false
@@ -221,7 +197,7 @@ partial class JobSettingForm:
 		//TODO sourceResolutionCheckBox convertFPSCheckBox sourceFrameRateCheckBox的相关方法要改
 	
 	private def InitializeFrameRate(avsConfig as AvisynthConfig, videoInfo as VideoInfo):
-		if self._avsConfig.UsingSourceFrameRate:
+		if self._jobItem.AvsConfig.UsingSourceFrameRate:
 			self.frameRateBox.Text = videoInfo.FrameRate.ToString()
 			//引发事件
 			self.sourceFrameRateCheckBox.Checked = true
@@ -319,7 +295,7 @@ partial class JobSettingForm:
 
 	private def BtOutBrowseClick(sender as object, e as System.EventArgs):
 		if self.destFileBox.Text == "":
-			self.destFileBox.Text = self.DestFile
+			self.destFileBox.Text = self._jobItem.DestFile
 		try:	
 			self.saveFileDialog1.InitialDirectory = Path.GetDirectoryName(self.destFileBox.Text)
 			self.saveFileDialog1.FileName = Path.GetFileName(self.destFileBox.Text)
@@ -331,18 +307,16 @@ partial class JobSettingForm:
 
 	#region EncTabPage x264Config
 
-	private def InitializeEncConfig(videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase):
+	private def InitializeEncConfig():
 	"""
 	从x264Config和NeroAacConfig的对象导入到UI。此后任何操作都是同步的。
 	"""
-		self._videoEncConfig = Clone[of VideoEncConfigBase](videoEncConfig)
-		self._audioEncConfig = Clone[of AudioEncConfigBase](audioEncConfig)
 		RefreshX264UI()
 		RefreshNeroAac()
 
 	private def RefreshX264UI(): 
 	
-		x264config = _videoEncConfig as x264Config
+		x264config = self._videoEncConfig as x264Config
 		for control as Control in self.groupBox4.Controls:
 			node = x264config.GetNode(control.Name.Replace(char('_'), char('-')))
 			if node == null:
@@ -377,12 +351,12 @@ partial class JobSettingForm:
 			self.label9.Text = "码率"
 		self.rateControlBox.SelectedIndexChanged += self.RateControlBoxSelectedIndexChanged
 			
-		self.useCustomCmdBox.Checked = _videoEncConfig.UsingCustomCmd
+		self.useCustomCmdBox.Checked = self._videoEncConfig.UsingCustomCmd
 		UseCustomCmdBoxCheckedChanged(null, null)
 			
 
 	private def RateControlBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
-		_x264config = _videoEncConfig as x264Config
+		_x264config = self._videoEncConfig as x264Config
 		if self.rateControlBox.SelectedIndex == 0:
 			_x264config.SetNumOption("crf", 23)
 		elif self.rateControlBox.SelectedIndex == 1:
@@ -394,7 +368,7 @@ partial class JobSettingForm:
 		RefreshX264UI()
 	
 	private def RateFactorBoxValidating(sender as object, e as System.ComponentModel.CancelEventArgs):
-		config = _videoEncConfig as x264Config
+		config = self._videoEncConfig as x264Config
 		if self.rateControlBox.SelectedIndex == 0:
 			name = "crf"
 		elif self.rateControlBox.SelectedIndex == 1:
@@ -415,21 +389,21 @@ partial class JobSettingForm:
 		checkBox as CheckBox = sender
 		if checkBox.Enabled:
 			name = checkBox.Name.Replace(char('_'), char('-'))
-			(_videoEncConfig as x264Config).SetBooleanOption(name, checkBox.Checked)
+			(self._videoEncConfig as x264Config).SetBooleanOption(name, checkBox.Checked)
 			RefreshX264UI()	
 
 	private def StringOptionChanged(sender as object, e as System.EventArgs):
 		box as ComboBox = sender
 		if box.Enabled:
 			name = box.Name.Replace(char('_'), char('-'))
-			(_videoEncConfig as x264Config).SelectStringOption(name, box.SelectedIndex)
+			(self._videoEncConfig as x264Config).SelectStringOption(name, box.SelectedIndex)
 			RefreshX264UI()
 	#endregion
 	
 	#region EncTabPage NeroAacConfig
 
 	private def RefreshNeroAac():
-		neroAacConfig = _audioEncConfig as NeroAacConfig
+		neroAacConfig = self._audioEncConfig as NeroAacConfig
 		if neroAacConfig.Quality > 0:
 			self.neroAacRateControlBox.SelectedIndex = 0
 			self.neroAacRateFactorBox.Text = neroAacConfig.Quality.ToString()
@@ -518,7 +492,6 @@ partial class JobSettingForm:
 			avsConfig.Normalize = self.normalizeBox.Checked	
 		
 	private def SaveToJobConfig(jobConfig as JobItemConfig):
-		jobConfig.UseSeparateAudio = self.chbSepAudio.Checked
 		jobConfig.VideoMode = cast(StreamProcessMode, self.cbVideoMode.SelectedIndex)
 		jobConfig.AudioMode = cast(StreamProcessMode, self.cbAudioMode.SelectedIndex)
 		jobConfig.VideoMode = StreamProcessMode.None if jobConfig.VideoMode == -1
@@ -535,16 +508,23 @@ partial class JobSettingForm:
 		int.TryParse(self.fontBottomBox.Text, subtitleConfig.MarginV)
 		subtitleConfig.UsingStyle = self.customSubCheckBox.Checked
 		
-	private def OkButtonClick(sender as object, e as System.EventArgs):		
+	private def OkButtonClick(sender as object, e as System.EventArgs):	
+		self._jobItem.VideoEncConfig = self._videoEncConfig
+		self._jobItem.AudioEncConfig = self._audioEncConfig
+		
+		self._jobItem.State = JobState.NotProccessed
+		self._jobItem.ProfileName = self.profileBox.Text
+		
+		
 		if self._videoInfo.Format == "avs":
-			self.AvsInputSaveConfig(self._jobConfig)
+			self.AvsInputSaveConfig(self._jobItem.JobConfig)
 		else:
 			try:
 				dir = Path.GetDirectoryName(self.destFileBox.Text)
 				if dir == "" or dir == null:
-					self.destFileBox.Text = self._destFile			
+					self.destFileBox.Text = self._jobItem.DestFile
 					
-				elif IsSameFile(self._sourceFile, saveFileDialog1.FileName):
+				elif IsSameFile(self._jobItem.SourceFile, saveFileDialog1.FileName):
 					MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 					return
 				elif Exists(saveFileDialog1.FileName):
@@ -552,38 +532,39 @@ partial class JobSettingForm:
 					if result == DialogResult.No:
 						return
 				elif Directory.Exists(dir):
-					self._destFile = self.destFileBox.Text
+					self._jobItem.DestFile = self.destFileBox.Text
 				elif not Directory.Exists(dir):
 					result = MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
 					if result == DialogResult.OK:
 						Directory.CreateDirectory(Path.GetDirectoryName(self.destFileBox.Text))
-						self._destFile = self.destFileBox.Text
+						self._jobItem.DestFile = self.destFileBox.Text
 					else:
-						self.destFileBox.Text = self._destFile
+						self.destFileBox.Text = self._jobItem.DestFile
 				else:
-					self._destFile = self.destFileBox.Text
+					self._jobItem.DestFile = self.destFileBox.Text
 			except:
-				self.destFileBox.Text = self._destFile
+				self.destFileBox.Text = self._jobItem.DestFile
 	
 			if self.chbSepAudio.Checked:
 				if self.tbSepAudio.Text != "":
-					self._sepAudio = self.tbSepAudio.Text
+					self._jobItem.UsingExternalAudio = true
+					self._jobItem.ExternalAudio = self.tbSepAudio.Text
 				else:
 					result = MessageBox.Show("未指定外挂音轨。确定退出吗？", "", MessageBoxButtons.YesNo,
 					MessageBoxIcon.Information)
 					if result == DialogResult.No:
 						return
 					elif result == DialogResult.Yes:
-						self.chbSepAudio.Checked = false //TODO
+						self.chbSepAudio.Checked = false
+						self._jobItem.UsingExternalAudio = false
+						self._jobItem.ExternalAudio = ""
 	
 			if self.subtitleTextBox.Text != "":
-				self._subtitle = self.subtitleTextBox.Text
-			SaveToAvsConfig(_avsConfig)
-			SaveToJobConfig(_jobConfig)
-			SaveToSubtitleConfig(_subtitleConfig)
+				self._jobItem.SubtitleFile = self.subtitleTextBox.Text
+			SaveToAvsConfig(self._jobItem.AvsConfig)
+			SaveToJobConfig(self._jobItem.JobConfig)
+			SaveToSubtitleConfig(self._jobItem.SubtitleConfig)
 		
-		if _resetter.Changed():
-			self._changed = true
 		_resetter.Clear()
 		self.DialogResult = DialogResult.OK
 		self.Close()
@@ -600,10 +581,9 @@ partial class JobSettingForm:
 		self.DialogResult = DialogResult.Cancel
 		self.Close()
 
-	private def MediaSettingFormLoad(sender as object, e as System.EventArgs):
+	private def JobSettingFormLoad(sender as object, e as System.EventArgs):
 		if _resetter == null:
 			_resetter = ControlResetter()
-
 		_resetter.SaveControls(self)
 		
 
@@ -631,18 +611,11 @@ partial class JobSettingForm:
 			e.Handled = true
 	
 	public def Clear ():
-		self._avsConfig = null
 		self._videoEncConfig = null
 		self._audioEncConfig = null
-		self._jobConfig = null
-		self._subtitleConfig = null
 		self._videoInfo = null
 		self._audioInfo = null
 		self._resolutionCal = null
-		self._sourceFile = ""
-		self._destFile = ""
-		self._sepAudio = ""
-		self._subtitle = ""
 		self.widthBox.Text = ""
 		self.heightBox.Text = ""
 		self.aspectRatioBox.Text = ""
@@ -737,33 +710,35 @@ partial class JobSettingForm:
 			if not self.profileBox.Items.Contains("Default"):
 				Profile.RebuildDefault("Default")
 				self.profileBox.Items.Add("Default")
-			if self.profileBox.Items.Contains(self._usingProfile):
-				self.profileBox.SelectedItem = self._usingProfile
-				_profile = Profile(self._usingProfile)
-			else:
-				self.profileBox.SelectedItem = "Default"
-				_profile = Profile("Default")
+			self.profileBox.SelectedItem = "Default"
+			_profile = Profile("Default")
 			self.profileBox.SelectedIndexChanged += self.ProfileBoxSelectedIndexChanged
 		
-		self._usingProfile = self.profileBox.Text
-		self.AvsConfig = _profile.AvsConfig
-		self.VideoEncConfig = _profile.VideoEncConfig
-		self.AudioEncConfig = _profile.AudioEncConfig
-		self.JobConfig = _profile.JobConfig
-		InitializeJobConfig(_jobConfig)
-		InitializeAvsConfig(_avsConfig)
-		InitializeEncConfig(self._videoEncConfig, self._audioEncConfig)
+		InitializeJobConfig(_profile.JobConfig)
+		InitializeAvsConfig(_profile.AvsConfig)
+		InitializeSubtitleConfig(_profile.SubtitleConfig)
+		self._videoEncConfig = _profile.VideoEncConfig
+		self._audioEncConfig = _profile.AudioEncConfig
+		InitializeEncConfig()
 	
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
+		avsConfig as AvisynthConfig
+		jobConfig as JobItemConfig
+		subtitleConfig as SubtitleConfig
 		if self._videoInfo.Format == "avs":
-			self.AvsInputSaveConfig(self._jobConfig)
+			avsConfig = self._jobItem.AvsConfig
+			subtitleConfig = self._jobItem.SubtitleConfig
+			jobConfig = JobItemConfig()
+			self.AvsInputSaveConfig(jobConfig)
 		else:
-			SaveToAvsConfig(_avsConfig)
-			SaveToJobConfig(_jobConfig)
-			SaveToSubtitleConfig(_subtitleConfig)
-		Profile.Save(self.profileBox.Text, _jobConfig, _avsConfig, _videoEncConfig, _audioEncConfig, _subtitleConfig)
+			avsConfig = AvisynthConfig()
+			subtitleConfig = SubtitleConfig()
+			jobConfig = JobItemConfig()
+			SaveToAvsConfig(avsConfig)
+			SaveToJobConfig(jobConfig)
+			SaveToSubtitleConfig(subtitleConfig)
+		Profile.Save(self.profileBox.Text, jobConfig, avsConfig, self._videoEncConfig, self._audioEncConfig, subtitleConfig)
 		self.profileBox.Items.Add(self.profileBox.Text) if self.profileBox.Text not in self.profileBox.Items
-		self._usingProfile = self.profileBox.Text
 		
 	public def UpdateProfiles(profileNames as (string), selectedProfile as string):
 		self.profileBox.SelectedIndexChanged -= self.ProfileBoxSelectedIndexChanged
@@ -784,7 +759,7 @@ partial class JobSettingForm:
 				control.Enabled = false
 			self.useCustomCmdBox.Enabled = true
 			self.editCmdButton.Enabled = true
-			self._cmdLineBox.CmdLine = self.VideoEncConfig.GetArgument()
+			self._cmdLineBox.CmdLine = self._videoEncConfig.GetArgument()
 			self._videoEncConfig.UsingCustomCmd = true
 		else:
 			for control as Control in self.groupBox4.Controls:
@@ -796,13 +771,13 @@ partial class JobSettingForm:
 	private def EditCmdButtonClick(sender as object, e as System.EventArgs):
 	//TODO 第一次要引入VideoENCcONFIG的数据，之后都使用CusntomConfig的数据
 		self._cmdLineBox.ShowDialog()
-		self.VideoEncConfig.CustomCmdLine = self._cmdLineBox.CmdLine 
+		self._videoEncConfig.CustomCmdLine = self._cmdLineBox.CmdLine 
 	
 	private def SaveFileDialog1FileOk(sender as object, e as System.ComponentModel.CancelEventArgs):
 			ext = '.' + self.muxerComboBox.Text.ToLower()
 			if not saveFileDialog1.FileName.ToLower().EndsWith(ext):
 				saveFileDialog1.FileName += ext
-			if IsSameFile(self._sourceFile, saveFileDialog1.FileName):
+			if IsSameFile(self._jobItem.SourceFile, saveFileDialog1.FileName):
 				MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 				e.Cancel = true
 				return
@@ -814,9 +789,7 @@ partial class JobSettingForm:
 	
 	private def MuxerComboBoxSelectedIndexChanged(sender as object, e as System.EventArgs):
 		ext = self.muxerComboBox.Text.ToLower()
-		self._destFile = Path.ChangeExtension(self._destFile, ext)
-		self._destFile = GetUniqueName(self._destFile)
-		self.destFileBox.Text = self._destFile
+		self.destFileBox.Text = GetUniqueName(Path.ChangeExtension(self._jobItem.DestFile, ext))
 	
 	private def SubtitleButtonClick(sender as object, e as System.EventArgs):
 		self.openFileDialog2.FileName = self.subtitleTextBox.Text
@@ -824,9 +797,8 @@ partial class JobSettingForm:
 		self.subtitleTextBox.Text = self.openFileDialog2.FileName
 	
 	private def FontButtonClick(sender as object, e as System.EventArgs):
-		self.fontDialog1.Font = Font(self._subtitleConfig.Fontname, 100) //TODO
+		self.fontDialog1.Font = Font(self.fontButton.Text, 100) //TODO
 		self.fontDialog1.ShowDialog()
-		self._subtitleConfig.Fontname = self.fontDialog1.Font.Name
 		self.fontButton.Text = self.fontDialog1.Font.Name
 	
 	private def CustomSubCheckBoxCheckedChanged(sender as object, e as System.EventArgs):
@@ -870,28 +842,28 @@ partial class JobSettingForm:
 			self.SaveToSubtitleConfig(subtitleConfig)
 			if File.Exists(self.subtitleTextBox.Text):
 				subtitle = self.subtitleTextBox.Text
-			if File.Exists(self.tbSepAudio.Text):
+			if self.chbSepAudio.Checked and File.Exists(self.tbSepAudio.Text):
 				sepAudio = self.tbSepAudio.Text
 		
-		if self._jobConfig.VideoMode != StreamProcessMode.None:
+		if self._jobItem.JobConfig.VideoMode != StreamProcessMode.None:
 			hasVideo = true
-			if self._jobConfig.VideoMode == StreamProcessMode.Encode:
+			if self._jobItem.JobConfig.VideoMode == StreamProcessMode.Encode:
 				if subtitle != "" and subtitleConfig.UsingStyle:
 					SubStyleWriter(subtitle, subtitleConfig).Write()
-			elif self._jobConfig.VideoMode == StreamProcessMode.Copy:
+			elif self._jobItem.JobConfig.VideoMode == StreamProcessMode.Copy:
 				avsConfig.UsingSourceFrameRate = true
 				avsConfig.UsingSourceResolution = true
 				avsConfig.ConvertFPS = true
-			VideoAvsWriter(self._sourceFile, avsConfig, subtitle).WriteScript('video.avs')
+			VideoAvsWriter(self._jobItem.SourceFile, avsConfig, subtitle).WriteScript('video.avs')
 			previewContent += "video = import(\"video.avs\")"
 		
 		if sepAudio != "":
 			audio = sepAudio
 		else:
-			audio = self._sourceFile
-		if self._jobConfig.AudioMode != StreamProcessMode.None:
+			audio = self._jobItem.SourceFile
+		if self._jobItem.JobConfig.AudioMode != StreamProcessMode.None:
 			hasAudio = true
-			if self._jobConfig.AudioMode == StreamProcessMode.Copy:
+			if self._jobItem.JobConfig.AudioMode == StreamProcessMode.Copy:
 				avsConfig.Normalize = false
 				avsConfig.DownMix = false
 			AudioAvsWriter(audio, avsConfig).WriteScript('audio.avs')

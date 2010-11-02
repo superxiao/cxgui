@@ -170,20 +170,6 @@ partial class MainForm(System.Windows.Forms.Form):
 		self._jobSettingForm.UpdateProfiles(array(string, self.profileBox.Items), jobItem.ProfileName)
 		self._jobSettingForm.SetUpFormForItem(jobItem)
 		result = self._jobSettingForm.ShowDialog()
-		
-		if result == DialogResult.OK and self._jobSettingForm.Changed:
-			self._jobSettingForm.Changed = false
-			jobItem.State = JobState.NotProccessed
-			jobItem.DestFile = self._jobSettingForm.DestFile
-			jobItem.AvsConfig = self._jobSettingForm.AvsConfig
-			jobItem.VideoEncConfig = self._jobSettingForm.VideoEncConfig
-			jobItem.AudioEncConfig = self._jobSettingForm.AudioEncConfig
-			jobItem.JobConfig = self._jobSettingForm.JobConfig
-			jobItem.SubtitleConfig = self._jobSettingForm.SubtitleConfig
-			jobItem.ProfileName = self._jobSettingForm.UsingProfileName
-			if jobItem.JobConfig.UseSeparateAudio:
-				jobItem.ExternalAudio = self._jobSettingForm.SepAudio
-			jobItem.SubtitleFile = self._jobSettingForm.Subtitle
 			
 		self.UpdateProfileBox(self._jobSettingForm.GetProfiles(), self.profileBox.Text)
 		self._jobSettingForm.Clear()

@@ -14,21 +14,12 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 	// not be able to load this method if it was changed manually.
 	private def InitializeComponent():
 		self.tabControl1 = System.Windows.Forms.TabControl()
-		self.editTabPage = System.Windows.Forms.TabPage()
-		self.cbAudioMode = System.Windows.Forms.ComboBox()
+		self.videoEditTabPage = System.Windows.Forms.TabPage()
 		self.cbVideoMode = System.Windows.Forms.ComboBox()
-		self.label17 = System.Windows.Forms.Label()
 		self.label16 = System.Windows.Forms.Label()
 		self.destFileBox = System.Windows.Forms.ComboBox()
 		self.label6 = System.Windows.Forms.Label()
 		self.btOutBrowse = System.Windows.Forms.Button()
-		self.gbAudioAvs = System.Windows.Forms.GroupBox()
-		self.tbSepAudio = System.Windows.Forms.TextBox()
-		self.btSepAudio = System.Windows.Forms.Button()
-		self.chbSepAudio = System.Windows.Forms.CheckBox()
-		self.audioSourceComboBox = System.Windows.Forms.ComboBox()
-		self.downMixBox = System.Windows.Forms.CheckBox()
-		self.normalizeBox = System.Windows.Forms.CheckBox()
 		self.gbVideoSource = System.Windows.Forms.GroupBox()
 		self.convertFPSCheckBox = System.Windows.Forms.CheckBox()
 		self.sourceFrameRateCheckBox = System.Windows.Forms.CheckBox()
@@ -48,6 +39,15 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.label1 = System.Windows.Forms.Label()
 		self.heightBox = System.Windows.Forms.TextBox()
 		self.widthBox = System.Windows.Forms.TextBox()
+		self.audioEditTabPage = System.Windows.Forms.TabPage()
+		self.cbAudioMode = System.Windows.Forms.ComboBox()
+		self.label17 = System.Windows.Forms.Label()
+		self.tbSepAudio = System.Windows.Forms.TextBox()
+		self.btSepAudio = System.Windows.Forms.Button()
+		self.chbSepAudio = System.Windows.Forms.CheckBox()
+		self.audioSourceComboBox = System.Windows.Forms.ComboBox()
+		self.downMixBox = System.Windows.Forms.CheckBox()
+		self.normalizeBox = System.Windows.Forms.CheckBox()
 		self.avsInputTabPage = System.Windows.Forms.TabPage()
 		self.encTabPage = System.Windows.Forms.TabPage()
 		self.groupBox6 = System.Windows.Forms.GroupBox()
@@ -95,10 +95,10 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.openFileDialog2 = System.Windows.Forms.OpenFileDialog()
 		self.fontDialog1 = System.Windows.Forms.FontDialog()
 		self.tabControl1.SuspendLayout()
-		self.editTabPage.SuspendLayout()
-		self.gbAudioAvs.SuspendLayout()
+		self.videoEditTabPage.SuspendLayout()
 		self.gbVideoSource.SuspendLayout()
 		self.gbResolution.SuspendLayout()
+		self.audioEditTabPage.SuspendLayout()
 		self.encTabPage.SuspendLayout()
 		self.groupBox6.SuspendLayout()
 		self.groupBox5.SuspendLayout()
@@ -112,7 +112,8 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.tabControl1.Anchor = cast(System.Windows.Forms.AnchorStyles,(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 						| System.Windows.Forms.AnchorStyles.Left) 
 						| System.Windows.Forms.AnchorStyles.Right))
-		self.tabControl1.Controls.Add(self.editTabPage)
+		self.tabControl1.Controls.Add(self.videoEditTabPage)
+		self.tabControl1.Controls.Add(self.audioEditTabPage)
 		self.tabControl1.Controls.Add(self.avsInputTabPage)
 		self.tabControl1.Controls.Add(self.encTabPage)
 		self.tabControl1.Controls.Add(self.subtitleTabPage)
@@ -122,36 +123,22 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.tabControl1.Size = System.Drawing.Size(440, 490)
 		self.tabControl1.TabIndex = 0
 		# 
-		# editTabPage
+		# videoEditTabPage
 		# 
-		self.editTabPage.Controls.Add(self.cbAudioMode)
-		self.editTabPage.Controls.Add(self.cbVideoMode)
-		self.editTabPage.Controls.Add(self.label17)
-		self.editTabPage.Controls.Add(self.label16)
-		self.editTabPage.Controls.Add(self.destFileBox)
-		self.editTabPage.Controls.Add(self.label6)
-		self.editTabPage.Controls.Add(self.btOutBrowse)
-		self.editTabPage.Controls.Add(self.gbAudioAvs)
-		self.editTabPage.Controls.Add(self.gbVideoSource)
-		self.editTabPage.Controls.Add(self.gbResolution)
-		self.editTabPage.Location = System.Drawing.Point(4, 22)
-		self.editTabPage.Name = "editTabPage"
-		self.editTabPage.Padding = System.Windows.Forms.Padding(3)
-		self.editTabPage.Size = System.Drawing.Size(432, 464)
-		self.editTabPage.TabIndex = 0
-		self.editTabPage.Text = "编辑"
-		self.editTabPage.UseVisualStyleBackColor = true
-		# 
-		# cbAudioMode
-		# 
-		self.cbAudioMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		self.cbAudioMode.FormattingEnabled = true
-		self.cbAudioMode.Items.AddRange((of object: "编码", "复制", "无"))
-		self.cbAudioMode.Location = System.Drawing.Point(281, 24)
-		self.cbAudioMode.Name = "cbAudioMode"
-		self.cbAudioMode.Size = System.Drawing.Size(121, 20)
-		self.cbAudioMode.TabIndex = 15
-		self.cbAudioMode.SelectedIndexChanged += self.CbAudioModeSelectedIndexChanged as System.EventHandler
+		self.videoEditTabPage.Controls.Add(self.cbVideoMode)
+		self.videoEditTabPage.Controls.Add(self.label16)
+		self.videoEditTabPage.Controls.Add(self.destFileBox)
+		self.videoEditTabPage.Controls.Add(self.label6)
+		self.videoEditTabPage.Controls.Add(self.btOutBrowse)
+		self.videoEditTabPage.Controls.Add(self.gbVideoSource)
+		self.videoEditTabPage.Controls.Add(self.gbResolution)
+		self.videoEditTabPage.Location = System.Drawing.Point(4, 22)
+		self.videoEditTabPage.Name = "videoEditTabPage"
+		self.videoEditTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.videoEditTabPage.Size = System.Drawing.Size(432, 464)
+		self.videoEditTabPage.TabIndex = 0
+		self.videoEditTabPage.Text = "视频"
+		self.videoEditTabPage.UseVisualStyleBackColor = true
 		# 
 		# cbVideoMode
 		# 
@@ -163,15 +150,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.cbVideoMode.Size = System.Drawing.Size(121, 20)
 		self.cbVideoMode.TabIndex = 14
 		self.cbVideoMode.SelectedIndexChanged += self.CbVideoModeSelectedIndexChanged as System.EventHandler
-		# 
-		# label17
-		# 
-		self.label17.Location = System.Drawing.Point(214, 24)
-		self.label17.Name = "label17"
-		self.label17.Size = System.Drawing.Size(61, 23)
-		self.label17.TabIndex = 13
-		self.label17.Text = "音频模式"
-		self.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
 		# 
 		# label16
 		# 
@@ -211,84 +189,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.btOutBrowse.Text = "浏览"
 		self.btOutBrowse.UseVisualStyleBackColor = true
 		self.btOutBrowse.Click += self.BtOutBrowseClick as System.EventHandler
-		# 
-		# gbAudioAvs
-		# 
-		self.gbAudioAvs.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-						| System.Windows.Forms.AnchorStyles.Right))
-		self.gbAudioAvs.Controls.Add(self.tbSepAudio)
-		self.gbAudioAvs.Controls.Add(self.btSepAudio)
-		self.gbAudioAvs.Controls.Add(self.chbSepAudio)
-		self.gbAudioAvs.Controls.Add(self.audioSourceComboBox)
-		self.gbAudioAvs.Controls.Add(self.downMixBox)
-		self.gbAudioAvs.Controls.Add(self.normalizeBox)
-		self.gbAudioAvs.Location = System.Drawing.Point(6, 310)
-		self.gbAudioAvs.Name = "gbAudioAvs"
-		self.gbAudioAvs.Size = System.Drawing.Size(415, 109)
-		self.gbAudioAvs.TabIndex = 5
-		self.gbAudioAvs.TabStop = false
-		self.gbAudioAvs.Text = "音频"
-		# 
-		# tbSepAudio
-		# 
-		self.tbSepAudio.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-						| System.Windows.Forms.AnchorStyles.Right))
-		self.tbSepAudio.Enabled = false
-		self.tbSepAudio.Location = System.Drawing.Point(85, 67)
-		self.tbSepAudio.Name = "tbSepAudio"
-		self.tbSepAudio.ReadOnly = true
-		self.tbSepAudio.Size = System.Drawing.Size(249, 21)
-		self.tbSepAudio.TabIndex = 13
-		# 
-		# btSepAudio
-		# 
-		self.btSepAudio.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
-		self.btSepAudio.Enabled = false
-		self.btSepAudio.Location = System.Drawing.Point(340, 67)
-		self.btSepAudio.Name = "btSepAudio"
-		self.btSepAudio.Size = System.Drawing.Size(63, 23)
-		self.btSepAudio.TabIndex = 12
-		self.btSepAudio.Text = "浏览"
-		self.btSepAudio.UseVisualStyleBackColor = true
-		self.btSepAudio.Click += self.BtSepAudioClick as System.EventHandler
-		# 
-		# chbSepAudio
-		# 
-		self.chbSepAudio.Location = System.Drawing.Point(6, 65)
-		self.chbSepAudio.Name = "chbSepAudio"
-		self.chbSepAudio.Size = System.Drawing.Size(88, 24)
-		self.chbSepAudio.TabIndex = 3
-		self.chbSepAudio.Text = "独立音轨："
-		self.chbSepAudio.UseVisualStyleBackColor = true
-		self.chbSepAudio.CheckedChanged += self.ChbSepAudioCheckedChanged as System.EventHandler
-		# 
-		# audioSourceComboBox
-		# 
-		self.audioSourceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-		self.audioSourceComboBox.FormattingEnabled = true
-		self.audioSourceComboBox.Items.AddRange((of object: "FFAudioSource", "DirectShowSource"))
-		self.audioSourceComboBox.Location = System.Drawing.Point(7, 20)
-		self.audioSourceComboBox.Name = "audioSourceComboBox"
-		self.audioSourceComboBox.Size = System.Drawing.Size(121, 20)
-		self.audioSourceComboBox.TabIndex = 2
-		# 
-		# downMixBox
-		# 
-		self.downMixBox.Location = System.Drawing.Point(143, 20)
-		self.downMixBox.Name = "downMixBox"
-		self.downMixBox.Size = System.Drawing.Size(104, 24)
-		self.downMixBox.TabIndex = 1
-		self.downMixBox.Text = "立体声混音"
-		self.downMixBox.UseVisualStyleBackColor = true
-		# 
-		# normalizeBox
-		# 
-		self.normalizeBox.Location = System.Drawing.Point(257, 20)
-		self.normalizeBox.Name = "normalizeBox"
-		self.normalizeBox.Size = System.Drawing.Size(104, 24)
-		self.normalizeBox.TabIndex = 0
-		self.normalizeBox.Text = "规格化"
-		self.normalizeBox.UseVisualStyleBackColor = true
 		# 
 		# gbVideoSource
 		# 
@@ -497,6 +397,102 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.widthBox.KeyUp += self.WidthBoxKeyUp as System.Windows.Forms.KeyEventHandler
 		self.widthBox.KeyPress += self.AllowInteger as System.Windows.Forms.KeyPressEventHandler
 		self.widthBox.Validating += self.ResolutionValidating as System.ComponentModel.CancelEventHandler
+		# 
+		# audioEditTabPage
+		# 
+		self.audioEditTabPage.Controls.Add(self.normalizeBox)
+		self.audioEditTabPage.Controls.Add(self.downMixBox)
+		self.audioEditTabPage.Controls.Add(self.btSepAudio)
+		self.audioEditTabPage.Controls.Add(self.tbSepAudio)
+		self.audioEditTabPage.Controls.Add(self.cbAudioMode)
+		self.audioEditTabPage.Controls.Add(self.label17)
+		self.audioEditTabPage.Controls.Add(self.chbSepAudio)
+		self.audioEditTabPage.Controls.Add(self.audioSourceComboBox)
+		self.audioEditTabPage.Location = System.Drawing.Point(4, 22)
+		self.audioEditTabPage.Name = "audioEditTabPage"
+		self.audioEditTabPage.Padding = System.Windows.Forms.Padding(3)
+		self.audioEditTabPage.Size = System.Drawing.Size(432, 464)
+		self.audioEditTabPage.TabIndex = 4
+		self.audioEditTabPage.Text = "音频"
+		self.audioEditTabPage.UseVisualStyleBackColor = true
+		# 
+		# cbAudioMode
+		# 
+		self.cbAudioMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		self.cbAudioMode.FormattingEnabled = true
+		self.cbAudioMode.Items.AddRange((of object: "编码", "复制", "无"))
+		self.cbAudioMode.Location = System.Drawing.Point(74, 24)
+		self.cbAudioMode.Name = "cbAudioMode"
+		self.cbAudioMode.Size = System.Drawing.Size(121, 20)
+		self.cbAudioMode.TabIndex = 17
+		# 
+		# label17
+		# 
+		self.label17.Location = System.Drawing.Point(13, 24)
+		self.label17.Name = "label17"
+		self.label17.Size = System.Drawing.Size(61, 23)
+		self.label17.TabIndex = 16
+		self.label17.Text = "音频模式"
+		self.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+		# 
+		# tbSepAudio
+		# 
+		self.tbSepAudio.Anchor = cast(System.Windows.Forms.AnchorStyles,((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+						| System.Windows.Forms.AnchorStyles.Right))
+		self.tbSepAudio.Enabled = false
+		self.tbSepAudio.Location = System.Drawing.Point(96, 106)
+		self.tbSepAudio.Name = "tbSepAudio"
+		self.tbSepAudio.ReadOnly = true
+		self.tbSepAudio.Size = System.Drawing.Size(249, 21)
+		self.tbSepAudio.TabIndex = 13
+		# 
+		# btSepAudio
+		# 
+		self.btSepAudio.Anchor = cast(System.Windows.Forms.AnchorStyles,(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))
+		self.btSepAudio.Enabled = false
+		self.btSepAudio.Location = System.Drawing.Point(351, 104)
+		self.btSepAudio.Name = "btSepAudio"
+		self.btSepAudio.Size = System.Drawing.Size(63, 23)
+		self.btSepAudio.TabIndex = 12
+		self.btSepAudio.Text = "浏览"
+		self.btSepAudio.UseVisualStyleBackColor = true
+		# 
+		# chbSepAudio
+		# 
+		self.chbSepAudio.Location = System.Drawing.Point(13, 104)
+		self.chbSepAudio.Name = "chbSepAudio"
+		self.chbSepAudio.Size = System.Drawing.Size(88, 24)
+		self.chbSepAudio.TabIndex = 3
+		self.chbSepAudio.Text = "独立音轨："
+		self.chbSepAudio.UseVisualStyleBackColor = true
+		# 
+		# audioSourceComboBox
+		# 
+		self.audioSourceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+		self.audioSourceComboBox.FormattingEnabled = true
+		self.audioSourceComboBox.Items.AddRange((of object: "FFAudioSource", "DirectShowSource"))
+		self.audioSourceComboBox.Location = System.Drawing.Point(13, 63)
+		self.audioSourceComboBox.Name = "audioSourceComboBox"
+		self.audioSourceComboBox.Size = System.Drawing.Size(121, 20)
+		self.audioSourceComboBox.TabIndex = 2
+		# 
+		# downMixBox
+		# 
+		self.downMixBox.Location = System.Drawing.Point(178, 61)
+		self.downMixBox.Name = "downMixBox"
+		self.downMixBox.Size = System.Drawing.Size(104, 24)
+		self.downMixBox.TabIndex = 1
+		self.downMixBox.Text = "立体声混音"
+		self.downMixBox.UseVisualStyleBackColor = true
+		# 
+		# normalizeBox
+		# 
+		self.normalizeBox.Location = System.Drawing.Point(288, 61)
+		self.normalizeBox.Name = "normalizeBox"
+		self.normalizeBox.Size = System.Drawing.Size(104, 24)
+		self.normalizeBox.TabIndex = 0
+		self.normalizeBox.Text = "规格化"
+		self.normalizeBox.UseVisualStyleBackColor = true
 		# 
 		# avsInputTabPage
 		# 
@@ -974,15 +970,15 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.MinimumSize = System.Drawing.Size(480, 580)
 		self.Name = "JobSettingForm"
 		self.Text = "设置"
-		self.Load += self.MediaSettingFormLoad as System.EventHandler
+		self.Load += self.JobSettingFormLoad as System.EventHandler
 		self.FormClosed += self.MediaSettingFormFormClosed as System.Windows.Forms.FormClosedEventHandler
 		self.tabControl1.ResumeLayout(false)
-		self.editTabPage.ResumeLayout(false)
-		self.gbAudioAvs.ResumeLayout(false)
-		self.gbAudioAvs.PerformLayout()
+		self.videoEditTabPage.ResumeLayout(false)
 		self.gbVideoSource.ResumeLayout(false)
 		self.gbResolution.ResumeLayout(false)
 		self.gbResolution.PerformLayout()
+		self.audioEditTabPage.ResumeLayout(false)
+		self.audioEditTabPage.PerformLayout()
 		self.encTabPage.ResumeLayout(false)
 		self.groupBox6.ResumeLayout(false)
 		self.groupBox5.ResumeLayout(false)
@@ -991,6 +987,7 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 		self.subtitleTabPage.PerformLayout()
 		self.customSubGroupBox.ResumeLayout(false)
 		self.ResumeLayout(false)
+	private audioEditTabPage as System.Windows.Forms.TabPage
 	private previewButton as System.Windows.Forms.Button
 	private encTabPage as System.Windows.Forms.TabPage
 	private avsInputTabPage as System.Windows.Forms.TabPage
@@ -1024,7 +1021,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 	private chbSepAudio as System.Windows.Forms.CheckBox
 	private btOutBrowse as System.Windows.Forms.Button
 	private gbVideoSource as System.Windows.Forms.GroupBox
-	private gbAudioAvs as System.Windows.Forms.GroupBox
 	private gbResolution as System.Windows.Forms.GroupBox
 	private audioSourceComboBox as System.Windows.Forms.ComboBox
 	private muxerComboBox as System.Windows.Forms.ComboBox
@@ -1070,6 +1066,6 @@ partial class JobSettingForm(System.Windows.Forms.Form):
 	private widthBox as System.Windows.Forms.TextBox
 	private label1 as System.Windows.Forms.Label
 	private label2 as System.Windows.Forms.Label
-	private editTabPage as System.Windows.Forms.TabPage
+	private videoEditTabPage as System.Windows.Forms.TabPage
 	private tabControl1 as System.Windows.Forms.TabControl
 

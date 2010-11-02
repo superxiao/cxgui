@@ -8,7 +8,7 @@ import System.Windows.Forms
 class ControlResetter:
 """提供控件属性的保存和重设功能。"""
 
-	_savedCheckBox = Dictionary[of Control, bool]()
+	_savedCheckBox = Dictionary[of CheckBox, bool]()
 	_savedTextControl = Dictionary[of Control, string]()
 
 	public def constructor():
@@ -38,11 +38,9 @@ class ControlResetter:
 	def Changed() as bool:
 		for checkBox as CheckBox in _savedCheckBox.Keys:
 			if checkBox.Checked != _savedCheckBox[checkBox]:
-				
 				return true
 		for control as Control in _savedTextControl.Keys:
 			if control.Text != _savedTextControl[control]:
-				
 				return true
 		return false
 		
