@@ -5,7 +5,6 @@ import System.IO
 import System.Diagnostics
 import System.Windows.Forms
 import CXGUI
-import My
 import CXGUI.External
 
 

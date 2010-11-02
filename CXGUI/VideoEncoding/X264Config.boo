@@ -3,21 +3,28 @@
 namespace CXGUI.VideoEncoding
 
 import System
+import System.IO
 import System.Collections
 import System.Collections.Specialized
 import System.Collections.Generic
 import System.Windows.Forms
 import CXGUI.External
+import System.Runtime.Serialization.Formatters.Binary
 
 class x264Config(VideoEncConfigBase):
 """Description of x264Config"""
-	//variables
+	//Fields
 	_presets = {}
-	
 	
 	_optionDict = OrderedDictionary[of string, x264ConfigNode]()
 	
+	_totalPass as int
+	
+	_currentPass as int
+	
+	//Properties
 	TotalPass as int:
+	"""将影响GetArgument()"""
 		set:
 			_totalPass = value
 			if value > 1:
@@ -30,11 +37,15 @@ class x264Config(VideoEncConfigBase):
 				_optionDict["slow-firstpass"].Locked = true
 		get:
 			return _totalPass
-	_totalPass as int
 
-	[Property(CurrentPass)]
-	_currentPass as int
+	CurrentPass as int:
+	"""将影响GetArgument()"""
+		get:
+			return self._currentPass
+		set:
+			self._currentPass = value
 	
+	//Methods
 	public def constructor():
 		_totalPass = 1
 		_currentPass = 1
@@ -165,8 +176,7 @@ class x264Config(VideoEncConfigBase):
 						"me":1, "no-mixed-refs":false, "partitions":3, "p8x8":true, "p4x4":false, "b8x8":true, "i8x8":true,
 						"i4x4":true, "merange":16, "rc-lookahead":40, "ref":3, "no-scenecut":false, 
 						"subme":7, "trellis":1, "no-weightb":false, "weightp":2}
-	//methods
-	
+
 	def GetNode(name as string) as x264ConfigNode:
 		try:
 			return _optionDict[name]

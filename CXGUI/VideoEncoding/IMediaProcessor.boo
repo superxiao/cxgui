@@ -1,4 +1,4 @@
-﻿namespace My
+﻿namespace CXGUI
 
 import System
 

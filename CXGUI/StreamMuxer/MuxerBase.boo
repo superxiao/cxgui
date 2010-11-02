@@ -2,7 +2,7 @@
 
 import System
 import System.Diagnostics
-import My
+import CXGUI
 
 class MuxerBase(IMediaProcessor):
 """Description of Class1"""

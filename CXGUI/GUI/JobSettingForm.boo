@@ -15,7 +15,7 @@ import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
 import CXGUI.Config
 import CXGUI.Job
-import My
+import Clinky.IO
 
 partial class JobSettingForm:
 """Description of JobSettingForm."""
@@ -78,8 +78,6 @@ partial class JobSettingForm:
 
 		self._jobConfig = jobItem.JobConfig
 		self._avsConfig = jobItem.AvsConfig
-		self._videoEncConfig = jobItem.VideoEncConfig
-		self._audioEncConfig = jobItem.AudioEncConfig
 		self._subtitleConfig = jobItem.SubtitleConfig
 		self._videoInfo = VideoInfo(self._sourceFile)
 		self._audioInfo = AudioInfo(self._sourceFile)
@@ -96,7 +94,7 @@ partial class JobSettingForm:
 				self.tabControl1.Controls.Clear()
 				self.tabControl1.Controls.AddRange((self.avsInputTabPage, self.encTabPage))
 				AvsInputInitializeConfig(jobItem)
-		InitializeEncConfig()
+		InitializeEncConfig(jobItem.VideoEncConfig, jobItem.AudioEncConfig)
 
 	private def AvsInputInitializeConfig(jobItem as JobItem):
 		if jobItem.JobConfig.Container == OutputContainer.MKV:
@@ -333,10 +331,12 @@ partial class JobSettingForm:
 
 	#region EncTabPage x264Config
 
-	private def InitializeEncConfig():
+	private def InitializeEncConfig(videoEncConfig as VideoEncConfigBase, audioEncConfig as AudioEncConfigBase):
 	"""
 	从x264Config和NeroAacConfig的对象导入到UI。此后任何操作都是同步的。
 	"""
+		self._videoEncConfig = Clone[of VideoEncConfigBase](videoEncConfig)
+		self._audioEncConfig = Clone[of AudioEncConfigBase](audioEncConfig)
 		RefreshX264UI()
 		RefreshNeroAac()
 
@@ -752,7 +752,7 @@ partial class JobSettingForm:
 		self.JobConfig = _profile.JobConfig
 		InitializeJobConfig(_jobConfig)
 		InitializeAvsConfig(_avsConfig)
-		InitializeEncConfig()
+		InitializeEncConfig(self._videoEncConfig, self._audioEncConfig)
 	
 	private def SaveProfileButtonClick(sender as object, e as System.EventArgs):
 		if self._videoInfo.Format == "avs":

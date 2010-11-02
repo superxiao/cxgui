@@ -3,7 +3,7 @@
 import System
 import System.IO
 import System.Text
-import My
+import Clinky.IO
 
 class SubStyleWriter:
 """Description of Subtitler"""

@@ -21,7 +21,7 @@ import CXGUI.Avisynth
 import CXGUI.Config
 import CXGUI.Job
 import DirectShowLib.DES
-import My
+import Clinky.IO
 
 
 partial class MainForm(System.Windows.Forms.Form):

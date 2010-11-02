@@ -1,7 +1,8 @@
-﻿namespace My
+﻿namespace Clinky.IO
 
 import System
 import System.IO
+import System.Runtime.Serialization.Formatters.Binary
 import System.Windows.Forms
 
 def IsSameFile(path1 as string, path2 as string) as bool:
@@ -31,3 +32,12 @@ def GetUniqueName(path as string) as string:
 		if Exists(path):
 			path = GetUniqueName(path)
 	return path
+	
+def Clone[of T](obj as T) as T:
+	formatter = BinaryFormatter()
+	stream = MemoryStream()
+	formatter.Serialize(stream, obj)
+	stream.Position = 0
+	obj = formatter.Deserialize(stream)
+	stream.Close()
+	return obj

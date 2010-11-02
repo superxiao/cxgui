@@ -10,6 +10,7 @@ import CXGUI.VideoEncoding
 import CXGUI.AudioEncoding
 import CXGUI.StreamMuxer
 import CXGUI.Config
+import Clinky.IO
 
 partial class MainForm(System.Windows.Forms.Form):
 

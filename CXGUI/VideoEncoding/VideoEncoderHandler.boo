@@ -6,7 +6,6 @@ import System.Diagnostics
 import System.Windows.Forms
 import CXGUI
 import CXGUI.External
-import My
 
 class VideoEncoderHandler(IMediaProcessor):
 """Description of VideoEncoder"""

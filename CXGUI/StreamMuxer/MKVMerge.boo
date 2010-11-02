@@ -4,7 +4,7 @@ import System
 import System.IO
 import System.Windows.Forms
 import CXGUI
-import My
+import Clinky.IO
 
 class MKVMerge(MuxerBase):
 """Description of MKVMerge"""

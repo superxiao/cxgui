@@ -1,4 +1,4 @@
-﻿namespace My
+﻿namespace Clinky.Math
 
 import System
 
