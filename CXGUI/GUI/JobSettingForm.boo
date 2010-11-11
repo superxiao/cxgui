@@ -879,7 +879,7 @@ partial class JobSettingForm:
 			
 			process = System.Diagnostics.Process()
 			process.StartInfo.FileName = ProgramConfig.Get().PlayerPath
-			process.StartInfo.Arguments = Path.GetFullPath("preview.avs")
+			process.StartInfo.Arguments = "\""+Path.GetFullPath("preview.avs")+"\""
 			process.Start()
 		
 			
