@@ -1,0 +1,152 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{286AF126-1D81-4818-ADF0-3C5D0428903C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CXGUI</RootNamespace>
+    <AssemblyName>CXGUI</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\clinky\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <NoStdLib>False</NoStdLib>
+    <Ducky>False</Ducky>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <Strict>False</Strict>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DirectShowLib-2005">
+      <HintPath>bin\Debug\DirectShowLib-2005.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AudioEncoding\AudioEncConfigBase.boo" />
+    <Compile Include="AudioEncoding\AudioEncoderHandler.boo" />
+    <Compile Include="AudioEncoding\NeroAacHandler.boo" />
+    <Compile Include="AudioEncoding\NeroAacConfig.boo">
+      <DependentUpon>NeroAacHandler.boo</DependentUpon>
+    </Compile>
+    <Compile Include="Avisynth\AudioAvsWriter.boo">
+    </Compile>
+    <Compile Include="Avisynth\AvisynthConfig.boo" />
+    <Compile Include="Avisynth\FrameReader.boo" />
+    <Compile Include="Avisynth\ResolutionCalculator.boo" />
+    <Compile Include="Avisynth\SubStyleWriter.boo" />
+    <Compile Include="Avisynth\SubtitleConfig.boo">
+      <DependentUpon>SubStyleWriter.boo</DependentUpon>
+    </Compile>
+    <Compile Include="Avisynth\VideoAvsWriter.boo">
+    </Compile>
+    <Compile Include="Config\Profile.boo" />
+    <Compile Include="Config\ProgramConfig.boo" />
+    <Compile Include="Exception.boo" />
+    <Compile Include="GUI\ControlResetter.boo">
+    </Compile>
+    <Compile Include="GUI\CommandLineBox.boo" />
+    <Compile Include="GUI\CommandLineBox.Designer.boo">
+      <DependentUpon>CommandLineBox.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\MainForm.boo" />
+    <Compile Include="GUI\MainForm.Designer.boo">
+      <DependentUpon>MainForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\MainForm.Worker.boo">
+      <DependentUpon>MainForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ProgramConfigForm.boo" />
+    <Compile Include="GUI\ProgramConfigForm.Designer.boo">
+      <DependentUpon>ProgramConfigForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\JobSettingForm.boo" />
+    <Compile Include="GUI\JobSettingForm.Designer.boo">
+      <DependentUpon>JobSettingForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\X264ConfigForm.boo" />
+    <Compile Include="GUI\X264ConfigForm.Designer.boo">
+      <DependentUpon>X264ConfigForm.boo</DependentUpon>
+    </Compile>
+    <Compile Include="Job\CxListViewItem.boo">
+      <DependentUpon>JobItem.boo</DependentUpon>
+    </Compile>
+    <Compile Include="Job\JobItem.boo" />
+    <Compile Include="Job\JobItemConfig.boo">
+      <DependentUpon>JobItem.boo</DependentUpon>
+    </Compile>
+    <Compile Include="MediaInfo\AudioInfo.boo" />
+    <Compile Include="MediaInfo\DirectShowInfo.boo" />
+    <Compile Include="MediaInfo\VideoInfo.boo" />
+    <Compile Include="My\IO.boo" />
+    <Compile Include="My\Math.boo" />
+    <Compile Include="StreamMuxer\FFMP4.boo" />
+    <Compile Include="StreamMuxer\MKVMerge.boo" />
+    <Compile Include="StreamMuxer\MP4Box.boo" />
+    <Compile Include="StreamMuxer\MuxerBase.boo" />
+    <Compile Include="VideoEncoding\IMediaProcessor.boo" />
+    <Compile Include="VideoEncoding\VideoEncConfigBase.boo" />
+    <Compile Include="VideoEncoding\VideoEncoderHandler.boo" />
+    <Compile Include="VideoEncoding\x264Handler.boo" />
+    <Compile Include="VideoEncoding\X264Config.boo">
+      <DependentUpon>x264Handler.boo</DependentUpon>
+    </Compile>
+    <Compile Include="VideoEncoding\X264ConfigNode.boo">
+      <DependentUpon>x264Handler.boo</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="GUI\CommandLineBox.resx">
+      <DependentUpon>CommandLineBox.Designer.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\CommandLineBox.resx">
+      <DependentUpon>CommandLineBox.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MainForm.resx">
+      <DependentUpon>MainForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\JobSettingForm.resx">
+      <DependentUpon>JobSettingForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ProgramConfigForm.resx">
+      <DependentUpon>ProgramConfigForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\X264ConfigForm.resx">
+      <DependentUpon>X264ConfigForm.boo</DependentUpon>
+    </EmbeddedResource>
+    <None Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AudioEncoding" />
+    <Folder Include="Avisynth" />
+    <Folder Include="GUI" />
+    <Folder Include="MediaInfo" />
+    <Folder Include="My" />
+    <Folder Include="StreamMuxer" />
+    <Folder Include="VideoEncoding" />
+    <Folder Include="Job" />
+    <Folder Include="Config" />
+    <ProjectReference Include="..\External\External.csproj">
+      <Project>{120BD046-7DC6-4E5A-AEF4-B21B5097CFAF}</Project>
+      <Name>External</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />
+</Project>
