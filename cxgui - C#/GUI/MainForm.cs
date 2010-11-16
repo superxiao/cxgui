@@ -26,6 +26,7 @@
     {
         protected ProgramConfigForm _configForm;
         protected JobSettingForm _jobSettingForm;
+        protected AboutForm _aboutForm;
         protected bool _workerReporting;
         protected JobItem _workingJobItem;
         protected List<JobItem> _workingJobItems;
@@ -66,7 +67,7 @@
                 {
                     argument.Event = JobEvent.OneJobItemCancelled;
                     this.JobEventReport(argument);
-                    if (this._workingJobItems[-1] == argument)
+                    if (this._workingJobItems[this._workingJobItems.Count - 1] == argument)
                     {
                         argument.Event = JobEvent.AllDone;
                         this.JobEventReport(argument);
@@ -116,7 +117,7 @@
             }
             finally
             {
-                if (this._workingJobItems[-1] == argument)
+                if (this._workingJobItems[this._workingJobItems.Count-1] == argument)
                 {
                     argument.Event = JobEvent.AllDone;
                     this.JobEventReport(argument);
@@ -541,7 +542,7 @@
                     result.Event = JobEvent.None;
                     this._workingJobItems.Clear();
                 }
-                else if (this._workingJobItems[-1] != result)
+                else if (this._workingJobItems[this._workingJobItems.Count - 1] != result)
                 {
                     int num = this._workingJobItems.IndexOf(result) + 1;
                     JobItem argument = this._workingJobItems[num];
@@ -963,6 +964,13 @@
             {
                 this.settingButton.Enabled = false;
             }
+        }
+
+        private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this._aboutForm == null)
+                this._aboutForm = new AboutForm();
+            this._aboutForm.ShowDialog();
         }
     }
 }

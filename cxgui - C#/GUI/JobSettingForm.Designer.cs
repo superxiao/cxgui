@@ -489,7 +489,7 @@
             this.btSepAudio.TabIndex = 12;
             this.btSepAudio.Text = "浏览";
             this.btSepAudio.UseVisualStyleBackColor = true;
-            this.btSepAudio.Click += new System.EventHandler(this.SubtitleButtonClick);
+            this.btSepAudio.Click += new System.EventHandler(this.BtSepAudioClick);
             // 
             // tbSepAudio
             // 

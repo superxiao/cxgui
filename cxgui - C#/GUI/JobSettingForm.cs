@@ -267,9 +267,10 @@
 
         private void FontButtonClick(object sender, EventArgs e)
         {
-            this.fontDialog1.Font = new Font(this.fontButton.Text, (float)100);
+            this.fontDialog1.Font = new Font(this.fontButton.Text, float.Parse(this.fontSizeBox.Text));
             this.fontDialog1.ShowDialog();
             this.fontButton.Text = this.fontDialog1.Font.Name;
+            this.fontSizeBox.Text = this.fontDialog1.Font.SizeInPoints.ToString();
         }
 
         private void FrameRateBoxValidating(object sender, CancelEventArgs e)
@@ -1186,7 +1187,11 @@
 
         private void SubtitleButtonClick(object sender, EventArgs e)
         {
-            this.openFileDialog2.FileName = this.subtitleTextBox.Text;
+            if (this.subtitleTextBox.Text.Length > 0)
+                this.openFileDialog2.FileName = this.subtitleTextBox.Text;
+            else
+                this.openFileDialog2.FileName = "";
+                this.openFileDialog2.InitialDirectory = Path.GetDirectoryName(this._jobItem.SourceFile);
             this.openFileDialog2.ShowDialog();
             this.subtitleTextBox.Text = this.openFileDialog2.FileName;
         }
