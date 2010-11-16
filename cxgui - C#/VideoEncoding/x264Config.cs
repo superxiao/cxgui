@@ -190,10 +190,10 @@
                 node.Type = (NodeType) Enum.Parse(typeof(NodeType), objArray[index][1].ToString());
                 if (node.Type == NodeType.Num)
                 {
-                    node.DefaultNum = (double)objArray[index][2];
+                    node.DefaultNum = Convert.ToDouble(objArray[index][2]);
                     node.Num = node.DefaultNum;
-                    node.MinNum = (double)objArray[index][3];
-                    node.MaxNum = (double)objArray[index][4];
+                    node.MinNum = Convert.ToDouble(objArray[index][3]);
+                    node.MaxNum = Convert.ToDouble(objArray[index][4]);
                 }
                 else if (node.Type == NodeType.StrOptionIndex)
                 {
