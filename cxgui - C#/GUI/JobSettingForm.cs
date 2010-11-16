@@ -710,7 +710,7 @@
                         text = this.tbSepAudio.Text;
                     }
                 }
-                if (this._jobItem.JobConfig.VideoMode != StreamProcessMode.None)
+                if (this.cbVideoMode.SelectedIndex != -1 && this.cbVideoMode.SelectedIndex != 2)
                 {
                     flag = true;
                     if (this._jobItem.JobConfig.VideoMode == StreamProcessMode.Encode)
@@ -737,7 +737,7 @@
                 {
                     sourceFile = this._jobItem.SourceFile;
                 }
-                if (this._jobItem.JobConfig.AudioMode != StreamProcessMode.None)
+                if (this.cbAudioMode.SelectedIndex != -1 && this.cbAudioMode.SelectedIndex != 2)
                 {
                     flag2 = true;
                     if (this._jobItem.JobConfig.AudioMode == StreamProcessMode.Copy)
