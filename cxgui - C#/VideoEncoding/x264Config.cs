@@ -689,22 +689,22 @@
             x264ConfigNode node = this._optionDict[name];
             if (node.Type == NodeType.Bool)
             {
-                node.Bool = (bool)(value);
+                node.Bool = Convert.ToBoolean(value);
                 node.DefaultBool = node.Bool;
             }
             else if (node.Type == NodeType.Num)
             {
-                node.Num = (double)(value);
+                node.Num = Convert.ToDouble(value);
                 node.DefaultNum = node.Num;
             }
             else if (node.Type == NodeType.StrOptionIndex)
             {
-                node.StrOptionIndex = (int)(value);
+                node.StrOptionIndex = Convert.ToInt32(value);
                 node.DefaultStrOptionIndex = node.StrOptionIndex;
             }
             else if (node.Type == NodeType.Str)
             {
-                node.Str = (string) value;
+                node.Str = Convert.ToString(value);
                 node.DefaultStr = node.Str;
             }
         }

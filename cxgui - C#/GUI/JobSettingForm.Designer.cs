@@ -1030,6 +1030,7 @@
             // saveFileDialog1
             // 
             this.saveFileDialog1.OverwritePrompt = false;
+            this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
             // 
             // openFileDialog1
             // 

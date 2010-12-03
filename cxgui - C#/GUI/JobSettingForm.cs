@@ -1272,6 +1272,11 @@
                 }
             }
         }
+
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            this.destFileBox.Text = this.saveFileDialog1.FileName;
+        }
     }
 }
 
