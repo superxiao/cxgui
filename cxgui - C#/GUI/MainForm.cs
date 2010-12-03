@@ -435,10 +435,6 @@
             this.jobItemListView.DoDragDrop(this.jobItemListView.SelectedItems, DragDropEffects.Move);
         }
 
-        private void MainFormActivated(object sender, EventArgs e)
-        {
-        }
-
         private void MainFormFormClosing(object sender, FormClosingEventArgs e)
         {
             if ((this._workingJobItem != null) && (this._workingJobItem.State == JobState.Working))

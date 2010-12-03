@@ -167,7 +167,7 @@
             {
                 this._jobConfig.VideoMode = StreamProcessMode.None;
             }
-            if (this._videoInfo.AudioStreamsCount == 0)
+            if (this._videoInfo.AudioStreamsCount==0&&!this.UsingExternalAudio)
             {
                 this._jobConfig.AudioMode = StreamProcessMode.None;
             }

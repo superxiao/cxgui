@@ -170,8 +170,8 @@
                     MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     this.cbAudioMode.SelectedIndex = 0;
                 }
+                this.SettleAudioControls();
             }
-            this.SettleAudioControls();
         }
 
         private void CbVideoModeSelectedIndexChanged(object sender, EventArgs e)
@@ -660,6 +660,11 @@
                             goto Label_02BE;
                     }
                 }
+            }
+            else
+            {
+                this._jobItem.UsingExternalAudio = false;
+                this._jobItem.ExternalAudio = string.Empty; 
             }
         Label_02BE:
             if (this.subtitleTextBox.Text != string.Empty)
