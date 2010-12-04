@@ -82,7 +82,7 @@
                         else
                         {
                             string ext = Path.GetExtension(this._destFile).ToLower();
-                            if (ext == ".mp4" || ext == ".m4v" || ext == ".m4a")
+                            if (ext != ".mp4" && ext != ".m4v" && ext != ".m4a")
                             {
                                 this._muxer = new FFMP4();
                             }
@@ -139,7 +139,9 @@
                 this._readSubCfg = false;
             }
         }
-
+        /// <summary>
+        /// 根据ProfileName获取各设置，附加混流控制器
+        /// </summary>
         public void SetUp()
         {
             if (this._avsConfig == null)

@@ -4,6 +4,7 @@
     using System;
     using System.IO;
     using System.Text;
+    using Clinky;
 
     [Serializable]
     public class FFMP4 : MuxerBase
@@ -57,27 +58,41 @@
 
         public override void Start()
         {
+            string uniqueName = "";
+            if (base._videoFile == base._dstFile)
+            {
+                uniqueName = MyIO.GetUniqueName(Path.Combine(Path.GetDirectoryName(base._videoFile), "temp" + Path.GetExtension(base._videoFile)));
+                File.Move(base._videoFile, uniqueName);
+                base._videoFile = uniqueName;
+            }
+            else if (base._audioFile == base._dstFile)
+            {
+                uniqueName = MyIO.GetUniqueName(Path.Combine(Path.GetDirectoryName(base._audioFile), "temp" + Path.GetExtension(base._audioFile)));
+                File.Move(base._audioFile, uniqueName);
+                base._audioFile = uniqueName;
+            }
             double length = 0;
-            VideoInfo info = new VideoInfo(base._videoFile);
-            AudioInfo info2 = new AudioInfo(base._audioFile);
-            string argument = this.GetArgument(info as VideoInfo, info2 as AudioInfo);
+            VideoInfo videoInfo = new VideoInfo(base._videoFile);
+            AudioInfo audioInfo = new AudioInfo(base._audioFile);
+            string argument = this.GetArgument(videoInfo, audioInfo);
             base._process.StartInfo.Arguments = argument;
             base._process.StartInfo.UseShellExecute = false;
             base._process.StartInfo.RedirectStandardError = true;
             base._process.StartInfo.CreateNoWindow = true;
             this._startTime = DateTime.Now;
-            if (info.HasVideo)
+            if (videoInfo.HasVideo)
             {
-                length = info.Length;
+                length = videoInfo.Length;
             }
-            else if (info2.StreamsCount != 0)
+            else if (audioInfo.StreamsCount != 0)
             {
-                length = info2.Length;
+                length = audioInfo.Length;
             }
             base._process.Start();
             this.ReadStdErr(length);
             base._process.WaitForExit();
-            base.processingDone = true;
+            base.processingDone = true; 
+            File.Delete(uniqueName);
         }
 
         public override void Stop()

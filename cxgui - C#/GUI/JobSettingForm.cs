@@ -139,18 +139,21 @@
         private void BtSepAudioClick(object sender, EventArgs e)
         {
             this.openFileDialog1.ShowDialog();
-            AudioInfo info = new AudioInfo(this.openFileDialog1.FileName);
-            if (info.StreamsCount == 0)
+            if (File.Exists(this.openFileDialog1.FileName))
             {
-                MessageBox.Show(new StringBuilder().Append(this.openFileDialog1.FileName).Append("\n检测不到所选文件中的音频流。").ToString(), "检测失败", MessageBoxButtons.OK);
+                AudioInfo info = new AudioInfo(this.openFileDialog1.FileName);
+                if (info.StreamsCount == 0)
+                {
+                    MessageBox.Show(new StringBuilder().Append(this.openFileDialog1.FileName).Append("\n检测不到所选文件中的音频流。").ToString(), "检测失败", MessageBoxButtons.OK);
+                }
+                else
+                {
+                    this._usingSepAudio = true;
+                    this.tbSepAudio.Text = this.openFileDialog1.FileName;
+                    this.cbAudioMode.SelectedIndex = 0;
+                }
+                this.SettleAudioControls();
             }
-            else
-            {
-                this._usingSepAudio = true;
-                this.tbSepAudio.Text = this.openFileDialog1.FileName;
-                this.cbAudioMode.SelectedIndex = 0;
-            }
-            this.SettleAudioControls();
         }
 
         private void CancelButtonClick(object sender, EventArgs e)
@@ -695,8 +698,8 @@
                 string subtitle = string.Empty;
                 string text = string.Empty;
                 string contents = string.Empty;
-                bool flag = false;
-                bool flag2 = false;
+                bool writeVideoScript = false;
+                bool writeAudioScript = false;
                 if (this._videoInfo.Format == "avs")
                 {
                     this.AvsInputSaveConfig(jobConfig);
@@ -715,17 +718,17 @@
                         text = this.tbSepAudio.Text;
                     }
                 }
-                if (this.cbVideoMode.SelectedIndex != -1 && this.cbVideoMode.SelectedIndex != 2)
+                if (jobConfig.VideoMode != StreamProcessMode.None)
                 {
-                    flag = true;
-                    if (this._jobItem.JobConfig.VideoMode == StreamProcessMode.Encode)
+                    writeVideoScript = true;
+                    if (jobConfig.VideoMode == StreamProcessMode.Encode)
                     {
                         if ((subtitle != string.Empty) && subtitleConfig.UsingStyle)
                         {
                             new SubStyleWriter(subtitle, subtitleConfig).Write();
                         }
                     }
-                    else if (this._jobItem.JobConfig.VideoMode == StreamProcessMode.Copy)
+                    else if (jobConfig.VideoMode == StreamProcessMode.Copy)
                     {
                         avsConfig.UsingSourceFrameRate = true;
                         avsConfig.UsingSourceResolution = true;
@@ -742,10 +745,10 @@
                 {
                     sourceFile = this._jobItem.SourceFile;
                 }
-                if (this.cbAudioMode.SelectedIndex != -1 && this.cbAudioMode.SelectedIndex != 2)
+                if (jobConfig.AudioMode != StreamProcessMode.None)
                 {
-                    flag2 = true;
-                    if (this._jobItem.JobConfig.AudioMode == StreamProcessMode.Copy)
+                    writeAudioScript = true;
+                    if (jobConfig.AudioMode == StreamProcessMode.Copy)
                     {
                         avsConfig.Normalize = false;
                         avsConfig.DownMix = false;
@@ -753,15 +756,15 @@
                     new AudioAvsWriter(sourceFile, avsConfig).WriteScript("audio.avs");
                     contents += "\r\naudio = import(\"audio.avs\")";
                 }
-                if (flag && flag2)
+                if (writeVideoScript && writeAudioScript)
                 {
                     contents += "\r\nAudioDub(video, audio)";
                 }
-                else if (flag)
+                else if (writeVideoScript)
                 {
                     contents += "\r\nvideo";
                 }
-                else if (flag2)
+                else if (writeAudioScript)
                 {
                     contents += "\r\naudio";
                 }
@@ -1110,8 +1113,8 @@
                 if (this.tabControl1.Controls.Count != 3)
                 {
                     this.tabControl1.Controls.Clear();
-                    TabPage[] controls = new TabPage[] { this.videoEditTabPage, this.audioEditTabPage, this.encTabPage, this.subtitleTabPage };
-                    this.tabControl1.Controls.AddRange(controls);
+                    TabPage[] tabPages = new TabPage[] { this.videoEditTabPage, this.audioEditTabPage, this.encTabPage, this.subtitleTabPage };
+                    this.tabControl1.Controls.AddRange(tabPages);
                 }
                 this.InitializeJobConfig(this._jobItem.JobConfig);
                 this.InitializeAvsConfig(this._jobItem.AvsConfig);
@@ -1120,8 +1123,8 @@
             else if (this.tabControl1.Controls.Count != 2)
             {
                 this.tabControl1.Controls.Clear();
-                TabPage[] pageArray2 = new TabPage[] { this.avsInputTabPage, this.encTabPage };
-                this.tabControl1.Controls.AddRange(pageArray2);
+                TabPage[] tabPages = new TabPage[] { this.avsInputTabPage, this.encTabPage };
+                this.tabControl1.Controls.AddRange(tabPages);
                 this.AvsInputInitializeConfig(jobItem);
             }
             this._videoEncConfig = MyIO.Clone<VideoEncConfigBase>(this._jobItem.VideoEncConfig);

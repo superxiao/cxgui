@@ -125,7 +125,7 @@
             // previewButton
             // 
             this.previewButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.previewButton.Location = new System.Drawing.Point(12, 508);
+            this.previewButton.Location = new System.Drawing.Point(10, 474);
             this.previewButton.Name = "previewButton";
             this.previewButton.Size = new System.Drawing.Size(75, 23);
             this.previewButton.TabIndex = 19;
@@ -146,22 +146,19 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(440, 490);
+            this.tabControl1.Size = new System.Drawing.Size(440, 456);
             this.tabControl1.TabIndex = 13;
             // 
             // videoEditTabPage
             // 
             this.videoEditTabPage.Controls.Add(this.cbVideoMode);
             this.videoEditTabPage.Controls.Add(this.label16);
-            this.videoEditTabPage.Controls.Add(this.destFileBox);
-            this.videoEditTabPage.Controls.Add(this.label6);
-            this.videoEditTabPage.Controls.Add(this.btOutBrowse);
             this.videoEditTabPage.Controls.Add(this.gbVideoSource);
             this.videoEditTabPage.Controls.Add(this.gbResolution);
             this.videoEditTabPage.Location = new System.Drawing.Point(4, 22);
             this.videoEditTabPage.Name = "videoEditTabPage";
             this.videoEditTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.videoEditTabPage.Size = new System.Drawing.Size(432, 464);
+            this.videoEditTabPage.Size = new System.Drawing.Size(432, 430);
             this.videoEditTabPage.TabIndex = 0;
             this.videoEditTabPage.Text = "视频";
             this.videoEditTabPage.UseVisualStyleBackColor = true;
@@ -194,14 +191,14 @@
             this.destFileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.destFileBox.FormattingEnabled = true;
-            this.destFileBox.Location = new System.Drawing.Point(74, 427);
+            this.destFileBox.Location = new System.Drawing.Point(105, 508);
             this.destFileBox.Name = "destFileBox";
             this.destFileBox.Size = new System.Drawing.Size(266, 20);
             this.destFileBox.TabIndex = 11;
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(6, 425);
+            this.label6.Location = new System.Drawing.Point(20, 506);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 23);
             this.label6.TabIndex = 8;
@@ -211,7 +208,7 @@
             // btOutBrowse
             // 
             this.btOutBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btOutBrowse.Location = new System.Drawing.Point(346, 425);
+            this.btOutBrowse.Location = new System.Drawing.Point(377, 508);
             this.btOutBrowse.Name = "btOutBrowse";
             this.btOutBrowse.Size = new System.Drawing.Size(75, 23);
             this.btOutBrowse.TabIndex = 7;
@@ -456,7 +453,7 @@
             this.audioEditTabPage.Location = new System.Drawing.Point(4, 22);
             this.audioEditTabPage.Name = "audioEditTabPage";
             this.audioEditTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.audioEditTabPage.Size = new System.Drawing.Size(432, 464);
+            this.audioEditTabPage.Size = new System.Drawing.Size(432, 430);
             this.audioEditTabPage.TabIndex = 4;
             this.audioEditTabPage.Text = "音频";
             this.audioEditTabPage.UseVisualStyleBackColor = true;
@@ -552,7 +549,7 @@
             this.avsInputTabPage.Location = new System.Drawing.Point(4, 22);
             this.avsInputTabPage.Name = "avsInputTabPage";
             this.avsInputTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.avsInputTabPage.Size = new System.Drawing.Size(432, 464);
+            this.avsInputTabPage.Size = new System.Drawing.Size(432, 430);
             this.avsInputTabPage.TabIndex = 3;
             this.avsInputTabPage.Text = "avs输入";
             this.avsInputTabPage.UseVisualStyleBackColor = true;
@@ -565,7 +562,7 @@
             this.encTabPage.Location = new System.Drawing.Point(4, 22);
             this.encTabPage.Name = "encTabPage";
             this.encTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.encTabPage.Size = new System.Drawing.Size(432, 464);
+            this.encTabPage.Size = new System.Drawing.Size(432, 430);
             this.encTabPage.TabIndex = 1;
             this.encTabPage.Text = "编码器";
             this.encTabPage.UseVisualStyleBackColor = true;
@@ -593,6 +590,7 @@
             this.muxerComboBox.Name = "muxerComboBox";
             this.muxerComboBox.Size = new System.Drawing.Size(121, 20);
             this.muxerComboBox.TabIndex = 0;
+            this.muxerComboBox.SelectedIndexChanged += new System.EventHandler(this.MuxerComboBoxSelectedIndexChanged);
             // 
             // groupBox5
             // 
@@ -1032,13 +1030,8 @@
             this.saveFileDialog1.OverwritePrompt = false;
             this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
             // openFileDialog2
             // 
-            this.openFileDialog2.FileName = "openFileDialog2";
             this.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*.ssa|srt|*.srt|ass|*.ass|ssa|*.ssa";
             // 
             // JobSettingForm
@@ -1050,8 +1043,11 @@
             this.ClientSize = new System.Drawing.Size(464, 576);
             this.Controls.Add(this.previewButton);
             this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.destFileBox);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.profileBox);
+            this.Controls.Add(this.btOutBrowse);
             this.Controls.Add(this.saveProfileButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);

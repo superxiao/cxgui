@@ -23,9 +23,9 @@
 
         public void DeleteTempFiles()
         {
-            foreach (string str in this._tempFiles)
+            foreach (string file in this._tempFiles)
             {
-                File.Delete(str);
+                File.Delete(file);
             }
             this._tempFiles.Clear();
         }
