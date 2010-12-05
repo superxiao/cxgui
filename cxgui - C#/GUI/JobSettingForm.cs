@@ -85,6 +85,49 @@
 
         private void AvsInputInitializeConfig(JobItem jobItem)
         {
+            this.avsVideoModeComboBox.SelectedIndex = 0;
+            this.avsAudioModeComboBox.SelectedIndex = 0;
+            if (this._videoInfo.HasVideo)
+            {
+                this.avsVideoModeComboBox.Enabled = true;
+                if (jobItem.JobConfig.VideoMode == StreamProcessMode.None && this._audioInfo.StreamsCount > 0)
+                    this.avsVideoModeComboBox.SelectedIndex = 1;
+            }
+            else
+            {
+                this.avsVideoModeComboBox.Enabled = false;
+                this.avsVideoModeComboBox.SelectedIndex = -1;
+            }
+            // 当无视频时，也不需要附加音轨
+            if (this.avsVideoModeComboBox.SelectedIndex != -1)
+            {
+                this.sepAudioCheckBox.Enabled = true;
+                this.sepAudioCheckBox.Checked = this._jobItem.UsingExternalAudio;
+            }
+            else
+            {
+                this.sepAudioCheckBox.Enabled = false;
+                this.sepAudioCheckBox.Checked = false;
+            }
+            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) && (this.sepAudioTextBox.Text != string.Empty))
+            {
+                this._usingSepAudio = true;
+            }
+            else
+            {
+                this._usingSepAudio = false;
+            }
+            if (this._usingSepAudio || (this._audioInfo.StreamsCount != 0))
+            {
+                this.avsAudioModeComboBox.Enabled = true;
+                if (jobItem.JobConfig.AudioMode == StreamProcessMode.None && this._videoInfo.HasVideo)
+                    this.avsVideoModeComboBox.SelectedIndex = 1;
+            }
+            else
+            {
+                this.avsAudioModeComboBox.Enabled = false;
+                this.avsAudioModeComboBox.SelectedIndex = -1;
+            }
             if (jobItem.JobConfig.Container == OutputContainer.MKV)
             {
                 this.muxerComboBox.Text = "MKV";
@@ -97,6 +140,14 @@
 
         private void AvsInputSaveConfig(JobItemConfig jobConfig)
         {
+            if (this.avsVideoModeComboBox.SelectedIndex == 0)
+                jobConfig.VideoMode = StreamProcessMode.Encode;
+            else
+                jobConfig.VideoMode = StreamProcessMode.None;
+            if (this.avsAudioModeComboBox.SelectedIndex == 0)
+                jobConfig.AudioMode = StreamProcessMode.Encode;
+            else
+                jobConfig.AudioMode = StreamProcessMode.None;
             if (this.muxerComboBox.Text == "MKV")
             {
                 jobConfig.Container = OutputContainer.MKV;
@@ -149,8 +200,8 @@
                 else
                 {
                     this._usingSepAudio = true;
-                    this.tbSepAudio.Text = this.openFileDialog1.FileName;
-                    this.cbAudioMode.SelectedIndex = 0;
+                    this.sepAudioTextBox.Text = this.openFileDialog1.FileName;
+                    this.audioModeComboBox.SelectedIndex = 0;
                 }
                 this.SettleAudioControls();
             }
@@ -166,12 +217,12 @@
 
         private void CbAudioModeSelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.Created && (this.cbAudioMode.SelectedIndex == 2))
+            if (this.Created && (this.audioModeComboBox.SelectedIndex == 2))
             {
-                if (this.cbVideoMode.SelectedIndex == -1 || this.cbVideoMode.SelectedIndex == 2)
+                if (this.videoModeComboBox.SelectedIndex == -1 || this.videoModeComboBox.SelectedIndex == 2)
                 {
                     MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    this.cbAudioMode.SelectedIndex = 0;
+                    this.audioModeComboBox.SelectedIndex = 0;
                 }
                 this.SettleAudioControls();
             }
@@ -179,22 +230,22 @@
 
         private void CbVideoModeSelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.cbVideoMode.SelectedIndex == 0)
+            if (this.videoModeComboBox.SelectedIndex == 0)
             {
                 this.gbResolution.Enabled = true;
                 this.gbVideoSource.Enabled = true;
             }
-            else if (this.cbVideoMode.SelectedIndex == 1)
+            else if (this.videoModeComboBox.SelectedIndex == 1)
             {
                 this.gbResolution.Enabled = false;
                 this.gbVideoSource.Enabled = false;
             }
-            else if (this.cbVideoMode.SelectedIndex == 2)
+            else if (this.videoModeComboBox.SelectedIndex == 2)
             {
-                if (this.cbAudioMode.SelectedIndex == -1 || this.cbAudioMode.SelectedIndex == 2)
+                if (this.audioModeComboBox.SelectedIndex == -1 || this.audioModeComboBox.SelectedIndex == 2)
                 {
                     MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    this.cbVideoMode.SelectedIndex = 0;
+                    this.videoModeComboBox.SelectedIndex = 0;
                 }
                 else
                 {
@@ -206,30 +257,30 @@
 
         private void ChbSepAudioCheckedChanged(object sender, EventArgs e)
         {
-            if (this.chbSepAudio.Checked)
+            if (this.sepAudioCheckBox.Checked)
             {
-                this.tbSepAudio.Enabled = true;
-                this.btSepAudio.Enabled = true;
+                this.sepAudioTextBox.Enabled = true;
+                this.sepAudioButton.Enabled = true;
                 this._usingSepAudio = true;
-                if (this.tbSepAudio.Text != string.Empty)
+                if (this.sepAudioTextBox.Text != string.Empty)
                 {
-                    if (this.cbAudioMode.SelectedIndex == -1 || this.cbAudioMode.SelectedIndex == 2)
+                    if (this.audioModeComboBox.SelectedIndex == -1 || this.audioModeComboBox.SelectedIndex == 2)
                     {
-                        this.cbAudioMode.SelectedIndex = 0;
+                        this.audioModeComboBox.SelectedIndex = 0;
                     }
                 }
             }
             else
             {
-                if (this.cbVideoMode.SelectedIndex == -1 || this.cbVideoMode.SelectedIndex == 2)
+                if (this.videoModeComboBox.SelectedIndex == -1 || this.videoModeComboBox.SelectedIndex == 2)
                 {
                     MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    this.chbSepAudio.Checked = true;
+                    this.sepAudioCheckBox.Checked = true;
                 }
                 else
                 {
-                    this.tbSepAudio.Enabled = false;
-                    this.btSepAudio.Enabled = false;
+                    this.sepAudioTextBox.Enabled = false;
+                    this.sepAudioButton.Enabled = false;
                     this._usingSepAudio = false;
                 }
             }
@@ -355,29 +406,30 @@
 
         private void InitializeJobConfig(JobItemConfig jobConfig)
         {
-            this.cbVideoMode.SelectedIndex = 1;
-            this.cbAudioMode.SelectedIndex = 1;
+            this.videoModeComboBox.SelectedIndex = 1;
+            this.audioModeComboBox.SelectedIndex = 1;
             if (this._videoInfo.HasVideo)
             {
-                this.cbVideoMode.Enabled = true;
-                this.cbVideoMode.SelectedIndex = (int)jobConfig.VideoMode;
+                this.videoModeComboBox.Enabled = true;
+                this.videoModeComboBox.SelectedIndex = (int)jobConfig.VideoMode;
             }
             else
             {
-                this.cbVideoMode.Enabled = false;
-                this.cbVideoMode.SelectedIndex = -1;
+                this.videoModeComboBox.Enabled = false;
+                this.videoModeComboBox.SelectedIndex = -1;
             }
-            if (this.cbVideoMode.SelectedIndex != -1)
+            // 当无视频时，也不需要附加音轨
+            if (this.videoModeComboBox.SelectedIndex != -1)
             {
-                this.chbSepAudio.Enabled = true;
-                this.chbSepAudio.Checked = this._jobItem.UsingExternalAudio;
+                this.sepAudioCheckBox.Enabled = true;
+                this.sepAudioCheckBox.Checked = this._jobItem.UsingExternalAudio;
             }
             else
             {
-                this.chbSepAudio.Enabled = false;
-                this.chbSepAudio.Checked = false;
+                this.sepAudioCheckBox.Enabled = false;
+                this.sepAudioCheckBox.Checked = false;
             }
-            if ((this.chbSepAudio.Enabled && this.chbSepAudio.Checked) && (this.tbSepAudio.Text != string.Empty))
+            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) && (this.sepAudioTextBox.Text != string.Empty))
             {
                 this._usingSepAudio = true;
             }
@@ -387,16 +439,16 @@
             }
             if (this._usingSepAudio || (this._audioInfo.StreamsCount != 0))
             {
-                this.cbAudioMode.Enabled = true;
-                this.cbAudioMode.SelectedIndex = (int)jobConfig.AudioMode;
+                this.audioModeComboBox.Enabled = true;
+                this.audioModeComboBox.SelectedIndex = (int)jobConfig.AudioMode;
             }
             else
             {
-                this.cbAudioMode.Enabled = false;
-                this.cbAudioMode.SelectedIndex = -1;
+                this.audioModeComboBox.Enabled = false;
+                this.audioModeComboBox.SelectedIndex = -1;
             }
             this.SettleAudioControls();
-            if (this.cbVideoMode.SelectedIndex != 0)
+            if (this.videoModeComboBox.SelectedIndex != 0)
             {
                 this.gbResolution.Enabled = false;
                 this.gbVideoSource.Enabled = false;
@@ -585,42 +637,44 @@
 
         private void OkButtonClick(object sender, EventArgs e)
         {
+            //_videoEncConfig和_audioEncConfig由_jobItem克隆得来，跟随GUI即时变化
             this._jobItem.VideoEncConfig = this._videoEncConfig;
             this._jobItem.AudioEncConfig = this._audioEncConfig;
             this._jobItem.State = JobState.NotProccessed;
             this._jobItem.ProfileName = this.profileBox.Text;
             if (this._videoInfo.Format == "avs")
-            {
                 this.AvsInputSaveConfig(this._jobItem.JobConfig);
-                goto Label_0321;
-            }
+            else
+            {
+                if (this.subtitleTextBox.Text != string.Empty)
+                {
+                    this._jobItem.SubtitleFile = this.subtitleTextBox.Text;
+                }
+                this.SaveToAvsConfig(this._jobItem.AvsConfig);
+                this.SaveToJobConfig(this._jobItem.JobConfig);
+                this.SaveToSubtitleConfig(this._jobItem.SubtitleConfig);
+            } 
+            
             try
             {
-                string directoryName = Path.GetDirectoryName(this.destFileBox.Text);
-                switch (directoryName)
-                {
-                    case "":
-                    case null:
-                        this.destFileBox.Text = this._jobItem.DestFile;
-                        goto Label_021F;
-                }
-                if (MyIO.IsSameFile(this._jobItem.SourceFile, this.saveFileDialog1.FileName))
+                string destDir = Path.GetDirectoryName(this.destFileBox.Text);
+                if (destDir == "" || destDir == null)
+                    this.destFileBox.Text = this._jobItem.DestFile;
+                else if (MyIO.IsSameFile(this._jobItem.SourceFile, this.destFileBox.Text))
                 {
                     MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
-                if (MyIO.Exists(this.saveFileDialog1.FileName))
+                else if (MyIO.Exists(this.destFileBox.Text))
                 {
-                    if (MessageBox.Show(new StringBuilder().Append(Path.GetFileName(this.saveFileDialog1.FileName)).Append(" 已存在。\n要替换它吗？").ToString(), "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-                    {
+                    if (MessageBox.Show(Path.GetFileName(this.destFileBox.Text) + " 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                         return;
-                    }
                 }
-                else if (Directory.Exists(directoryName))
+                else if (Directory.Exists(destDir))
                 {
                     this._jobItem.DestFile = this.destFileBox.Text;
                 }
-                else if (!Directory.Exists(directoryName))
+                else if (!Directory.Exists(destDir))
                 {
                     if (MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk) == DialogResult.OK)
                     {
@@ -641,43 +695,33 @@
             {
                 this.destFileBox.Text = this._jobItem.DestFile;
             }
-        Label_021F:
-            if (this.chbSepAudio.Checked)
+
+            if (this.sepAudioCheckBox.Checked)
             {
-                if (this.tbSepAudio.Text != string.Empty)
+                if (this.sepAudioTextBox.Text != string.Empty)
                 {
                     this._jobItem.UsingExternalAudio = true;
-                    this._jobItem.ExternalAudio = this.tbSepAudio.Text;
+                    this._jobItem.ExternalAudio = this.sepAudioTextBox.Text;
                 }
                 else
                 {
-                    switch (MessageBox.Show("未指定外挂音轨。确定退出吗？", string.Empty, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk))
-                    {
-                        case DialogResult.No:
-                            return;
+                    DialogResult result = MessageBox.Show("未指定外挂音轨。确定退出吗？", string.Empty, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
 
-                        case DialogResult.Yes:
-                            this.chbSepAudio.Checked = false;
-                            this._jobItem.UsingExternalAudio = false;
-                            this._jobItem.ExternalAudio = string.Empty;
-                            goto Label_02BE;
+                    if (result == DialogResult.No)
+                        return;
+                    else if (result == DialogResult.Yes)
+                    {
+                        this.sepAudioCheckBox.Checked = false;
+                        this._jobItem.UsingExternalAudio = false;
+                        this._jobItem.ExternalAudio = string.Empty;
                     }
                 }
             }
             else
             {
                 this._jobItem.UsingExternalAudio = false;
-                this._jobItem.ExternalAudio = string.Empty; 
+                this._jobItem.ExternalAudio = string.Empty;
             }
-        Label_02BE:
-            if (this.subtitleTextBox.Text != string.Empty)
-            {
-                this._jobItem.SubtitleFile = this.subtitleTextBox.Text;
-            }
-            this.SaveToAvsConfig(this._jobItem.AvsConfig);
-            this.SaveToJobConfig(this._jobItem.JobConfig);
-            this.SaveToSubtitleConfig(this._jobItem.SubtitleConfig);
-        Label_0321:
             this._resetter.Clear();
             this.DialogResult = DialogResult.OK;
             this.Close();
@@ -696,10 +740,11 @@
                 JobItemConfig jobConfig = new JobItemConfig();
                 SubtitleConfig subtitleConfig = new SubtitleConfig();
                 string subtitle = string.Empty;
-                string text = string.Empty;
+                string externalAudio = string.Empty;
                 string contents = string.Empty;
                 bool writeVideoScript = false;
                 bool writeAudioScript = false;
+
                 if (this._videoInfo.Format == "avs")
                 {
                     this.AvsInputSaveConfig(jobConfig);
@@ -713,11 +758,8 @@
                     {
                         subtitle = this.subtitleTextBox.Text;
                     }
-                    if (this.chbSepAudio.Checked && MyIO.Exists(this.tbSepAudio.Text))
-                    {
-                        text = this.tbSepAudio.Text;
-                    }
                 }
+
                 if (jobConfig.VideoMode != StreamProcessMode.None)
                 {
                     writeVideoScript = true;
@@ -737,9 +779,14 @@
                     new VideoAvsWriter(this._jobItem.SourceFile, avsConfig, subtitle).WriteScript("video.avs");
                     contents += "video = import(\"video.avs\")";
                 }
-                if (text != string.Empty)
+
+                if (this.sepAudioCheckBox.Checked && MyIO.Exists(this.sepAudioTextBox.Text))
                 {
-                    sourceFile = text;
+                    externalAudio = this.sepAudioTextBox.Text;
+                }
+                if (externalAudio != string.Empty)
+                {
+                    sourceFile = externalAudio;
                 }
                 else
                 {
@@ -756,6 +803,7 @@
                     new AudioAvsWriter(sourceFile, avsConfig).WriteScript("audio.avs");
                     contents += "\r\naudio = import(\"audio.avs\")";
                 }
+
                 if (writeVideoScript && writeAudioScript)
                 {
                     contents += "\r\nAudioDub(video, audio)";
@@ -1047,15 +1095,25 @@
 
         private void SaveToJobConfig(JobItemConfig jobConfig)
         {
-            jobConfig.VideoMode = (StreamProcessMode)this.cbVideoMode.SelectedIndex;
-            jobConfig.AudioMode = (StreamProcessMode)this.cbAudioMode.SelectedIndex;
-            if (jobConfig.VideoMode == ~StreamProcessMode.Encode)
+            if (this._videoInfo.Format == "avs")
             {
-                jobConfig.VideoMode = StreamProcessMode.None;
+                if (!this._videoInfo.HasVideo)
+                    jobConfig.VideoMode = StreamProcessMode.None;
+                if (this._audioInfo.StreamsCount==0)
+                    jobConfig.AudioMode = StreamProcessMode.None;
             }
-            if (jobConfig.AudioMode == ~StreamProcessMode.Encode)
+            else
             {
-                jobConfig.AudioMode = StreamProcessMode.None;
+                jobConfig.VideoMode = (StreamProcessMode)this.videoModeComboBox.SelectedIndex;
+                jobConfig.AudioMode = (StreamProcessMode)this.audioModeComboBox.SelectedIndex;
+                if ((int)jobConfig.VideoMode == -1)
+                {
+                    jobConfig.VideoMode = StreamProcessMode.None;
+                }
+                if ((int)jobConfig.AudioMode == -1)
+                {
+                    jobConfig.AudioMode = StreamProcessMode.None;
+                }
             }
             if (this.muxerComboBox.Text == "MKV")
             {
@@ -1079,14 +1137,14 @@
         {
             if ((this._audioInfo.StreamsCount != 0) || this._usingSepAudio)
             {
-                this.cbAudioMode.Enabled = true;
+                this.audioModeComboBox.Enabled = true;
             }
             else
             {
-                this.cbAudioMode.Enabled = false;
-                this.cbAudioMode.SelectedIndex = -1;
+                this.audioModeComboBox.Enabled = false;
+                this.audioModeComboBox.SelectedIndex = -1;
             }
-            if (((this._audioInfo.StreamsCount != 0) || this._usingSepAudio) && (this.cbAudioMode.SelectedIndex == 0))
+            if (((this._audioInfo.StreamsCount != 0) || this._usingSepAudio) && (this.audioModeComboBox.SelectedIndex == 0))
             {
                 this.audioSourceComboBox.Enabled = true;
                 this.downMixBox.Enabled = true;
@@ -1104,7 +1162,7 @@
         {
             this._jobItem = jobItem;
             this.destFileBox.Text = this._jobItem.DestFile;
-            this.tbSepAudio.Text = this._jobItem.ExternalAudio;
+            this.sepAudioTextBox.Text = this._jobItem.ExternalAudio;
             this.subtitleTextBox.Text = jobItem.SubtitleFile;
             this._videoInfo = new VideoInfo(this._jobItem.SourceFile);
             this._audioInfo = new AudioInfo(this._jobItem.SourceFile);
@@ -1115,6 +1173,7 @@
                     this.tabControl1.Controls.Clear();
                     TabPage[] tabPages = new TabPage[] { this.videoEditTabPage, this.audioEditTabPage, this.encTabPage, this.subtitleTabPage };
                     this.tabControl1.Controls.AddRange(tabPages);
+                    this.audioEditTabPage.Controls.AddRange(new Control[] { this.sepAudioButton, this.sepAudioTextBox, this.sepAudioCheckBox });
                 }
                 this.InitializeJobConfig(this._jobItem.JobConfig);
                 this.InitializeAvsConfig(this._jobItem.AvsConfig);
@@ -1125,8 +1184,9 @@
                 this.tabControl1.Controls.Clear();
                 TabPage[] tabPages = new TabPage[] { this.avsInputTabPage, this.encTabPage };
                 this.tabControl1.Controls.AddRange(tabPages);
-                this.AvsInputInitializeConfig(jobItem);
+                this.avsInputTabPage.Controls.AddRange(new Control[] { this.sepAudioButton, this.sepAudioTextBox, this.sepAudioCheckBox});
             }
+            this.AvsInputInitializeConfig(jobItem);
             this._videoEncConfig = MyIO.Clone<VideoEncConfigBase>(this._jobItem.VideoEncConfig);
             this._audioEncConfig = MyIO.Clone<AudioEncConfigBase>(this._jobItem.AudioEncConfig);
             this.InitializeEncConfig();
@@ -1284,6 +1344,44 @@
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             this.destFileBox.Text = this.saveFileDialog1.FileName;
+        }
+
+        private void comboBoxAvsVideoMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.Created && this.avsVideoModeComboBox.SelectedIndex == 1)
+            {
+                if (this.avsAudioModeComboBox.SelectedIndex != 0)
+                {
+                    MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    this.avsVideoModeComboBox.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private void comboBoxAvsAudioMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.Created && this.avsAudioModeComboBox.SelectedIndex == 1)
+            {
+                if (this.avsVideoModeComboBox.SelectedIndex != 0)
+                {
+                    MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    this.avsAudioModeComboBox.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private void sepAudioCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.sepAudioCheckBox.Checked)
+            {
+                this.sepAudioButton.Enabled = true;
+                this.sepAudioTextBox.Enabled = true;
+            }
+            else
+            {
+                this.sepAudioButton.Enabled = false;
+                this.sepAudioTextBox.Enabled = false;
+            }
         }
     }
 }

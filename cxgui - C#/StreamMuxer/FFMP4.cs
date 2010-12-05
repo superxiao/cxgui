@@ -58,18 +58,18 @@
 
         public override void Start()
         {
-            string uniqueName = "";
+            string tempVideoOrAudio = "";
             if (base._videoFile == base._dstFile)
             {
-                uniqueName = MyIO.GetUniqueName(Path.Combine(Path.GetDirectoryName(base._videoFile), "temp" + Path.GetExtension(base._videoFile)));
-                File.Move(base._videoFile, uniqueName);
-                base._videoFile = uniqueName;
+                tempVideoOrAudio = MyIO.GetUniqueName(Path.Combine(Path.GetDirectoryName(base._videoFile), "temp" + Path.GetExtension(base._videoFile)));
+                File.Move(base._videoFile, tempVideoOrAudio);
+                base._videoFile = tempVideoOrAudio;
             }
             else if (base._audioFile == base._dstFile)
             {
-                uniqueName = MyIO.GetUniqueName(Path.Combine(Path.GetDirectoryName(base._audioFile), "temp" + Path.GetExtension(base._audioFile)));
-                File.Move(base._audioFile, uniqueName);
-                base._audioFile = uniqueName;
+                tempVideoOrAudio = MyIO.GetUniqueName(Path.Combine(Path.GetDirectoryName(base._audioFile), "temp" + Path.GetExtension(base._audioFile)));
+                File.Move(base._audioFile, tempVideoOrAudio);
+                base._audioFile = tempVideoOrAudio;
             }
             double length = 0;
             VideoInfo videoInfo = new VideoInfo(base._videoFile);
@@ -92,7 +92,7 @@
             this.ReadStdErr(length);
             base._process.WaitForExit();
             base.processingDone = true; 
-            File.Delete(uniqueName);
+            File.Delete(tempVideoOrAudio);
         }
 
         public override void Stop()

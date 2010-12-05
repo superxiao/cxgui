@@ -572,27 +572,27 @@
 
         private void ProcessAudio(JobItem jobItem, DoWorkEventArgs e)
         {
-            string externalAudio = "";
+            string audio = "";
             if (jobItem.UsingExternalAudio && File.Exists(jobItem.ExternalAudio))
             {
-                externalAudio = jobItem.ExternalAudio;
+                audio = jobItem.ExternalAudio;
             }
             else
             {
-                externalAudio = jobItem.SourceFile;
+                audio = jobItem.SourceFile;
             }
-            new AudioAvsWriter(jobItem.SourceFile, jobItem.AvsConfig).WriteScript("audio.avs");
+            new AudioAvsWriter(audio, jobItem.AvsConfig).WriteScript("audio.avs");
             string destAudio = string.Empty;
             if (jobItem.JobConfig.VideoMode != StreamProcessMode.None)
             {
                 destAudio = Path.ChangeExtension(jobItem.DestFile, "m4a");
                 destAudio = MyIO.GetUniqueName(destAudio);
+                jobItem.FilesToDeleteWhenProcessingFails.Add(destAudio);
             }
             else
             {
                 destAudio = jobItem.DestFile;
             }
-            jobItem.FilesToDeleteWhenProcessingFails.Add(destAudio);
             try
             {
                 this.EncodeAudio("audio.avs", destAudio, jobItem.AudioEncConfig, e);
@@ -621,7 +621,7 @@
             }
             if (jobItem.AvsConfig.AudioSourceFilter == AudioSourceFilter.FFAudioSource)
             {
-                File.Delete(externalAudio + ".ffindex");
+                File.Delete(audio + ".ffindex");
             }
         }
 

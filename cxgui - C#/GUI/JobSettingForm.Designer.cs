@@ -31,11 +31,8 @@
             this.previewButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.videoEditTabPage = new System.Windows.Forms.TabPage();
-            this.cbVideoMode = new System.Windows.Forms.ComboBox();
+            this.videoModeComboBox = new System.Windows.Forms.ComboBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.destFileBox = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.btOutBrowse = new System.Windows.Forms.Button();
             this.gbVideoSource = new System.Windows.Forms.GroupBox();
             this.convertFPSCheckBox = new System.Windows.Forms.CheckBox();
             this.sourceFrameRateCheckBox = new System.Windows.Forms.CheckBox();
@@ -58,13 +55,17 @@
             this.audioEditTabPage = new System.Windows.Forms.TabPage();
             this.normalizeBox = new System.Windows.Forms.CheckBox();
             this.downMixBox = new System.Windows.Forms.CheckBox();
-            this.btSepAudio = new System.Windows.Forms.Button();
-            this.tbSepAudio = new System.Windows.Forms.TextBox();
-            this.cbAudioMode = new System.Windows.Forms.ComboBox();
+            this.sepAudioButton = new System.Windows.Forms.Button();
+            this.sepAudioTextBox = new System.Windows.Forms.TextBox();
+            this.audioModeComboBox = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
-            this.chbSepAudio = new System.Windows.Forms.CheckBox();
+            this.sepAudioCheckBox = new System.Windows.Forms.CheckBox();
             this.audioSourceComboBox = new System.Windows.Forms.ComboBox();
             this.avsInputTabPage = new System.Windows.Forms.TabPage();
+            this.avsAudioModeComboBox = new System.Windows.Forms.ComboBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.avsVideoModeComboBox = new System.Windows.Forms.ComboBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.encTabPage = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.muxerComboBox = new System.Windows.Forms.ComboBox();
@@ -100,6 +101,9 @@
             this.subtitleTextBox = new System.Windows.Forms.TextBox();
             this.subtitleButton = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
+            this.destFileBox = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btOutBrowse = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
             this.profileBox = new System.Windows.Forms.ComboBox();
             this.saveProfileButton = new System.Windows.Forms.Button();
@@ -114,6 +118,7 @@
             this.gbVideoSource.SuspendLayout();
             this.gbResolution.SuspendLayout();
             this.audioEditTabPage.SuspendLayout();
+            this.avsInputTabPage.SuspendLayout();
             this.encTabPage.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -151,7 +156,7 @@
             // 
             // videoEditTabPage
             // 
-            this.videoEditTabPage.Controls.Add(this.cbVideoMode);
+            this.videoEditTabPage.Controls.Add(this.videoModeComboBox);
             this.videoEditTabPage.Controls.Add(this.label16);
             this.videoEditTabPage.Controls.Add(this.gbVideoSource);
             this.videoEditTabPage.Controls.Add(this.gbResolution);
@@ -163,19 +168,19 @@
             this.videoEditTabPage.Text = "视频";
             this.videoEditTabPage.UseVisualStyleBackColor = true;
             // 
-            // cbVideoMode
+            // videoModeComboBox
             // 
-            this.cbVideoMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbVideoMode.FormattingEnabled = true;
-            this.cbVideoMode.Items.AddRange(new object[] {
+            this.videoModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.videoModeComboBox.FormattingEnabled = true;
+            this.videoModeComboBox.Items.AddRange(new object[] {
             "编码",
             "复制",
             "无"});
-            this.cbVideoMode.Location = new System.Drawing.Point(74, 24);
-            this.cbVideoMode.Name = "cbVideoMode";
-            this.cbVideoMode.Size = new System.Drawing.Size(121, 20);
-            this.cbVideoMode.TabIndex = 14;
-            this.cbVideoMode.SelectedIndexChanged += new System.EventHandler(this.CbVideoModeSelectedIndexChanged);
+            this.videoModeComboBox.Location = new System.Drawing.Point(74, 24);
+            this.videoModeComboBox.Name = "videoModeComboBox";
+            this.videoModeComboBox.Size = new System.Drawing.Size(121, 20);
+            this.videoModeComboBox.TabIndex = 14;
+            this.videoModeComboBox.SelectedIndexChanged += new System.EventHandler(this.CbVideoModeSelectedIndexChanged);
             // 
             // label16
             // 
@@ -185,36 +190,6 @@
             this.label16.TabIndex = 12;
             this.label16.Text = "视频模式";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // destFileBox
-            // 
-            this.destFileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.destFileBox.FormattingEnabled = true;
-            this.destFileBox.Location = new System.Drawing.Point(105, 508);
-            this.destFileBox.Name = "destFileBox";
-            this.destFileBox.Size = new System.Drawing.Size(266, 20);
-            this.destFileBox.TabIndex = 11;
-            // 
-            // label6
-            // 
-            this.label6.Location = new System.Drawing.Point(20, 506);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(74, 23);
-            this.label6.TabIndex = 8;
-            this.label6.Text = "输出文件：";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btOutBrowse
-            // 
-            this.btOutBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btOutBrowse.Location = new System.Drawing.Point(377, 508);
-            this.btOutBrowse.Name = "btOutBrowse";
-            this.btOutBrowse.Size = new System.Drawing.Size(75, 23);
-            this.btOutBrowse.TabIndex = 7;
-            this.btOutBrowse.Text = "浏览";
-            this.btOutBrowse.UseVisualStyleBackColor = true;
-            this.btOutBrowse.Click += new System.EventHandler(this.BtOutBrowseClick);
             // 
             // gbVideoSource
             // 
@@ -444,11 +419,11 @@
             // 
             this.audioEditTabPage.Controls.Add(this.normalizeBox);
             this.audioEditTabPage.Controls.Add(this.downMixBox);
-            this.audioEditTabPage.Controls.Add(this.btSepAudio);
-            this.audioEditTabPage.Controls.Add(this.tbSepAudio);
-            this.audioEditTabPage.Controls.Add(this.cbAudioMode);
+            this.audioEditTabPage.Controls.Add(this.sepAudioButton);
+            this.audioEditTabPage.Controls.Add(this.sepAudioTextBox);
+            this.audioEditTabPage.Controls.Add(this.audioModeComboBox);
             this.audioEditTabPage.Controls.Add(this.label17);
-            this.audioEditTabPage.Controls.Add(this.chbSepAudio);
+            this.audioEditTabPage.Controls.Add(this.sepAudioCheckBox);
             this.audioEditTabPage.Controls.Add(this.audioSourceComboBox);
             this.audioEditTabPage.Location = new System.Drawing.Point(4, 22);
             this.audioEditTabPage.Name = "audioEditTabPage";
@@ -476,42 +451,42 @@
             this.downMixBox.Text = "立体声混音";
             this.downMixBox.UseVisualStyleBackColor = true;
             // 
-            // btSepAudio
+            // sepAudioButton
             // 
-            this.btSepAudio.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btSepAudio.Enabled = false;
-            this.btSepAudio.Location = new System.Drawing.Point(351, 104);
-            this.btSepAudio.Name = "btSepAudio";
-            this.btSepAudio.Size = new System.Drawing.Size(63, 23);
-            this.btSepAudio.TabIndex = 12;
-            this.btSepAudio.Text = "浏览";
-            this.btSepAudio.UseVisualStyleBackColor = true;
-            this.btSepAudio.Click += new System.EventHandler(this.BtSepAudioClick);
+            this.sepAudioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.sepAudioButton.Enabled = false;
+            this.sepAudioButton.Location = new System.Drawing.Point(351, 104);
+            this.sepAudioButton.Name = "sepAudioButton";
+            this.sepAudioButton.Size = new System.Drawing.Size(63, 23);
+            this.sepAudioButton.TabIndex = 12;
+            this.sepAudioButton.Text = "浏览";
+            this.sepAudioButton.UseVisualStyleBackColor = true;
+            this.sepAudioButton.Click += new System.EventHandler(this.BtSepAudioClick);
             // 
-            // tbSepAudio
+            // sepAudioTextBox
             // 
-            this.tbSepAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.sepAudioTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbSepAudio.Enabled = false;
-            this.tbSepAudio.Location = new System.Drawing.Point(96, 106);
-            this.tbSepAudio.Name = "tbSepAudio";
-            this.tbSepAudio.ReadOnly = true;
-            this.tbSepAudio.Size = new System.Drawing.Size(249, 21);
-            this.tbSepAudio.TabIndex = 13;
+            this.sepAudioTextBox.Enabled = false;
+            this.sepAudioTextBox.Location = new System.Drawing.Point(96, 106);
+            this.sepAudioTextBox.Name = "sepAudioTextBox";
+            this.sepAudioTextBox.ReadOnly = true;
+            this.sepAudioTextBox.Size = new System.Drawing.Size(249, 21);
+            this.sepAudioTextBox.TabIndex = 13;
             // 
-            // cbAudioMode
+            // audioModeComboBox
             // 
-            this.cbAudioMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbAudioMode.FormattingEnabled = true;
-            this.cbAudioMode.Items.AddRange(new object[] {
+            this.audioModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.audioModeComboBox.FormattingEnabled = true;
+            this.audioModeComboBox.Items.AddRange(new object[] {
             "编码",
             "复制",
             "无"});
-            this.cbAudioMode.Location = new System.Drawing.Point(74, 24);
-            this.cbAudioMode.Name = "cbAudioMode";
-            this.cbAudioMode.Size = new System.Drawing.Size(121, 20);
-            this.cbAudioMode.TabIndex = 17;
-            this.cbAudioMode.SelectedIndexChanged += new System.EventHandler(this.CbAudioModeSelectedIndexChanged);
+            this.audioModeComboBox.Location = new System.Drawing.Point(74, 24);
+            this.audioModeComboBox.Name = "audioModeComboBox";
+            this.audioModeComboBox.Size = new System.Drawing.Size(121, 20);
+            this.audioModeComboBox.TabIndex = 17;
+            this.audioModeComboBox.SelectedIndexChanged += new System.EventHandler(this.CbAudioModeSelectedIndexChanged);
             // 
             // label17
             // 
@@ -522,15 +497,15 @@
             this.label17.Text = "音频模式";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // chbSepAudio
+            // sepAudioCheckBox
             // 
-            this.chbSepAudio.Location = new System.Drawing.Point(13, 104);
-            this.chbSepAudio.Name = "chbSepAudio";
-            this.chbSepAudio.Size = new System.Drawing.Size(88, 24);
-            this.chbSepAudio.TabIndex = 3;
-            this.chbSepAudio.Text = "独立音轨：";
-            this.chbSepAudio.UseVisualStyleBackColor = true;
-            this.chbSepAudio.CheckedChanged += new System.EventHandler(this.ChbSepAudioCheckedChanged);
+            this.sepAudioCheckBox.Location = new System.Drawing.Point(13, 104);
+            this.sepAudioCheckBox.Name = "sepAudioCheckBox";
+            this.sepAudioCheckBox.Size = new System.Drawing.Size(92, 24);
+            this.sepAudioCheckBox.TabIndex = 3;
+            this.sepAudioCheckBox.Text = "独立音轨：";
+            this.sepAudioCheckBox.UseVisualStyleBackColor = true;
+            this.sepAudioCheckBox.CheckedChanged += new System.EventHandler(this.sepAudioCheckBox_CheckedChanged);
             // 
             // audioSourceComboBox
             // 
@@ -546,6 +521,10 @@
             // 
             // avsInputTabPage
             // 
+            this.avsInputTabPage.Controls.Add(this.avsAudioModeComboBox);
+            this.avsInputTabPage.Controls.Add(this.label23);
+            this.avsInputTabPage.Controls.Add(this.avsVideoModeComboBox);
+            this.avsInputTabPage.Controls.Add(this.label22);
             this.avsInputTabPage.Location = new System.Drawing.Point(4, 22);
             this.avsInputTabPage.Name = "avsInputTabPage";
             this.avsInputTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -553,6 +532,50 @@
             this.avsInputTabPage.TabIndex = 3;
             this.avsInputTabPage.Text = "avs输入";
             this.avsInputTabPage.UseVisualStyleBackColor = true;
+            // 
+            // avsAudioModeComboBox
+            // 
+            this.avsAudioModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.avsAudioModeComboBox.FormattingEnabled = true;
+            this.avsAudioModeComboBox.Items.AddRange(new object[] {
+            "编码",
+            "无"});
+            this.avsAudioModeComboBox.Location = new System.Drawing.Point(75, 69);
+            this.avsAudioModeComboBox.Name = "avsAudioModeComboBox";
+            this.avsAudioModeComboBox.Size = new System.Drawing.Size(121, 20);
+            this.avsAudioModeComboBox.TabIndex = 19;
+            this.avsAudioModeComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBoxAvsAudioMode_SelectedIndexChanged);
+            // 
+            // label23
+            // 
+            this.label23.Location = new System.Drawing.Point(14, 69);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(61, 23);
+            this.label23.TabIndex = 18;
+            this.label23.Text = "音频模式";
+            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // avsVideoModeComboBox
+            // 
+            this.avsVideoModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.avsVideoModeComboBox.FormattingEnabled = true;
+            this.avsVideoModeComboBox.Items.AddRange(new object[] {
+            "编码",
+            "无"});
+            this.avsVideoModeComboBox.Location = new System.Drawing.Point(75, 34);
+            this.avsVideoModeComboBox.Name = "avsVideoModeComboBox";
+            this.avsVideoModeComboBox.Size = new System.Drawing.Size(121, 20);
+            this.avsVideoModeComboBox.TabIndex = 16;
+            this.avsVideoModeComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBoxAvsVideoMode_SelectedIndexChanged);
+            // 
+            // label22
+            // 
+            this.label22.Location = new System.Drawing.Point(20, 31);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(55, 23);
+            this.label22.TabIndex = 15;
+            this.label22.Text = "视频模式";
+            this.label22.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // encTabPage
             // 
@@ -855,7 +878,7 @@
             this.subtitleTabPage.Controls.Add(this.label18);
             this.subtitleTabPage.Location = new System.Drawing.Point(4, 22);
             this.subtitleTabPage.Name = "subtitleTabPage";
-            this.subtitleTabPage.Size = new System.Drawing.Size(432, 464);
+            this.subtitleTabPage.Size = new System.Drawing.Size(432, 430);
             this.subtitleTabPage.TabIndex = 2;
             this.subtitleTabPage.Text = "字幕";
             this.subtitleTabPage.UseVisualStyleBackColor = true;
@@ -970,6 +993,36 @@
             this.label18.Text = "字幕路径";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // destFileBox
+            // 
+            this.destFileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.destFileBox.FormattingEnabled = true;
+            this.destFileBox.Location = new System.Drawing.Point(105, 508);
+            this.destFileBox.Name = "destFileBox";
+            this.destFileBox.Size = new System.Drawing.Size(266, 20);
+            this.destFileBox.TabIndex = 11;
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(20, 506);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(74, 23);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "输出文件：";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // btOutBrowse
+            // 
+            this.btOutBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btOutBrowse.Location = new System.Drawing.Point(377, 508);
+            this.btOutBrowse.Name = "btOutBrowse";
+            this.btOutBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btOutBrowse.TabIndex = 7;
+            this.btOutBrowse.Text = "浏览";
+            this.btOutBrowse.UseVisualStyleBackColor = true;
+            this.btOutBrowse.Click += new System.EventHandler(this.BtOutBrowseClick);
+            // 
             // label15
             // 
             this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1063,6 +1116,7 @@
             this.gbResolution.PerformLayout();
             this.audioEditTabPage.ResumeLayout(false);
             this.audioEditTabPage.PerformLayout();
+            this.avsInputTabPage.ResumeLayout(false);
             this.encTabPage.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
@@ -1079,7 +1133,7 @@
         private System.Windows.Forms.Button previewButton;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage videoEditTabPage;
-        private System.Windows.Forms.ComboBox cbVideoMode;
+        private System.Windows.Forms.ComboBox videoModeComboBox;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.ComboBox destFileBox;
         private System.Windows.Forms.Label label6;
@@ -1106,11 +1160,11 @@
         private System.Windows.Forms.TabPage audioEditTabPage;
         private System.Windows.Forms.CheckBox normalizeBox;
         private System.Windows.Forms.CheckBox downMixBox;
-        private System.Windows.Forms.Button btSepAudio;
-        private System.Windows.Forms.TextBox tbSepAudio;
-        private System.Windows.Forms.ComboBox cbAudioMode;
+        private System.Windows.Forms.Button sepAudioButton;
+        private System.Windows.Forms.TextBox sepAudioTextBox;
+        private System.Windows.Forms.ComboBox audioModeComboBox;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.CheckBox chbSepAudio;
+        private System.Windows.Forms.CheckBox sepAudioCheckBox;
         private System.Windows.Forms.ComboBox audioSourceComboBox;
         private System.Windows.Forms.TabPage avsInputTabPage;
         private System.Windows.Forms.TabPage encTabPage;
@@ -1157,6 +1211,10 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
         private System.Windows.Forms.FontDialog fontDialog1;
+        private System.Windows.Forms.ComboBox avsAudioModeComboBox;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.ComboBox avsVideoModeComboBox;
+        private System.Windows.Forms.Label label22;
 
     }
 }
