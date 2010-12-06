@@ -136,8 +136,8 @@
                     if (jobItem.VideoEncoder.ProcessingFrameRate != 0)
                     {
                         this.videoProgressBar.Value = jobItem.VideoEncoder.Progress;
-                        this.videoTimeUsed.Text = jobItem.VideoEncoder.TimeUsed.ToString();
-                        this.videoTimeLeft.Text = jobItem.VideoEncoder.TimeLeft.ToString();
+                        this.videoTimeUsedLable.Text = jobItem.VideoEncoder.TimeUsed.ToString();
+                        this.videoTimeLeftLable.Text = jobItem.VideoEncoder.TimeLeft.ToString();
                         this.videoEncodingFpsLable.Text = jobItem.VideoEncoder.ProcessingFrameRate.ToString(".00' fps'");
                         this.videoEstimatedFileSizeLable.Text = ((double)jobItem.VideoEncoder.EstimatedFileSize / 1024).ToString(".00' MB'");
                         this.videoAvgBitRateLable.Text = jobItem.VideoEncoder.AvgBitRate.ToString(".00' kbps");
@@ -588,7 +588,7 @@
             {
                 audio = jobItem.SourceFile;
             }
-            new AudioAvsWriter(audio, jobItem.AvsConfig).WriteScript("audio.avs");
+            new AudioAvsWriter(audio, jobItem.AvsConfig, jobItem.AudioInfo).WriteScript("audio.avs");
             string destAudio = string.Empty;
             if (jobItem.JobConfig.VideoMode != StreamProcessMode.None)
             {
@@ -639,7 +639,7 @@
 				    source = source + 1;
                 if (source == 0)
 				    source = source - 1;
-				new AudioAvsWriter(jobItem.SourceFile, jobItem.AvsConfig).WriteScript("audio.avs");
+				new AudioAvsWriter(jobItem.SourceFile, jobItem.AvsConfig, jobItem.AudioInfo).WriteScript("audio.avs");
 				try
                 {
 					this.EncodeAudio("audio.avs", destAudio, jobItem.AudioEncConfig, e);
@@ -655,7 +655,7 @@
         private void ProcessVideo(JobItem jobItem, DoWorkEventArgs e)
         {
             SubStyleWriter writer = null;
-            new VideoAvsWriter(jobItem.SourceFile, jobItem.AvsConfig, jobItem.SubtitleFile).WriteScript("video.avs");
+            new VideoAvsWriter(jobItem.SourceFile, jobItem.AvsConfig, jobItem.SubtitleFile, jobItem.VideoInfo).WriteScript("video.avs");
             bool flag = false;
             if (MyIO.Exists(jobItem.SubtitleFile) && jobItem.SubtitleConfig.UsingStyle)
             {
@@ -717,8 +717,11 @@
             this.videoProgressBar.Value = 0;
             this.audioProgressBar.Value = 0;
             this.muxProgressBar.Value = 0;
-            this.videoTimeLeft.Text = string.Empty;
-            this.videoTimeUsed.Text = string.Empty;
+            this.videoTimeLeftLable.Text = string.Empty;
+            this.videoTimeUsedLable.Text = string.Empty;
+            this.videoAvgBitRateLable.Text = string.Empty;
+            this.videoEncodingFpsLable.Text = string.Empty;
+            this.videoEstimatedFileSizeLable.Text = string.Empty;
             this.audioTimeLeft.Text = string.Empty;
             this.audioTimeUsed.Text = string.Empty;
             this.muxTimeLeft.Text = string.Empty;

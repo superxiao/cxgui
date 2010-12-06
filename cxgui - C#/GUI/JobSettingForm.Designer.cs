@@ -539,6 +539,7 @@
             this.avsAudioModeComboBox.FormattingEnabled = true;
             this.avsAudioModeComboBox.Items.AddRange(new object[] {
             "编码",
+            "复制",
             "无"});
             this.avsAudioModeComboBox.Location = new System.Drawing.Point(75, 69);
             this.avsAudioModeComboBox.Name = "avsAudioModeComboBox";

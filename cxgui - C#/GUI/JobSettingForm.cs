@@ -20,12 +20,14 @@
     public partial class JobSettingForm : Form
     {
         protected AudioEncConfigBase _audioEncConfig;
+        /// <summary>
+        /// 当选用外部音轨时，更新_audioInfo。
+        /// </summary>
         protected AudioInfo _audioInfo;
         protected CommandLineBox _cmdLineBox;
         protected JobItem _jobItem;
         protected ControlResetter _resetter;
         protected ResolutionCalculator _resolutionCal;
-        protected bool _usingSepAudio;
         protected VideoEncConfigBase _videoEncConfig;
         protected VideoInfo _videoInfo;
 
@@ -85,13 +87,13 @@
 
         private void AvsInputInitializeConfig(JobItem jobItem)
         {
-            this.avsVideoModeComboBox.SelectedIndex = 0;
-            this.avsAudioModeComboBox.SelectedIndex = 0;
             if (this._videoInfo.HasVideo)
             {
                 this.avsVideoModeComboBox.Enabled = true;
                 if (jobItem.JobConfig.VideoMode == StreamProcessMode.None && this._audioInfo.StreamsCount > 0)
                     this.avsVideoModeComboBox.SelectedIndex = 1;
+                else
+                    this.avsVideoModeComboBox.SelectedIndex = 0;
             }
             else
             {
@@ -109,19 +111,15 @@
                 this.sepAudioCheckBox.Enabled = false;
                 this.sepAudioCheckBox.Checked = false;
             }
-            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) && (this.sepAudioTextBox.Text != string.Empty))
-            {
-                this._usingSepAudio = true;
-            }
-            else
-            {
-                this._usingSepAudio = false;
-            }
-            if (this._usingSepAudio || (this._audioInfo.StreamsCount != 0))
+            if (this.sepAudioCheckBox.Checked || (this._audioInfo.StreamsCount != 0))
             {
                 this.avsAudioModeComboBox.Enabled = true;
                 if (jobItem.JobConfig.AudioMode == StreamProcessMode.None && this._videoInfo.HasVideo)
-                    this.avsVideoModeComboBox.SelectedIndex = 1;
+                    this.avsAudioModeComboBox.SelectedIndex = 2;
+                else if (jobItem.JobConfig.AudioMode == StreamProcessMode.Copy)
+                    this.avsAudioModeComboBox.SelectedIndex = 1;
+                else
+                    this.avsAudioModeComboBox.SelectedIndex = 0;
             }
             else
             {
@@ -144,9 +142,8 @@
                 jobConfig.VideoMode = StreamProcessMode.Encode;
             else
                 jobConfig.VideoMode = StreamProcessMode.None;
-            if (this.avsAudioModeComboBox.SelectedIndex == 0)
-                jobConfig.AudioMode = StreamProcessMode.Encode;
-            else
+            jobConfig.AudioMode = (StreamProcessMode)this.avsAudioModeComboBox.SelectedIndex;
+            if (jobConfig.AudioMode < 0)
                 jobConfig.AudioMode = StreamProcessMode.None;
             if (this.muxerComboBox.Text == "MKV")
             {
@@ -199,9 +196,9 @@
                 }
                 else
                 {
-                    this._usingSepAudio = true;
                     this.sepAudioTextBox.Text = this.openFileDialog1.FileName;
                     this.audioModeComboBox.SelectedIndex = 0;
+                    this._audioInfo = info;
                 }
                 this.SettleAudioControls();
             }
@@ -261,7 +258,6 @@
             {
                 this.sepAudioTextBox.Enabled = true;
                 this.sepAudioButton.Enabled = true;
-                this._usingSepAudio = true;
                 if (this.sepAudioTextBox.Text != string.Empty)
                 {
                     if (this.audioModeComboBox.SelectedIndex == -1 || this.audioModeComboBox.SelectedIndex == 2)
@@ -281,7 +277,6 @@
                 {
                     this.sepAudioTextBox.Enabled = false;
                     this.sepAudioButton.Enabled = false;
-                    this._usingSepAudio = false;
                 }
             }
             this.SettleAudioControls();
@@ -429,15 +424,7 @@
                 this.sepAudioCheckBox.Enabled = false;
                 this.sepAudioCheckBox.Checked = false;
             }
-            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) && (this.sepAudioTextBox.Text != string.Empty))
-            {
-                this._usingSepAudio = true;
-            }
-            else
-            {
-                this._usingSepAudio = false;
-            }
-            if (this._usingSepAudio || (this._audioInfo.StreamsCount != 0))
+            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) || (this._audioInfo.StreamsCount != 0))
             {
                 this.audioModeComboBox.Enabled = true;
                 this.audioModeComboBox.SelectedIndex = (int)jobConfig.AudioMode;
@@ -777,7 +764,7 @@
                         avsConfig.UsingSourceResolution = true;
                         avsConfig.ConvertFPS = true;
                     }
-                    new VideoAvsWriter(this._jobItem.SourceFile, avsConfig, subtitle).WriteScript("video.avs");
+                    new VideoAvsWriter(this._jobItem.SourceFile, avsConfig, subtitle, this._videoInfo).WriteScript("video.avs");
                     contents += "video = import(\"video.avs\")";
                 }
 
@@ -801,7 +788,7 @@
                         avsConfig.Normalize = false;
                         avsConfig.DownMix = false;
                     }
-                    new AudioAvsWriter(sourceFile, avsConfig).WriteScript("audio.avs");
+                    new AudioAvsWriter(sourceFile, avsConfig, this._audioInfo).WriteScript("audio.avs");
                     contents += "\r\naudio = import(\"audio.avs\")";
                 }
 
@@ -1136,7 +1123,7 @@
 
         private void SettleAudioControls()
         {
-            if ((this._audioInfo.StreamsCount != 0) || this._usingSepAudio)
+            if ((this._audioInfo.StreamsCount != 0) || this.sepAudioCheckBox.Checked)
             {
                 this.audioModeComboBox.Enabled = true;
             }
@@ -1145,7 +1132,7 @@
                 this.audioModeComboBox.Enabled = false;
                 this.audioModeComboBox.SelectedIndex = -1;
             }
-            if (((this._audioInfo.StreamsCount != 0) || this._usingSepAudio) && (this.audioModeComboBox.SelectedIndex == 0))
+            if (this.audioModeComboBox.Enabled && this.audioModeComboBox.SelectedIndex == 0)
             {
                 this.audioSourceComboBox.Enabled = true;
                 this.downMixBox.Enabled = true;
@@ -1351,7 +1338,7 @@
         {
             if (this.Created && this.avsVideoModeComboBox.SelectedIndex == 1)
             {
-                if (this.avsAudioModeComboBox.SelectedIndex != 0)
+                if (this.avsAudioModeComboBox.SelectedIndex == -1 || this.avsAudioModeComboBox.SelectedIndex == 2)
                 {
                     MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     this.avsVideoModeComboBox.SelectedIndex = 0;
@@ -1361,13 +1348,22 @@
 
         private void comboBoxAvsAudioMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.Created && this.avsAudioModeComboBox.SelectedIndex == 1)
+            if (this.Created && this.avsAudioModeComboBox.SelectedIndex == 2)
             {
                 if (this.avsVideoModeComboBox.SelectedIndex != 0)
                 {
                     MessageBox.Show("音频与视频必选其一。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     this.avsAudioModeComboBox.SelectedIndex = 0;
                 }
+            }
+            else if (this.avsAudioModeComboBox.SelectedIndex == 1)
+            {
+                if (!this.sepAudioCheckBox.Checked)
+                {
+                    MessageBox.Show("avs脚本音频无法复制。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    this.avsAudioModeComboBox.SelectedIndex = 0;
+                }
+                
             }
         }
 

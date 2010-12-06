@@ -19,12 +19,12 @@
         protected bool _normalize;
         protected AudioSourceFilter _sourceFilter;
 
-        public AudioAvsWriter(string sourceFile, AvisynthConfig avsConfig)
+        public AudioAvsWriter(string sourceFile, AvisynthConfig avsConfig, AudioInfo audioInfo)
         {
             this._avsConfig = avsConfig;
             this._filters = new OrderedDictionary<string, string>();
             this._loadingsAndImportings = new List<string>();
-            this._audioInfo = new AudioInfo(sourceFile);
+            this._audioInfo = audioInfo;
             if (this._audioInfo.Format == "avs")
             {
                 this.AvsInputInitialize(sourceFile);

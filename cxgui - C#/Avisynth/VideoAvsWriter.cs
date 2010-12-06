@@ -16,10 +16,10 @@
         protected List<string> _loadingsAndImportings = new List<string>();
         protected VideoInfo _videoInfo;
 
-        public VideoAvsWriter(string sourceFile, AvisynthConfig avsConfig, string subtitleFile)
+        public VideoAvsWriter(string sourceFile, AvisynthConfig avsConfig, string subtitleFile, VideoInfo videoInfo)
         {
             this._avsConfig = avsConfig;
-            this._videoInfo = new VideoInfo(sourceFile);
+            this._videoInfo = videoInfo;
             if (this._videoInfo.Format == "avs")
             {
                 this.AvsInputInitialize(sourceFile);

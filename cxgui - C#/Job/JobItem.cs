@@ -181,10 +181,6 @@
                 {
                     this._jobConfig.VideoMode = StreamProcessMode.Encode;
                 }
-                if (this._jobConfig.AudioMode == StreamProcessMode.Copy)
-                {
-                    this._jobConfig.AudioMode = StreamProcessMode.Encode;
-                }
             }
             this.CreateNewMuxer();
         }
@@ -319,6 +315,8 @@
             set
             {
                 this._externalAudio = value;
+                if (File.Exists(value) && this._usingExternalAudio)
+                    this._audioInfo = new AudioInfo(value);
             }
         }
 
@@ -506,6 +504,9 @@
             }
         }
 
+        /// <summary>
+        /// 当更改JobItem的ExternalAudio属性时，如文件存在且UsingExternalAudio为true，则更新AudioInfo属性。
+        /// </summary>
         public AudioInfo AudioInfo
         {
             get 

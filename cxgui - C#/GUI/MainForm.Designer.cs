@@ -58,8 +58,8 @@
             this.muxTimeUsed = new System.Windows.Forms.Label();
             this.audioTimeLeft = new System.Windows.Forms.Label();
             this.audioTimeUsed = new System.Windows.Forms.Label();
-            this.videoTimeLeft = new System.Windows.Forms.Label();
-            this.videoTimeUsed = new System.Windows.Forms.Label();
+            this.videoTimeLeftLable = new System.Windows.Forms.Label();
+            this.videoTimeUsedLable = new System.Windows.Forms.Label();
             this.stopButton = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
@@ -233,8 +233,8 @@
             this.progressPage.Controls.Add(this.muxTimeUsed);
             this.progressPage.Controls.Add(this.audioTimeLeft);
             this.progressPage.Controls.Add(this.audioTimeUsed);
-            this.progressPage.Controls.Add(this.videoTimeLeft);
-            this.progressPage.Controls.Add(this.videoTimeUsed);
+            this.progressPage.Controls.Add(this.videoTimeLeftLable);
+            this.progressPage.Controls.Add(this.videoTimeUsedLable);
             this.progressPage.Controls.Add(this.stopButton);
             this.progressPage.Controls.Add(this.label8);
             this.progressPage.Controls.Add(this.label9);
@@ -344,17 +344,17 @@
             // 
             // videoTimeLeft
             // 
-            this.videoTimeLeft.Location = new System.Drawing.Point(183, 79);
-            this.videoTimeLeft.Name = "videoTimeLeft";
-            this.videoTimeLeft.Size = new System.Drawing.Size(100, 23);
-            this.videoTimeLeft.TabIndex = 14;
+            this.videoTimeLeftLable.Location = new System.Drawing.Point(183, 79);
+            this.videoTimeLeftLable.Name = "videoTimeLeft";
+            this.videoTimeLeftLable.Size = new System.Drawing.Size(100, 23);
+            this.videoTimeLeftLable.TabIndex = 14;
             // 
             // videoTimeUsed
             // 
-            this.videoTimeUsed.Location = new System.Drawing.Point(183, 56);
-            this.videoTimeUsed.Name = "videoTimeUsed";
-            this.videoTimeUsed.Size = new System.Drawing.Size(100, 23);
-            this.videoTimeUsed.TabIndex = 13;
+            this.videoTimeUsedLable.Location = new System.Drawing.Point(183, 56);
+            this.videoTimeUsedLable.Name = "videoTimeUsed";
+            this.videoTimeUsedLable.Size = new System.Drawing.Size(100, 23);
+            this.videoTimeUsedLable.TabIndex = 13;
             // 
             // stopButton
             // 
@@ -667,8 +667,8 @@
         private System.Windows.Forms.Label muxTimeUsed;
         private System.Windows.Forms.Label audioTimeLeft;
         private System.Windows.Forms.Label audioTimeUsed;
-        private System.Windows.Forms.Label videoTimeLeft;
-        private System.Windows.Forms.Label videoTimeUsed;
+        private System.Windows.Forms.Label videoTimeLeftLable;
+        private System.Windows.Forms.Label videoTimeUsedLable;
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
