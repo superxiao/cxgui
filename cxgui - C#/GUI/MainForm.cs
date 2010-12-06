@@ -60,8 +60,8 @@
         private void BackgroundWorker1DoWork(object sender, DoWorkEventArgs e)
         {
             JobItem jobItem = null;
-            //try
-            //{
+            try
+            {
                 jobItem = (JobItem) e.Argument;
                 if (MyIO.Exists(jobItem.DestFile) && (MessageBox.Show(new StringBuilder().Append(jobItem.DestFile).Append("\n目标文件已存在。决定覆盖吗？").ToString(), "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.Cancel))
                 {
@@ -108,102 +108,110 @@
                         this.JobEventReport(jobItem);
                     }
                 }
-            //}
-            //catch (Exception exception)
-            //{
-                //MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                //jobItem.Event = JobEvent.Error;
-                //this.JobEventReport(jobItem);
-            //}
-            //finally
-            //{
-            //    if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
-            //    {
-            //        jobItem.Event = JobEvent.AllDone;
-            //        this.JobEventReport(jobItem);
-            //    }
-            //    e.Result = jobItem;
-            //}
+            }
+            catch (Exception exception)
+            {
+            MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            jobItem.Event = JobEvent.Error;
+            this.JobEventReport(jobItem);
+            }
+            finally
+            {
+                if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
+                {
+                    jobItem.Event = JobEvent.AllDone;
+                    this.JobEventReport(jobItem);
+                }
+                e.Result = jobItem;
+            }
         }
 
         private void BackgroundWorker1ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             try
             {
-                JobItem userState = (JobItem) e.UserState;
-                if (userState.Event == JobEvent.VideoEncoding)
+                JobItem jobItem = (JobItem) e.UserState;
+                if (jobItem.Event == JobEvent.VideoEncoding)
                 {
-                    this.videoProgressBar.Value = userState.VideoEncoder.Progress;
-                    this.videoTimeUsed.Text = userState.VideoEncoder.TimeUsed.ToString();
-                    this.videoTimeLeft.Text = userState.VideoEncoder.TimeLeft.ToString();
+                    if (jobItem.VideoEncoder.ProcessingFrameRate != 0)
+                    {
+                        this.videoProgressBar.Value = jobItem.VideoEncoder.Progress;
+                        this.videoTimeUsed.Text = jobItem.VideoEncoder.TimeUsed.ToString();
+                        this.videoTimeLeft.Text = jobItem.VideoEncoder.TimeLeft.ToString();
+                        this.videoEncodingFpsLable.Text = jobItem.VideoEncoder.ProcessingFrameRate.ToString(".00' fps'");
+                        this.videoEstimatedFileSizeLable.Text = ((double)jobItem.VideoEncoder.EstimatedFileSize / 1024).ToString(".00' MB'");
+                        this.videoAvgBitRateLable.Text = jobItem.VideoEncoder.AvgBitRate.ToString(".00' kbps");
+                    }
                 }
-                else if (userState.Event == JobEvent.AudioEncoding)
+                else if (jobItem.Event == JobEvent.AudioEncoding)
                 {
-                    this.audioProgressBar.Value = userState.AudioEncoder.Progress;
-                    this.audioTimeUsed.Text = userState.AudioEncoder.TimeUsed.ToString();
-                    this.audioTimeLeft.Text = userState.AudioEncoder.TimeLeft.ToString();
+                    this.audioProgressBar.Value = jobItem.AudioEncoder.Progress;
+                    this.audioTimeUsed.Text = jobItem.AudioEncoder.TimeUsed.ToString();
+                    this.audioTimeLeft.Text = jobItem.AudioEncoder.TimeLeft.ToString();
+                    this.audioEstimatedFileSizeLable.Text = ((double)jobItem.AudioEncoder.EstimatedFileSize / 1024).ToString(".00' MB'");
+                   
                 }
-                else if (userState.Event == JobEvent.Muxing)
+                else if (jobItem.Event == JobEvent.Muxing)
                 {
-                    this.muxProgressBar.Value = userState.Muxer.Progress;
-                    this.muxTimeUsed.Text = userState.Muxer.TimeUsed.ToString();
-                    this.muxTimeLeft.Text = userState.Muxer.TimeLeft.ToString();
+                    this.muxProgressBar.Value = jobItem.Muxer.Progress;
+                    this.muxTimeUsed.Text = jobItem.Muxer.TimeUsed.ToString();
+                    this.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString();
                 }
                 else
                 {
                     int index;
-                    if (userState.Event == JobEvent.OneJobItemProcessing)
+                    if (jobItem.Event == JobEvent.OneJobItemProcessing)
                     {
                         this.ResetProgress();
-                        userState.State = JobState.Working;
+                        jobItem.State = JobState.Working;
                         this.startButton.Enabled = false;
-                        index = this._workingJobItems.IndexOf(userState);
+                        index = this._workingJobItems.IndexOf(jobItem);
                         this.statusLable.Text = new StringBuilder("正在处理第").Append(index + 1).Append("个文件，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
                     }
-                    else if (userState.Event == JobEvent.OneJobItemDone)
+                    else if (jobItem.Event == JobEvent.OneJobItemDone)
                     {
-                        userState.FilesToDeleteWhenProcessingFails.Clear();
-                        userState.State = JobState.Done;
-                        index = this._workingJobItems.IndexOf(userState);
+                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
+                        jobItem.State = JobState.Done;
+                        index = this._workingJobItems.IndexOf(jobItem);
                         this.statusLable.Text = new StringBuilder("第").Append(index + 1).Append("个文件处理完毕，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
                     }
-                    else if (userState.Event == JobEvent.AllDone)
+                    else if (jobItem.Event == JobEvent.AllDone)
                     {
                         this.statusLable.Text = new StringBuilder().Append(this._workingJobItems.Count).Append("个文件处理完成").ToString();
                         this.startButton.Enabled = true;
                     }
-                    else if (userState.Event == JobEvent.QuitAllProcessing)
+                    else if (jobItem.Event == JobEvent.QuitAllProcessing)
                     {
                         this.ResetProgress();
-                        userState.State = JobState.Stop;
+                        jobItem.State = JobState.Stop;
                         this.startButton.Enabled = true;
                         this.statusLable.Text = "中止";
                         this.tabControl1.SelectTab(this.inputPage);
-                        foreach (string file in userState.FilesToDeleteWhenProcessingFails)
+                        foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
                         {
                             File.Delete(file);
                         }
-                        userState.FilesToDeleteWhenProcessingFails.Clear();
+                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
                     }
-                    else if (userState.Event == JobEvent.OneJobItemCancelled)
+                    else if (jobItem.Event == JobEvent.OneJobItemCancelled)
                     {
-                        userState.State = JobState.Stop;
+                        jobItem.State = JobState.Stop;
                         this.statusLable.Text = "中止";
-                        foreach (string file in userState.FilesToDeleteWhenProcessingFails)
+                        foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
                         {
                             File.Delete(file);
                         }
-                        userState.FilesToDeleteWhenProcessingFails.Clear();
+                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
                     }
-                    else if (userState.Event == JobEvent.Error)
+                    else if (jobItem.Event == JobEvent.Error)
                     {
-                        userState.State = JobState.Error;
+                        jobItem.State = JobState.Error;
                         this.statusLable.Text = "错误";
-                        foreach (string file in userState.FilesToDeleteWhenProcessingFails)
+                        foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
                         {
                             File.Delete(file);
                         }
-                        userState.FilesToDeleteWhenProcessingFails.Clear();
+                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
                     }
                 }
                 this._workerReporting = false;

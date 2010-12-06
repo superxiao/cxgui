@@ -47,6 +47,7 @@
         [NonSerialized]
         protected VideoEncoderHandler _videoEncoder;
         protected VideoInfo _videoInfo;
+        protected AudioInfo _audioInfo;
 
         public JobItem(string sourceFile, string destFile, string profileName)
         {
@@ -54,6 +55,7 @@
             this._destFile = destFile;
             this._profileName = profileName;
             this._videoInfo = new VideoInfo(sourceFile);
+            this._audioInfo = new AudioInfo(sourceFile);
             string[] items = new string[] { "未处理", sourceFile, destFile };
             this._cxListViewItem = new CXGUI.Job.CxListViewItem(items);
             this._cxListViewItem.JobItem = this;
@@ -347,7 +349,7 @@
                 this._jobConfig = value;
             }
         }
-
+        
         public MuxerBase Muxer
         {
             get
@@ -493,6 +495,22 @@
             set
             {
                 this._videoEncoder = value;
+            }
+        }
+
+        public VideoInfo VideoInfo
+        {
+            get
+            {
+                return this._videoInfo;
+            }
+        }
+
+        public AudioInfo AudioInfo
+        {
+            get 
+            {
+                return this._audioInfo;
             }
         }
     }

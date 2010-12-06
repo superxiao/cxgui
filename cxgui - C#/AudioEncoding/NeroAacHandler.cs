@@ -5,6 +5,7 @@
     using System.IO;
     using System.Runtime.InteropServices;
     using System.Text;
+    using System.Windows.Forms;
 
     [Serializable]
     public class NeroAacHandler : AudioEncoderHandler
@@ -85,7 +86,7 @@
         private void UpdateProgress(int currentSample)
         {
             base.currentPosition = currentSample / base.scriptInfo.AudioSampleRate;
-            base.currentFileSize = currentSample * base.scriptInfo.BytesPerSample;
+            base.currentFileSize = (long)((double)currentSample * base.scriptInfo.BytesPerSample / 1024);
             base.progress = (((double) currentSample) / ((double) base.scriptInfo.SamplesCount)) * 100;
             if (base.progress != 0)
             {

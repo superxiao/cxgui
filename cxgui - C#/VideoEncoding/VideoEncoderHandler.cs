@@ -19,7 +19,7 @@
         protected Process _encodingProcess = new Process();
         protected long _estimatedFileSize;
         protected string _log;
-        protected double _ProcessingFrameRate;
+        protected double _processingFrameRate;
         protected int _progress;
         protected double _scriptFrameRate;
         protected AviSynthClip _scriptInfo;
@@ -158,7 +158,7 @@
         {
             get
             {
-                return this._ProcessingFrameRate;
+                return this._processingFrameRate;
             }
         }
 

@@ -115,10 +115,10 @@
             string str2 = strArray[2];
             base._currentPosition = (int) (((double) base._currentFrame) / base._scriptFrameRate);
             double.TryParse(str2.Substring(0, str2.IndexOf("k")), out this._avgBitRate);
-            base._currentFileSize = (long) ((base._avgBitRate * base._currentPosition) / ((double) 8));
-            base._estimatedFileSize = (long) ((base._avgBitRate * base._totalLength) / ((double) 8));
+            base._currentFileSize = (long)((base._avgBitRate * base._currentPosition) / (8 * 1.024));
+            base._estimatedFileSize = (long) ((base._avgBitRate * base._totalLength) / (8 * 1.024));
             string str3 = strArray[1];
-            base._ProcessingFrameRate = double.Parse(str3.Substring(0, str3.IndexOf("f")));
+            base._processingFrameRate = double.Parse(str3.Substring(0, str3.IndexOf("f")));
             string str4 = strArray[3];
             base._timeLeft = TimeSpan.Parse(str4.Substring(str4.IndexOf("a") + 1));
             base._timeUsed = (TimeSpan) (DateTime.Now - this._startTime);

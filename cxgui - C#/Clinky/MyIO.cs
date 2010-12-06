@@ -7,7 +7,6 @@
     using System.Text;
     using System.Text.RegularExpressions;
 
-    [CompilerGlobalScope]
     public sealed class MyIO
     {
 

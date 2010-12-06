@@ -1164,8 +1164,8 @@
             this.destFileBox.Text = this._jobItem.DestFile;
             this.sepAudioTextBox.Text = this._jobItem.ExternalAudio;
             this.subtitleTextBox.Text = jobItem.SubtitleFile;
-            this._videoInfo = new VideoInfo(this._jobItem.SourceFile);
-            this._audioInfo = new AudioInfo(this._jobItem.SourceFile);
+            this._videoInfo = this._jobItem.VideoInfo;
+            this._audioInfo = this._jobItem.AudioInfo;
             if (this._videoInfo.Format != "avs")
             {
                 if (this.tabControl1.Controls.Count != 3)

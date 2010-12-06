@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Clinky
 {
+    /// <summary>
+    /// 静态泛型方法Build将ICollection转换为Array
+    /// </summary>
 	class ArrayBuilder
 	{
         public static T[] Build<T>(ICollection collection)

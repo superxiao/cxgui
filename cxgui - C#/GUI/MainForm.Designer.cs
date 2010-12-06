@@ -46,6 +46,12 @@
             this.清空ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.打开目录ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.progressPage = new System.Windows.Forms.TabPage();
+            this.videoAvgBitRateLable = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.videoEstimatedFileSizeLable = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.videoEncodingFpsLable = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusLable = new System.Windows.Forms.ToolStripStatusLabel();
             this.muxTimeLeft = new System.Windows.Forms.Label();
@@ -216,6 +222,12 @@
             // 
             // progressPage
             // 
+            this.progressPage.Controls.Add(this.videoAvgBitRateLable);
+            this.progressPage.Controls.Add(this.label14);
+            this.progressPage.Controls.Add(this.videoEstimatedFileSizeLable);
+            this.progressPage.Controls.Add(this.label12);
+            this.progressPage.Controls.Add(this.videoEncodingFpsLable);
+            this.progressPage.Controls.Add(this.label13);
             this.progressPage.Controls.Add(this.statusStrip);
             this.progressPage.Controls.Add(this.muxTimeLeft);
             this.progressPage.Controls.Add(this.muxTimeUsed);
@@ -243,6 +255,51 @@
             this.progressPage.TabIndex = 1;
             this.progressPage.Text = "进度";
             // 
+            // videoAvgBitRateLable
+            // 
+            this.videoAvgBitRateLable.Location = new System.Drawing.Point(183, 102);
+            this.videoAvgBitRateLable.Name = "videoAvgBitRateLable";
+            this.videoAvgBitRateLable.Size = new System.Drawing.Size(100, 23);
+            this.videoAvgBitRateLable.TabIndex = 26;
+            // 
+            // label14
+            // 
+            this.label14.Location = new System.Drawing.Point(111, 102);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(66, 23);
+            this.label14.TabIndex = 25;
+            this.label14.Text = "平均码率：";
+            // 
+            // videoEstimatedFileSizeLable
+            // 
+            this.videoEstimatedFileSizeLable.Location = new System.Drawing.Point(361, 79);
+            this.videoEstimatedFileSizeLable.Name = "videoEstimatedFileSizeLable";
+            this.videoEstimatedFileSizeLable.Size = new System.Drawing.Size(100, 23);
+            this.videoEstimatedFileSizeLable.TabIndex = 24;
+            // 
+            // label12
+            // 
+            this.label12.Location = new System.Drawing.Point(289, 79);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(66, 23);
+            this.label12.TabIndex = 23;
+            this.label12.Text = "预计体积：";
+            // 
+            // videoEncodingFpsLable
+            // 
+            this.videoEncodingFpsLable.Location = new System.Drawing.Point(361, 56);
+            this.videoEncodingFpsLable.Name = "videoEncodingFpsLable";
+            this.videoEncodingFpsLable.Size = new System.Drawing.Size(100, 23);
+            this.videoEncodingFpsLable.TabIndex = 22;
+            // 
+            // label13
+            // 
+            this.label13.Location = new System.Drawing.Point(289, 56);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(66, 23);
+            this.label13.TabIndex = 21;
+            this.label13.Text = "压制帧率：";
+            // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -259,28 +316,28 @@
             // 
             // muxTimeLeft
             // 
-            this.muxTimeLeft.Location = new System.Drawing.Point(183, 247);
+            this.muxTimeLeft.Location = new System.Drawing.Point(183, 270);
             this.muxTimeLeft.Name = "muxTimeLeft";
             this.muxTimeLeft.Size = new System.Drawing.Size(100, 23);
             this.muxTimeLeft.TabIndex = 18;
             // 
             // muxTimeUsed
             // 
-            this.muxTimeUsed.Location = new System.Drawing.Point(183, 224);
+            this.muxTimeUsed.Location = new System.Drawing.Point(183, 247);
             this.muxTimeUsed.Name = "muxTimeUsed";
             this.muxTimeUsed.Size = new System.Drawing.Size(100, 23);
             this.muxTimeUsed.TabIndex = 17;
             // 
             // audioTimeLeft
             // 
-            this.audioTimeLeft.Location = new System.Drawing.Point(183, 163);
+            this.audioTimeLeft.Location = new System.Drawing.Point(183, 186);
             this.audioTimeLeft.Name = "audioTimeLeft";
             this.audioTimeLeft.Size = new System.Drawing.Size(100, 23);
             this.audioTimeLeft.TabIndex = 16;
             // 
             // audioTimeUsed
             // 
-            this.audioTimeUsed.Location = new System.Drawing.Point(183, 140);
+            this.audioTimeUsed.Location = new System.Drawing.Point(183, 163);
             this.audioTimeUsed.Name = "audioTimeUsed";
             this.audioTimeUsed.Size = new System.Drawing.Size(100, 23);
             this.audioTimeUsed.TabIndex = 15;
@@ -312,7 +369,7 @@
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(111, 247);
+            this.label8.Location = new System.Drawing.Point(111, 270);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(66, 23);
             this.label8.TabIndex = 11;
@@ -320,7 +377,7 @@
             // 
             // label9
             // 
-            this.label9.Location = new System.Drawing.Point(111, 224);
+            this.label9.Location = new System.Drawing.Point(111, 247);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(66, 23);
             this.label9.TabIndex = 10;
@@ -328,7 +385,7 @@
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(111, 163);
+            this.label6.Location = new System.Drawing.Point(111, 186);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(66, 23);
             this.label6.TabIndex = 9;
@@ -336,7 +393,7 @@
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(111, 140);
+            this.label7.Location = new System.Drawing.Point(111, 163);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(66, 23);
             this.label7.TabIndex = 8;
@@ -360,7 +417,7 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(3, 189);
+            this.label3.Location = new System.Drawing.Point(3, 212);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 23);
             this.label3.TabIndex = 5;
@@ -371,14 +428,14 @@
             // 
             this.muxProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.muxProgressBar.Location = new System.Drawing.Point(111, 189);
+            this.muxProgressBar.Location = new System.Drawing.Point(111, 212);
             this.muxProgressBar.Name = "muxProgressBar";
             this.muxProgressBar.Size = new System.Drawing.Size(394, 23);
             this.muxProgressBar.TabIndex = 4;
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(8, 105);
+            this.label2.Location = new System.Drawing.Point(8, 128);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(97, 23);
             this.label2.TabIndex = 3;
@@ -389,7 +446,7 @@
             // 
             this.audioProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.audioProgressBar.Location = new System.Drawing.Point(111, 105);
+            this.audioProgressBar.Location = new System.Drawing.Point(111, 128);
             this.audioProgressBar.Name = "audioProgressBar";
             this.audioProgressBar.Size = new System.Drawing.Size(394, 23);
             this.audioProgressBar.TabIndex = 2;
@@ -640,5 +697,11 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.ToolStripMenuItem 帮助ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 关于ToolStripMenuItem;
+        private System.Windows.Forms.Label videoEncodingFpsLable;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label videoAvgBitRateLable;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label videoEstimatedFileSizeLable;
+        private System.Windows.Forms.Label label12;
 	}
 }
