@@ -669,6 +669,7 @@
                 {
                     if (MessageBox.Show(Path.GetFileName(this.destFileBox.Text) + " 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                         return;
+                    this._jobItem.DestFile = this.destFileBox.Text;
                 }
                 else if (Directory.Exists(destDir))
                 {

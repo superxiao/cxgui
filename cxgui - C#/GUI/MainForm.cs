@@ -148,7 +148,6 @@
                     this.audioProgressBar.Value = jobItem.AudioEncoder.Progress;
                     this.audioTimeUsed.Text = jobItem.AudioEncoder.TimeUsed.ToString();
                     this.audioTimeLeft.Text = jobItem.AudioEncoder.TimeLeft.ToString();
-                    this.audioEstimatedFileSizeLable.Text = ((double)jobItem.AudioEncoder.EstimatedFileSize / 1024).ToString(".00' MB'");
                    
                 }
                 else if (jobItem.Event == JobEvent.Muxing)
