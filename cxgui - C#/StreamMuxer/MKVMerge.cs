@@ -83,7 +83,8 @@
             this.ReadStdErr();
             base._process.WaitForExit();
             base.processingDone = true;
-            File.Delete(uniqueName);
+            if (File.Exists(uniqueName))
+                File.Delete(uniqueName);
         }
 
         public override void Stop()
@@ -102,7 +103,7 @@
         {
             if (line.StartsWith("Progress"))
             {
-                base._progress = int.Parse(line.Substring(10, line.Length-1));
+                base._progress = int.Parse(line.Substring(10, line.Length - 11));
             }
             base._timeUsed = (TimeSpan) (DateTime.Now - this._startTime);
             if (base._progress != 0)

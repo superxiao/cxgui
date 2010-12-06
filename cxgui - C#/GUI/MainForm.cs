@@ -60,8 +60,8 @@
         private void BackgroundWorker1DoWork(object sender, DoWorkEventArgs e)
         {
             JobItem jobItem = null;
-            try
-            {
+            //try
+            //{
                 jobItem = (JobItem) e.Argument;
                 if (MyIO.Exists(jobItem.DestFile) && (MessageBox.Show(new StringBuilder().Append(jobItem.DestFile).Append("\n目标文件已存在。决定覆盖吗？").ToString(), "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.Cancel))
                 {
@@ -108,22 +108,22 @@
                         this.JobEventReport(jobItem);
                     }
                 }
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                jobItem.Event = JobEvent.Error;
-                this.JobEventReport(jobItem);
-            }
-            finally
-            {
-                if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
-                {
-                    jobItem.Event = JobEvent.AllDone;
-                    this.JobEventReport(jobItem);
-                }
-                e.Result = jobItem;
-            }
+            //}
+            //catch (Exception exception)
+            //{
+                //MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                //jobItem.Event = JobEvent.Error;
+                //this.JobEventReport(jobItem);
+            //}
+            //finally
+            //{
+            //    if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
+            //    {
+            //        jobItem.Event = JobEvent.AllDone;
+            //        this.JobEventReport(jobItem);
+            //    }
+            //    e.Result = jobItem;
+            //}
         }
 
         private void BackgroundWorker1ProgressChanged(object sender, ProgressChangedEventArgs e)
