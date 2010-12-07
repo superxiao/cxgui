@@ -33,7 +33,7 @@
             this.previewPlayerButton = new System.Windows.Forms.Button();
             this.previewPlayerComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cbAudioAutoSF = new System.Windows.Forms.CheckBox();
+            this.autoChangeAudioSourceFilterCheckBox = new System.Windows.Forms.CheckBox();
             this.cacelButton = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -96,7 +96,7 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.cbAudioAutoSF);
+            this.groupBox2.Controls.Add(this.autoChangeAudioSourceFilterCheckBox);
             this.groupBox2.Location = new System.Drawing.Point(12, 220);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(410, 87);
@@ -106,14 +106,14 @@
             // 
             // cbAudioAutoSF
             // 
-            this.cbAudioAutoSF.Checked = true;
-            this.cbAudioAutoSF.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbAudioAutoSF.Location = new System.Drawing.Point(6, 20);
-            this.cbAudioAutoSF.Name = "cbAudioAutoSF";
-            this.cbAudioAutoSF.Size = new System.Drawing.Size(217, 24);
-            this.cbAudioAutoSF.TabIndex = 0;
-            this.cbAudioAutoSF.Text = "当音频读取有错误时自动更改源滤镜";
-            this.cbAudioAutoSF.UseVisualStyleBackColor = true;
+            this.autoChangeAudioSourceFilterCheckBox.Checked = true;
+            this.autoChangeAudioSourceFilterCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.autoChangeAudioSourceFilterCheckBox.Location = new System.Drawing.Point(6, 20);
+            this.autoChangeAudioSourceFilterCheckBox.Name = "cbAudioAutoSF";
+            this.autoChangeAudioSourceFilterCheckBox.Size = new System.Drawing.Size(217, 24);
+            this.autoChangeAudioSourceFilterCheckBox.TabIndex = 0;
+            this.autoChangeAudioSourceFilterCheckBox.Text = "当音频读取有错误时自动更改源滤镜";
+            this.autoChangeAudioSourceFilterCheckBox.UseVisualStyleBackColor = true;
             // 
             // cacelButton
             // 
@@ -235,7 +235,7 @@
         private System.Windows.Forms.Button previewPlayerButton;
         private System.Windows.Forms.ComboBox previewPlayerComboBox;
         private System.Windows.Forms.GroupBox groupBox2;
-        public System.Windows.Forms.CheckBox cbAudioAutoSF;
+        public System.Windows.Forms.CheckBox autoChangeAudioSourceFilterCheckBox;
         private System.Windows.Forms.Button cacelButton;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.GroupBox groupBox1;

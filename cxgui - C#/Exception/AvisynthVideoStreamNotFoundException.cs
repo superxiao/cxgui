@@ -5,9 +5,9 @@
     using System.Text;
 
     [Serializable]
-    public class InvalidVideoAvisynthScriptException : Exception
+    public class AvisynthVideoStreamNotFoundException : Exception
     {
-        public InvalidVideoAvisynthScriptException(string path)
+        public AvisynthVideoStreamNotFoundException(string path)
         {
         }
     }

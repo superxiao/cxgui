@@ -25,9 +25,14 @@
         private void AvisynthInfo(string path)
         {
             AviSynthClip clip;
-            IDisposable disposable = (clip = new AviSynthScriptEnvironment().OpenScriptFile(path)) as IDisposable;
+            IDisposable disposable = null;
             try
             {
+                disposable = (clip = new AviSynthScriptEnvironment().OpenScriptFile(path)) as IDisposable;
+            }
+            catch (Exception)
+            { 
+                return;
             }
             finally
             {
@@ -47,10 +52,6 @@
                 this._id = 0;
                 this._length = ((double) clip.SamplesCount) / ((double) clip.AudioSampleRate);
                 this._hasVideo = clip.HasVideo;
-            }
-            if (clip.HasVideo || (clip.ChannelsCount != 0))
-            {
-                this._format = "avs";
             }
         }
 

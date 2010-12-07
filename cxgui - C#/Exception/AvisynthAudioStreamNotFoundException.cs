@@ -5,9 +5,9 @@
     using System.Text;
 
     [Serializable]
-    public class InvalidAudioAvisynthScriptException : Exception
+    public class AvisynthAudioStreamNotFoundException : Exception
     {
-        public InvalidAudioAvisynthScriptException(string path)
+        public AvisynthAudioStreamNotFoundException(string path)
         {
         }
     }

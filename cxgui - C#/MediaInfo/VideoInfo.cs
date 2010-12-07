@@ -20,6 +20,7 @@
         protected double _length;
         protected int _streamID;
         protected int _width;
+        protected string _container;
 
         public VideoInfo(string path)
         {
@@ -29,9 +30,15 @@
         private void AvisynthInfo(string path)
         {
             AviSynthClip clip;
-            IDisposable disposable = (clip = new AviSynthScriptEnvironment().OpenScriptFile(path)) as IDisposable;
+            IDisposable disposable = null;
+            // 如果出错说明不是正确的avs脚本
             try
             {
+                disposable = (clip = new AviSynthScriptEnvironment().OpenScriptFile(path)) as IDisposable;
+            }
+            catch (Exception)
+            {
+                return;
             }
             finally
             {
@@ -41,18 +48,20 @@
                     disposable = null;
                 }
             }
+            // 是正确的avs脚本
+            this._container = "avs";
             this._hasVideo = clip.HasVideo;
             this._filePath = path;
+            if (clip.ChannelsCount != 0)
+            {
+                this._audioStreamsCount = 1;
+            }
+            else
+            {
+                this._audioStreamsCount = 0;
+            }
             if (clip.HasVideo)
             {
-                if (clip.ChannelsCount != 0)
-                {
-                    this._audioStreamsCount = 1;
-                }
-                else
-                {
-                    this._audioStreamsCount = 0;
-                }
                 this._width = clip.VideoWidth;
                 this._height = clip.VideoHeight;
                 this._displayAspectRatio = ((double) this._width) / ((double) this._height);
@@ -61,14 +70,11 @@
                 this._streamID = 0;
                 this._length = ((double) clip.num_frames) / this._frameRate;
                 this._id = 0;
+                this._format = "avs";
             }
             else
             {
                 this._hasVideo = false;
-            }
-            if (clip.HasVideo || (clip.ChannelsCount != 0))
-            {
-                this._format = "avs";
             }
         }
 
@@ -107,6 +113,7 @@
                 {
                     this._hasVideo = true;
                     this._format = info.Get(StreamKind.Video, 0, "Format");
+                    this._container = info.Get(StreamKind.General, 0, "Format");
                     string str = info.Get(StreamKind.Audio, 0, "ID");
                     string str2 = info.Get(StreamKind.Video, 0, "ID");
                     if ((str == "0") || (str2 == "0"))
@@ -173,6 +180,9 @@
             }
         }
 
+        /// <summary>
+        /// 视频格式，对于包含视频流的avs脚本是"avs"。如不含视频流，为空
+        /// </summary>
         public string Format
         {
             get
@@ -242,6 +252,18 @@
             get
             {
                 return this._width;
+            }
+        }
+
+        /// <summary>
+        /// 视频容器，对于有效的avs脚本是"avs"
+        /// </summary>
+        public string Container
+        {
+            get
+            {
+                return this._container;
+
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿namespace CXGUI.VideoEncoding
 {
     using CXGUI;
+    using External;
     using System;
     using System.IO;
     using System.Text;
@@ -83,7 +84,7 @@
                 {
                     throw new BadEncoderCmdException("Encoding failed due to bad custom command line.");
                 }
-                throw new InvalidVideoAvisynthScriptException(base._avisynthScriptFile);
+                throw new AviSynthException(base._avisynthScriptFile);
             }
             if (base._progress >= 0x63)
             {

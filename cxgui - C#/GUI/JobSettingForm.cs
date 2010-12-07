@@ -629,7 +629,7 @@
             this._jobItem.AudioEncConfig = this._audioEncConfig;
             this._jobItem.State = JobState.NotProccessed;
             this._jobItem.ProfileName = this.profileBox.Text;
-            if (this._videoInfo.Format == "avs")
+            if (this._videoInfo.Container == "avs")
                 this.AvsInputSaveConfig(this._jobItem.JobConfig);
             else
             {
@@ -733,7 +733,7 @@
                 bool writeVideoScript = false;
                 bool writeAudioScript = false;
 
-                if (this._videoInfo.Format == "avs")
+                if (this._videoInfo.Container == "avs")
                 {
                     this.AvsInputSaveConfig(jobConfig);
                 }
@@ -1015,7 +1015,7 @@
             AvisynthConfig avsConfig = null;
             JobItemConfig jobConfig = null;
             SubtitleConfig subtitleConfig = null;
-            if (this._videoInfo.Format == "avs")
+            if (this._videoInfo.Container == "avs")
             {
                 avsConfig = this._jobItem.AvsConfig;
                 subtitleConfig = this._jobItem.SubtitleConfig;
@@ -1083,7 +1083,7 @@
 
         private void SaveToJobConfig(JobItemConfig jobConfig)
         {
-            if (this._videoInfo.Format == "avs")
+            if (this._videoInfo.Container == "avs")
             {
                 if (!this._videoInfo.HasVideo)
                     jobConfig.VideoMode = StreamProcessMode.None;
@@ -1154,7 +1154,7 @@
             this.subtitleTextBox.Text = jobItem.SubtitleFile;
             this._videoInfo = this._jobItem.VideoInfo;
             this._audioInfo = this._jobItem.AudioInfo;
-            if (this._videoInfo.Format != "avs")
+            if (this._videoInfo.Container != "avs")
             {
                 if (this.tabControl1.Controls.Count != 3)
                 {
@@ -1356,7 +1356,7 @@
                     this.avsAudioModeComboBox.SelectedIndex = 0;
                 }
             }
-            else if (this.avsAudioModeComboBox.SelectedIndex == 1)
+            else if (this.Created && this.avsAudioModeComboBox.SelectedIndex == 1)
             {
                 if (!this.sepAudioCheckBox.Checked)
                 {
@@ -1373,11 +1373,30 @@
             {
                 this.sepAudioButton.Enabled = true;
                 this.sepAudioTextBox.Enabled = true;
+                if (!this.avsAudioModeComboBox.Enabled)
+                {
+                    this.avsAudioModeComboBox.Enabled = true;
+                    this.avsAudioModeComboBox.SelectedIndex = 0;
+                }
+                if (!this.audioModeComboBox.Enabled)
+                {
+                    this.audioModeComboBox.Enabled = true;
+                    this.audioModeComboBox.SelectedIndex = 0;
+                }
             }
             else
             {
                 this.sepAudioButton.Enabled = false;
                 this.sepAudioTextBox.Enabled = false;
+                if (this._audioInfo.StreamsCount == 0)
+                {
+                    this.avsAudioModeComboBox.Enabled = false;
+                    this.avsAudioModeComboBox.SelectedIndex = -1;
+                    this.audioModeComboBox.Enabled = false;
+                    this.audioModeComboBox.SelectedIndex = -1;
+                }
+                else if (this.avsAudioModeComboBox.SelectedIndex == 1)
+                    this.avsAudioModeComboBox.SelectedIndex = 0;
             }
         }
     }

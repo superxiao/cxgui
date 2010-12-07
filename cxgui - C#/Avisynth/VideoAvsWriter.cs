@@ -20,7 +20,7 @@
         {
             this._avsConfig = avsConfig;
             this._videoInfo = videoInfo;
-            if (this._videoInfo.Format == "avs")
+            if (this._videoInfo.Container == "avs")
             {
                 this.AvsInputInitialize(sourceFile);
             }

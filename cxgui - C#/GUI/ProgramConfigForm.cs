@@ -20,7 +20,7 @@
             this.chbInputDir.Checked = configSection.OmitInputDir;
             this.chbSilentRestart.Checked = configSection.SilentRestart;
             this.previewPlayerComboBox.Text = configSection.PlayerPath;
-            this.cbAudioAutoSF.Checked = configSection.AutoChangeAudioSourceFilter;
+            this.autoChangeAudioSourceFilterCheckBox.Checked = configSection.AutoChangeAudioSourceFilter;
         }
 
         private void BrowseButtonClick(object sender, EventArgs e)
@@ -76,7 +76,7 @@
             config.OmitInputDir = this.chbInputDir.Checked;
             config.SilentRestart = this.chbSilentRestart.Checked;
             config.PlayerPath = this.previewPlayerComboBox.Text;
-            config.AutoChangeAudioSourceFilter = this.cbAudioAutoSF.Checked;
+            config.AutoChangeAudioSourceFilter = this.autoChangeAudioSourceFilterCheckBox.Checked;
             ProgramConfig.Save();
         }
     }

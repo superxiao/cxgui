@@ -142,7 +142,7 @@
             }
         }
         /// <summary>
-        /// 根据ProfileName获取各设置，附加混流控制器
+        /// 根据ProfileName获取各设置，附加混流控制器，并根据源文件内容修正音频和视频处理模式
         /// </summary>
         public void SetUp()
         {

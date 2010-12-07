@@ -108,6 +108,7 @@
     <Compile Include="AudioEncoding\NeroAacHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Exception\AvisynthVideoStreamNotFoundException.cs" />
     <Compile Include="GUI\CommandLineBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,10 +199,7 @@
     <Compile Include="Exception\IMediaProcessor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exception\InvalidAudioAvisynthScriptException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Exception\InvalidVideoAvisynthScriptException.cs">
+    <Compile Include="Exception\AvisynthAudioStreamNotFoundException.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Job\CxListViewItem.cs">

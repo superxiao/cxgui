@@ -24,6 +24,12 @@
         protected TimeSpan timeLeft;
         protected TimeSpan timeUsed;
 
+        /// <summary>
+        /// 如脚本有错误，引发AviSynthException；如脚本有效但不含音频，引发AvisynthVideoStreamNotFoundException
+        /// </summary>
+        /// <param name="encoderPath"></param>
+        /// <param name="avisynthScriptFile"></param>
+        /// <param name="destFile"></param>
         public AudioEncoderHandler(string encoderPath, string avisynthScriptFile, string destFile)
         {
             if (!File.Exists(avisynthScriptFile))
@@ -31,21 +37,17 @@
                 throw new FileNotFoundException(string.Empty, avisynthScriptFile);
             }
             avisynthScriptFile = Path.GetFullPath(avisynthScriptFile);
+            // 如果不是有效的avs脚本，则AvsSynthException
             IDisposable disposable = (this.scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)) as IDisposable;
-            try
-            {
-            }
-            finally
-            {
-                if (disposable != null)
+            if (disposable != null)
                 {
                     disposable.Dispose();
                     disposable = null;
                 }
-            }
+            // 是有效的avs脚本，但不包含音频内容，AvisynthVideoStreamNotFoundException
             if ((this.scriptInfo.ChannelsCount == 0) || (((int) this.scriptInfo.SamplesCount) == 0))
             {
-                throw new InvalidAudioAvisynthScriptException(avisynthScriptFile);
+                throw new AvisynthAudioStreamNotFoundException(avisynthScriptFile);
             }
             this.avisynthScriptFile = avisynthScriptFile;
             this.destFile = destFile;

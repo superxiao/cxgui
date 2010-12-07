@@ -7,6 +7,7 @@
     using CXGUI.Config;
     using CXGUI.Job;
     using CXGUI.VideoEncoding;
+    using External;
     using DirectShowLib.DES;
     using System;
     using System.Collections;
@@ -62,8 +63,20 @@
             JobItem jobItem = null;
             try
             {
-                jobItem = (JobItem) e.Argument;
-                if (MyIO.Exists(jobItem.DestFile) && (MessageBox.Show(new StringBuilder().Append(jobItem.DestFile).Append("\n目标文件已存在。决定覆盖吗？").ToString(), "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.Cancel))
+                jobItem = (JobItem)e.Argument; 
+                if (jobItem.JobConfig.VideoMode == StreamProcessMode.None && jobItem.JobConfig.AudioMode == StreamProcessMode.None)
+                {
+                    jobItem.Event = JobEvent.Error;
+                    this.JobEventReport(jobItem);
+                    MessageBox.Show(jobItem.SourceFile + "\n源文件不是视频文件，或设置有错误。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (this._workingJobItems[this._workingJobItems.Count - 1] == jobItem)
+                    {
+                        jobItem.Event = JobEvent.AllDone;
+                        this.JobEventReport(jobItem);
+                    }
+                    e.Result = jobItem;
+                }
+                else if (MyIO.Exists(jobItem.DestFile) && (MessageBox.Show(new StringBuilder().Append(jobItem.DestFile).Append("\n目标文件已存在。决定覆盖吗？").ToString(), "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.Cancel))
                 {
                     jobItem.Event = JobEvent.OneJobItemCancelled;
                     this.JobEventReport(jobItem);
@@ -109,12 +122,13 @@
                     }
                 }
             }
-            catch (Exception exception)
-            {
-            MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            jobItem.Event = JobEvent.Error;
-            this.JobEventReport(jobItem);
-            }
+            // BOOKMARK: BackgroundWorker1DoWork统一错误处理
+            //catch (Exception exception)
+            //{
+            //MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            //jobItem.Event = JobEvent.Error;
+            //this.JobEventReport(jobItem);
+            //}
             finally
             {
                 if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
@@ -128,97 +142,91 @@
 
         private void BackgroundWorker1ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            try
+            JobItem jobItem = (JobItem)e.UserState;
+            if (jobItem.Event == JobEvent.VideoEncoding)
             {
-                JobItem jobItem = (JobItem) e.UserState;
-                if (jobItem.Event == JobEvent.VideoEncoding)
+                if (jobItem.VideoEncoder.ProcessingFrameRate != 0)
                 {
-                    if (jobItem.VideoEncoder.ProcessingFrameRate != 0)
-                    {
-                        this.videoProgressBar.Value = jobItem.VideoEncoder.Progress;
-                        this.videoTimeUsedLable.Text = jobItem.VideoEncoder.TimeUsed.ToString();
-                        this.videoTimeLeftLable.Text = jobItem.VideoEncoder.TimeLeft.ToString();
-                        this.videoEncodingFpsLable.Text = jobItem.VideoEncoder.ProcessingFrameRate.ToString(".00' fps'");
-                        this.videoEstimatedFileSizeLable.Text = ((double)jobItem.VideoEncoder.EstimatedFileSize / 1024).ToString(".00' MB'");
-                        this.videoAvgBitRateLable.Text = jobItem.VideoEncoder.AvgBitRate.ToString(".00' kbps");
-                    }
+                    this.videoProgressBar.Value = jobItem.VideoEncoder.Progress;
+                    this.videoTimeUsedLable.Text = jobItem.VideoEncoder.TimeUsed.ToString();
+                    this.videoTimeLeftLable.Text = jobItem.VideoEncoder.TimeLeft.ToString();
+                    this.videoEncodingFpsLable.Text = jobItem.VideoEncoder.ProcessingFrameRate.ToString(".00' fps'");
+                    this.videoEstimatedFileSizeLable.Text = ((double)jobItem.VideoEncoder.EstimatedFileSize / 1024).ToString(".00' MB'");
+                    this.videoAvgBitRateLable.Text = jobItem.VideoEncoder.AvgBitRate.ToString(".00' kbps");
                 }
-                else if (jobItem.Event == JobEvent.AudioEncoding)
-                {
-                    this.audioProgressBar.Value = jobItem.AudioEncoder.Progress;
-                    this.audioTimeUsed.Text = jobItem.AudioEncoder.TimeUsed.ToString();
-                    this.audioTimeLeft.Text = jobItem.AudioEncoder.TimeLeft.ToString();
-                   
-                }
-                else if (jobItem.Event == JobEvent.Muxing)
-                {
-                    this.muxProgressBar.Value = jobItem.Muxer.Progress;
-                    this.muxTimeUsed.Text = jobItem.Muxer.TimeUsed.ToString();
-                    this.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString();
-                }
-                else
-                {
-                    int index;
-                    if (jobItem.Event == JobEvent.OneJobItemProcessing)
-                    {
-                        this.ResetProgress();
-                        jobItem.State = JobState.Working;
-                        this.startButton.Enabled = false;
-                        index = this._workingJobItems.IndexOf(jobItem);
-                        this.statusLable.Text = new StringBuilder("正在处理第").Append(index + 1).Append("个文件，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
-                    }
-                    else if (jobItem.Event == JobEvent.OneJobItemDone)
-                    {
-                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
-                        jobItem.State = JobState.Done;
-                        index = this._workingJobItems.IndexOf(jobItem);
-                        this.statusLable.Text = new StringBuilder("第").Append(index + 1).Append("个文件处理完毕，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
-                    }
-                    else if (jobItem.Event == JobEvent.AllDone)
-                    {
-                        this.statusLable.Text = new StringBuilder().Append(this._workingJobItems.Count).Append("个文件处理完成").ToString();
-                        this.startButton.Enabled = true;
-                    }
-                    else if (jobItem.Event == JobEvent.QuitAllProcessing)
-                    {
-                        this.ResetProgress();
-                        jobItem.State = JobState.Stop;
-                        this.startButton.Enabled = true;
-                        this.statusLable.Text = "中止";
-                        this.tabControl1.SelectTab(this.inputPage);
-                        foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
-                        {
-                            File.Delete(file);
-                        }
-                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
-                    }
-                    else if (jobItem.Event == JobEvent.OneJobItemCancelled)
-                    {
-                        jobItem.State = JobState.Stop;
-                        this.statusLable.Text = "中止";
-                        foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
-                        {
-                            File.Delete(file);
-                        }
-                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
-                    }
-                    else if (jobItem.Event == JobEvent.Error)
-                    {
-                        jobItem.State = JobState.Error;
-                        this.statusLable.Text = "错误";
-                        foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
-                        {
-                            File.Delete(file);
-                        }
-                        jobItem.FilesToDeleteWhenProcessingFails.Clear();
-                    }
-                }
-                this._workerReporting = false;
             }
-            catch (Exception exception)
+            else if (jobItem.Event == JobEvent.AudioEncoding)
             {
-                MessageBox.Show("发生了一个错误。\nBackgroundWorker1ProgressChanged:\n" + exception.ToString());
+                this.audioProgressBar.Value = jobItem.AudioEncoder.Progress;
+                this.audioTimeUsed.Text = jobItem.AudioEncoder.TimeUsed.ToString();
+                this.audioTimeLeft.Text = jobItem.AudioEncoder.TimeLeft.ToString();
+
             }
+            else if (jobItem.Event == JobEvent.Muxing)
+            {
+                this.muxProgressBar.Value = jobItem.Muxer.Progress;
+                this.muxTimeUsed.Text = jobItem.Muxer.TimeUsed.ToString();
+                this.muxTimeLeft.Text = jobItem.Muxer.TimeLeft.ToString();
+            }
+            else
+            {
+                int index;
+                if (jobItem.Event == JobEvent.OneJobItemProcessing)
+                {
+                    this.ResetProgress();
+                    jobItem.State = JobState.Working;
+                    this.startButton.Enabled = false;
+                    index = this._workingJobItems.IndexOf(jobItem);
+                    this.statusLable.Text = new StringBuilder("正在处理第").Append(index + 1).Append("个文件，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
+                }
+                else if (jobItem.Event == JobEvent.OneJobItemDone)
+                {
+                    jobItem.FilesToDeleteWhenProcessingFails.Clear();
+                    jobItem.State = JobState.Done;
+                    index = this._workingJobItems.IndexOf(jobItem);
+                    this.statusLable.Text = new StringBuilder("第").Append(index + 1).Append("个文件处理完毕，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
+                }
+                else if (jobItem.Event == JobEvent.AllDone)
+                {
+                    this.statusLable.Text = new StringBuilder().Append(this._workingJobItems.Count).Append("个文件处理完成").ToString();
+                    this.startButton.Enabled = true;
+                }
+                else if (jobItem.Event == JobEvent.QuitAllProcessing)
+                {
+                    this.ResetProgress();
+                    jobItem.State = JobState.Stop;
+                    this.startButton.Enabled = true;
+                    this.statusLable.Text = "中止";
+                    this.tabControl1.SelectTab(this.inputPage);
+                    foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
+                    {
+                        File.Delete(file);
+                    }
+                    jobItem.FilesToDeleteWhenProcessingFails.Clear();
+                }
+                else if (jobItem.Event == JobEvent.OneJobItemCancelled)
+                {
+                    jobItem.State = JobState.Stop;
+                    this.statusLable.Text = "中止";
+                    foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
+                    {
+                        File.Delete(file);
+                    }
+                    jobItem.FilesToDeleteWhenProcessingFails.Clear();
+                }
+                else if (jobItem.Event == JobEvent.Error)
+                {
+                    jobItem.State = JobState.Error;
+                    this.statusLable.Text = "错误";
+                    this.backgroundWorker1.CancelAsync();
+                    foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
+                    {
+                        File.Delete(file);
+                    }
+                    jobItem.FilesToDeleteWhenProcessingFails.Clear();
+                }
+            }
+            this._workerReporting = false;
         }
 
         private void ClearButtonClick(object sender, EventArgs e)
@@ -319,50 +327,152 @@
 
         private void EncodeAudio(string avsFile, string destFile, AudioEncConfigBase config, DoWorkEventArgs e)
         {
-            JobItem argument = (JobItem) e.Argument;
-            NeroAacHandler encoder = new NeroAacHandler(avsFile, destFile);
-            encoder.Config = config as NeroAacConfig;
-            argument.AudioEncoder = encoder;
-            argument.Event = JobEvent.AudioEncoding;
-            ReportInvoke encodingReport = this.EncodingReport;
-            IAsyncResult result = encodingReport.BeginInvoke(argument, encoder, e, null, null);
-            if (!this.backgroundWorker1.CancellationPending)
+            JobItem jobItem = (JobItem) e.Argument;
+            try
             {
-                encoder.Start();
+                NeroAacHandler encoder = new NeroAacHandler(avsFile, destFile);
+                encoder.Config = config as NeroAacConfig;
+                jobItem.AudioEncoder = encoder;
+                jobItem.Event = JobEvent.AudioEncoding;
+                ReportInvoke encodingReport = this.EncodingReport;
+                IAsyncResult result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
+                if (!this.backgroundWorker1.CancellationPending)
+                {
+                    encoder.Start();
+                }
+                encodingReport.EndInvoke(result);
+                jobItem.AudioEncoder = null;
             }
-            encodingReport.EndInvoke(result);
-            argument.AudioEncoder = null;
+            // 有效脚本，但不含音频。注意仅当源文件原本含音频流或输入avs脚本含音频时当前函数可能被调用。
+            catch (AvisynthAudioStreamNotFoundException)
+            {
+                string err;
+                if (jobItem.UsingExternalAudio && jobItem.ExternalAudio.Length > 0)
+                    err = jobItem.ExternalAudio;
+                else
+                    err = jobItem.SourceFile;
+                if (jobItem.VideoInfo.Container == "avs")
+                    // 输入音频脚本被改为不含音频的有效的脚本（视频脚本）
+                    err += "\n音频编码失败，原因是输入avs脚本有错误。";
+                else
+                    // 由于对于非avs脚本的媒体文件采用内部编写音频脚本的方式，如果出错则该脚本必然无效，因此不会出现以下错误
+                    err += "\n音频编码失败";
+                MessageBox.Show(err, "检测失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
+            }
+            catch (AviSynthException exception)
+            {
+                string err;
+                if (jobItem.UsingExternalAudio && jobItem.ExternalAudio.Length > 0)
+                    err = jobItem.ExternalAudio + "\n";
+                else
+                    err = jobItem.SourceFile + "\n";
+                // 输入avs脚本被更改为无效的avs脚本
+                if (jobItem.VideoInfo.Container == "avs")
+                    err += "音频编码失败，原因是输入avs脚本有错误。\n\n" + exception.ToString();
+                // 对于非avs脚本的媒体文件，可能虽然源文件含音频流，但无对应DShow滤镜而使avs脚本无效；或源文件被更改为非媒体文件
+                else if (jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.DirectShowSource || jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.DSS2)
+                {
+                    err += "音频编码失败。\n";
+                    if (jobItem.VideoInfo.Format.Length > 0)
+                        err += "\n视频格式：" + jobItem.VideoInfo.Format;
+                    if (jobItem.AudioInfo.Format.Length > 0)
+                        err += "\n音频格式：" + jobItem.AudioInfo.Format;
+                    if (jobItem.VideoInfo.Container.Length > 0)
+                        err += "\n容器：" + jobItem.VideoInfo.Container;
+                    err += "\n可能是没有为该音频安装正确的DirectShow解码器或分离器。\n可以尝试安装解码包，或ffdshow解码器和Haali分离器等。\n也可以在转换设置中改用FFAudioSource源滤镜，则不需要安装相关的DirectShow解码器。";
+                }
+                else
+                    err += "音频编码失败。请尝试更改音频源滤镜。";
+                MessageBox.Show(err, "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
+            }
+            catch (Exception exception)
+            {
+                string err;
+                if (jobItem.UsingExternalAudio && jobItem.ExternalAudio.Length > 0)
+                    err = jobItem.ExternalAudio;
+                else
+                    err = jobItem.SourceFile;
+                MessageBox.Show(err + "\n音频编码失败。" + exception.ToString());
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
+            }
         }
 
         private void EncodeVideo(string avsFile, string destFile, VideoEncConfigBase config, DoWorkEventArgs e)
         {
+            JobItem jobItem = (JobItem)e.Argument;
             try
             {
-                JobItem argument = (JobItem) e.Argument;
                 x264Handler encoder = new x264Handler(avsFile, destFile);
                 encoder.Config = config as x264Config;
-                argument.VideoEncoder = encoder;
-                argument.Event = JobEvent.VideoEncoding;
+                jobItem.VideoEncoder = encoder;
+                jobItem.Event = JobEvent.VideoEncoding;
                 ReportInvoke encodingReport = this.EncodingReport;
-                IAsyncResult result = encodingReport.BeginInvoke(argument, encoder, e, null, null);
+                IAsyncResult result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
                 if (!this.backgroundWorker1.CancellationPending)
-                {
-                    try
-                    {
-                        encoder.Start();
-                    }
-                    catch (BadEncoderCmdException)
-                    {
-                        MessageBox.Show("视频编码失败。是否使用了不正确的命令行？", "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                        this.backgroundWorker1.CancelAsync();
-                    }
-                }
+                    encoder.Start();
                 encodingReport.EndInvoke(result);
-                argument.VideoEncoder = null;
+                jobItem.VideoEncoder = null;
+            }
+            catch (BadEncoderCmdException)
+            {
+                MessageBox.Show("视频编码失败。是否使用了不正确的命令行？", "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.backgroundWorker1.CancelAsync();
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
+            }
+            // 有效脚本，但不含视频。注意仅当源文件原本含视频流或输入avs脚本含视频时当前函数可能被调用。
+            catch (AvisynthVideoStreamNotFoundException)
+            {
+                string err = jobItem.SourceFile+"\n";
+                if (jobItem.VideoInfo.Container == "avs")
+                {
+                    // 输入视频脚本被改为不含视频的有效的脚本（音频脚本）
+                    err += "视频编码失败，原因是输入avs脚本有错误。";
+                }
+                else 
+                { 
+                    // 由于对于非avs脚本的媒体文件采用内部编写视频脚本的方式，如果出错则该脚本必然无效，因此不会出现以下错误
+                    err += "视频编码失败。";
+                }
+                MessageBox.Show(err, "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
+            }
+            // 无效脚本。注意仅当源文件原本含视频流或输入avs脚本含视频时本函数可能被调用。
+            catch (AviSynthException exception)
+            {
+                string err = jobItem.SourceFile+"\n";
+                // 输入avs脚本被更改为无效的avs脚本
+                if (jobItem.VideoInfo.Container == "avs")
+                    err += "视频编码失败，原因是输入avs脚本有错误。\n\n" + exception.ToString();
+                // 对于非avs脚本的媒体文件，可能虽然源文件含视频流，但无对应DShow滤镜而使avs脚本无效；或源文件被更改为非媒体文件
+                else if (jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.DirectShowSource || jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.DSS2)
+                {
+                    err += "视频编码失败。\n";
+                    if (jobItem.VideoInfo.Format.Length > 0)
+                        err += "\n视频格式：" + jobItem.VideoInfo.Format;
+                    if (jobItem.AudioInfo.Format.Length > 0)
+                        err += "\n音频格式：" + jobItem.AudioInfo.Format;
+                    if (jobItem.VideoInfo.Container.Length > 0)
+                        err += "\n容器：" + jobItem.VideoInfo.Container;
+                    err += "\n可能是没有为该视频安装正确的DirectShow解码器或分离器。\n可以尝试安装解码包，或ffdshow解码器和Haali分离器等。\n也可以在转换设置中改用FFVideoSource源滤镜，则不需要安装相关的DirectShow解码器。";
+                }
+                else
+                    err += "视频编码失败。请尝试更改视频源滤镜。";
+                MessageBox.Show(err, "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
             }
             catch (Exception exception)
             {
-                MessageBox.Show("发生了一个错误。\nEncodeVideo:\n" + exception.ToString());
+                MessageBox.Show(jobItem.SourceFile + "\n视频编码失败。" + exception.ToString());
+                jobItem.Event = JobEvent.Error;
+                this.JobEventReport(jobItem);
             }
         }
 
@@ -374,10 +484,6 @@
                 if (this.backgroundWorker1.CancellationPending)
                 {
                     this.StopWorker(encoder, e);
-                    break;
-                }
-                if (jobItem.State == JobState.Error)
-                {
                     break;
                 }
                 if (encoder.ProcessingDone)
@@ -605,63 +711,25 @@
                 this.EncodeAudio("audio.avs", destAudio, jobItem.AudioEncConfig, e);
                 jobItem.EncodedAudio = destAudio;
             }
-            catch (InvalidAudioAvisynthScriptException)
+            finally
             {
-                if (this._configForm.cbAudioAutoSF.Checked)
+                if (jobItem.AvsConfig.AudioSourceFilter == AudioSourceFilter.FFAudioSource)
                 {
-                    this.ChangeSourceAndRetry(jobItem, destAudio, e);
-                }
-                else
-                {
-                    DialogResult result = MessageBox.Show(jobItem.SourceFile + "\n该文件的音频脚本无法读取。是否尝试更改源滤镜？", "检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
-                    jobItem.JobConfig.AudioMode = StreamProcessMode.None;
-                    if (result == DialogResult.OK)
-                    {
-                        this.ChangeSourceAndRetry(jobItem, destAudio, e);
-                    }
-                    else
-                    {
-                        jobItem.Event = JobEvent.Error;
-                        this.JobEventReport(jobItem);
-                    }
+                    File.Delete(audio + ".ffindex");
                 }
             }
-            if (jobItem.AvsConfig.AudioSourceFilter == AudioSourceFilter.FFAudioSource)
-            {
-                File.Delete(audio + ".ffindex");
-            }
-        }
-
-        private void ChangeSourceAndRetry(JobItem jobItem, string destAudio, DoWorkEventArgs e)
-        {
-				AudioSourceFilter source = jobItem.AvsConfig.AudioSourceFilter;
-                if (source == 0)
-				    source = source + 1;
-                if (source == 0)
-				    source = source - 1;
-				new AudioAvsWriter(jobItem.SourceFile, jobItem.AvsConfig, jobItem.AudioInfo).WriteScript("audio.avs");
-				try
-                {
-					this.EncodeAudio("audio.avs", destAudio, jobItem.AudioEncConfig, e);
-					jobItem.EncodedAudio = destAudio;
-                }
-				catch(InvalidAudioAvisynthScriptException)
-                {
-					MessageBox.Show(jobItem.SourceFile + "\n音频脚本无法读取。", 
-			"检测失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
         }
 
         private void ProcessVideo(JobItem jobItem, DoWorkEventArgs e)
         {
             SubStyleWriter writer = null;
             new VideoAvsWriter(jobItem.SourceFile, jobItem.AvsConfig, jobItem.SubtitleFile, jobItem.VideoInfo).WriteScript("video.avs");
-            bool flag = false;
+            bool usingSubtitleStyle = false;
             if (MyIO.Exists(jobItem.SubtitleFile) && jobItem.SubtitleConfig.UsingStyle)
             {
                 writer = new SubStyleWriter(jobItem.SubtitleFile, jobItem.SubtitleConfig);
                 writer.Write();
-                flag = true;
+                usingSubtitleStyle = true;
             }
             jobItem.FilesToDeleteWhenProcessingFails.Add(jobItem.DestFile);
             try
@@ -669,21 +737,12 @@
                 this.EncodeVideo("video.avs", jobItem.DestFile, jobItem.VideoEncConfig, e);
                 jobItem.EncodedVideo = jobItem.DestFile;
             }
-            catch (Exception exception)
+            finally
             {
-                if (flag)
-                {
+                if (usingSubtitleStyle)
                     writer.DeleteTempFiles();
-                }
-                throw exception;
-            }
-            if (flag)
-            {
-                writer.DeleteTempFiles();
-            }
-            if (jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.FFVideoSource)
-            {
-                File.Delete(jobItem.SourceFile + ".ffindex");
+                if (jobItem.AvsConfig.VideoSourceFilter == VideoSourceFilter.FFVideoSource)
+                    File.Delete(jobItem.SourceFile + ".ffindex");
             }
         }
 
@@ -811,10 +870,10 @@
 
         private void StopWorker(IMediaProcessor encoder, DoWorkEventArgs e)
         {
-            JobItem argument = (JobItem) e.Argument;
+            JobItem jobItem = (JobItem) e.Argument;
             encoder.Stop();
-            argument.Event = JobEvent.QuitAllProcessing;
-            this.JobEventReport(argument);
+            jobItem.Event = JobEvent.QuitAllProcessing;
+            this.JobEventReport(jobItem);
         }
 
         private void UpdateProfileBox(string[] newProfileNames, string selectedProfile)
@@ -927,7 +986,7 @@
             {
                 fileName = Path.GetFileName(fileName);
             }
-            if (checkMedia)
+            if (checkMedia&&Path.GetExtension(fileName).ToLower()!=".avs")
             {
                 int errorCode = ((IMediaDet)new MediaDet()).put_Filename(filePath);
                 try
@@ -956,6 +1015,11 @@
                 destFile = Path.Combine(this._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(filePath) + ext);
             destFile = MyIO.GetUniqueName(destFile);
             jobItem = new JobItem(filePath, destFile, this.profileBox.Text);
+            if (Path.GetExtension(filePath).ToLower()==".avs"&&jobItem.VideoInfo.Container!="avs")
+                if (MessageBox.Show((filePath + "\n错误的avs脚本，或没有安装Avisynth。\n") + "仍然要添加该文件吗？", "检测失败", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.OK)
+                {
+                    return null;
+                }
             this.jobItemListView.Items.Add(jobItem.CxListViewItem);
             return jobItem.CxListViewItem;
         }

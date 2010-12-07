@@ -28,7 +28,11 @@
         protected int _totalFrame;
         protected double _totalLength;
         protected bool processingDone;
-
+        /// <summary>
+        /// 如脚本有错误，引发AviSynthException；如脚本有效但不含视频，引发AvisynthVideoStreamNotFoundException
+        /// </summary>
+        /// <param name="avisynthScriptFile"></param>
+        /// <param name="destinationFile"></param>
         public VideoEncoderHandler(string avisynthScriptFile, string destinationFile)
         {
             if (!File.Exists(avisynthScriptFile))
@@ -37,20 +41,14 @@
             }
             avisynthScriptFile = Path.GetFullPath(avisynthScriptFile);
             IDisposable disposable = (this._scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)) as IDisposable;
-            try
-            {
-            }
-            finally
-            {
-                if (disposable != null)
+            if (disposable != null)
                 {
                     disposable.Dispose();
                     disposable = null;
                 }
-            }
             if (!this._scriptInfo.HasVideo)
             {
-                throw new InvalidVideoAvisynthScriptException(avisynthScriptFile);
+                throw new AvisynthVideoStreamNotFoundException(avisynthScriptFile);
             }
             this._avisynthScriptFile = Path.GetFullPath(avisynthScriptFile);
             this._destinationFile = destinationFile;
