@@ -114,6 +114,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.videoEditTabPage.SuspendLayout();
             this.gbVideoSource.SuspendLayout();
@@ -892,8 +893,8 @@
             // 
             // subtitleTabPage
             // 
+            this.subtitleTabPage.Controls.Add(this.button1);
             this.subtitleTabPage.Controls.Add(this.autoLoadSubtitleCheckBox);
-            this.subtitleTabPage.Controls.Add(this.customSubCheckBox);
             this.subtitleTabPage.Controls.Add(this.customSubGroupBox);
             this.subtitleTabPage.Controls.Add(this.subtitleTextBox);
             this.subtitleTabPage.Controls.Add(this.subtitleButton);
@@ -918,7 +919,7 @@
             // 
             // customSubCheckBox
             // 
-            this.customSubCheckBox.Location = new System.Drawing.Point(9, 105);
+            this.customSubCheckBox.Location = new System.Drawing.Point(8, 17);
             this.customSubCheckBox.Name = "customSubCheckBox";
             this.customSubCheckBox.Size = new System.Drawing.Size(139, 28);
             this.customSubCheckBox.TabIndex = 10;
@@ -932,13 +933,14 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.customSubGroupBox.Controls.Add(this.fontBottomBox);
             this.customSubGroupBox.Controls.Add(this.label19);
+            this.customSubGroupBox.Controls.Add(this.customSubCheckBox);
             this.customSubGroupBox.Controls.Add(this.label21);
             this.customSubGroupBox.Controls.Add(this.fontButton);
             this.customSubGroupBox.Controls.Add(this.label20);
             this.customSubGroupBox.Controls.Add(this.fontSizeBox);
             this.customSubGroupBox.Location = new System.Drawing.Point(3, 139);
             this.customSubGroupBox.Name = "customSubGroupBox";
-            this.customSubGroupBox.Size = new System.Drawing.Size(431, 117);
+            this.customSubGroupBox.Size = new System.Drawing.Size(431, 194);
             this.customSubGroupBox.TabIndex = 11;
             this.customSubGroupBox.TabStop = false;
             this.customSubGroupBox.Text = "字幕风格";
@@ -1003,15 +1005,15 @@
             this.subtitleTextBox.Location = new System.Drawing.Point(76, 62);
             this.subtitleTextBox.Name = "subtitleTextBox";
             this.subtitleTextBox.ReadOnly = true;
-            this.subtitleTextBox.Size = new System.Drawing.Size(274, 21);
+            this.subtitleTextBox.Size = new System.Drawing.Size(284, 21);
             this.subtitleTextBox.TabIndex = 3;
             // 
             // subtitleButton
             // 
             this.subtitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.subtitleButton.Location = new System.Drawing.Point(363, 62);
+            this.subtitleButton.Location = new System.Drawing.Point(368, 60);
             this.subtitleButton.Name = "subtitleButton";
-            this.subtitleButton.Size = new System.Drawing.Size(68, 23);
+            this.subtitleButton.Size = new System.Drawing.Size(60, 23);
             this.subtitleButton.TabIndex = 2;
             this.subtitleButton.Text = "浏览";
             this.subtitleButton.UseVisualStyleBackColor = true;
@@ -1119,6 +1121,17 @@
             // openFileDialog2
             // 
             this.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*.ssa|srt|*.srt|ass|*.ass|ssa|*.ssa";
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(368, 89);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 23);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "取消";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // JobSettingForm
             // 
@@ -1251,6 +1264,7 @@
         private System.Windows.Forms.NumericUpDown neroAacRateFactorBox;
         private System.Windows.Forms.NumericUpDown rateFactorBox;
         private System.Windows.Forms.CheckBox autoLoadSubtitleCheckBox;
+        private System.Windows.Forms.Button button1;
 
     }
 }

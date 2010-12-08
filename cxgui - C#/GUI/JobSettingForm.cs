@@ -678,6 +678,8 @@
                 {
                     this._jobItem.SubtitleFile = this.subtitleTextBox.Text;
                 }
+                else
+                    this._jobItem.SubtitleFile = string.Empty;
                 this.SaveToAvsConfig(this._jobItem.AvsConfig);
                 this.SaveToJobConfig(this._jobItem.JobConfig);
                 this.SaveToSubtitleConfig(this._jobItem.SubtitleConfig);
@@ -1466,6 +1468,11 @@
             {
                 this.subtitleTextBox.Text = this._jobItem.FindFirstSubtitleFile();
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.subtitleTextBox.Text = string.Empty;
         }
 
     }
