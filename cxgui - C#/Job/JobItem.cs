@@ -10,6 +10,7 @@
     using System.IO;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using System.Windows.Forms;
 
     [Serializable]
     public class JobItem
@@ -18,7 +19,7 @@
         [NonSerialized]
         protected AudioEncoderHandler _audioEncoder;
         protected AvisynthConfig _avsConfig;
-        protected List<string> _createdFiles = new List<string>(3);
+        protected List<string> _filesToDeleteWhenProcessingFails = new List<string>(3);
         protected string _customAudioScript;
         protected string _customVideoScript;
         protected CXGUI.Job.CxListViewItem _cxListViewItem;
@@ -183,6 +184,34 @@
                 }
             }
             this.CreateNewMuxer();
+            if (this._avsConfig.AutoLoadSubtitle&&!File.Exists(this._subtitleFile))
+            {
+                this._subtitleFile = FindFirstSubtitleFile();
+            }
+        }
+
+        /// <summary>
+        /// 在文件所在目录查找第一个字幕文件。如果不存在，返回空字串。
+        /// </summary>
+        /// <returns></returns>
+        public string FindFirstSubtitleFile()
+        {
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(this._sourceFile));
+
+            foreach (string file in files)
+            {
+                if (Path.GetFileName(file).ToLower().StartsWith(Path.GetFileNameWithoutExtension(this._sourceFile).ToLower()))
+                {
+                    switch (Path.GetExtension(file).ToLower())
+                    {
+                        case ".srt":
+                        case ".ass":
+                        case ".ssa":
+                            return file;
+                    }
+                }
+            }
+            return string.Empty;
         }
 
         public AudioEncConfigBase AudioEncConfig
@@ -282,6 +311,7 @@
             }
         }
 
+        // TODO: 删除这两个属性
         public string EncodedVideo
         {
             get
@@ -324,11 +354,11 @@
         {
             get
             {
-                return this._createdFiles;
+                return this._filesToDeleteWhenProcessingFails;
             }
             set
             {
-                this._createdFiles = value;
+                this._filesToDeleteWhenProcessingFails = value;
             }
         }
 

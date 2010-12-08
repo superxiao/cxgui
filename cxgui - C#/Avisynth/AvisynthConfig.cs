@@ -20,6 +20,7 @@
         protected bool _usingSourceResolution = true;
         protected CXGUI.Avisynth.VideoSourceFilter _videoSourceFilter;
         protected int _width;
+        protected bool _autoLoadSubtitle;
 
         public double AspectRatio
         {
@@ -198,6 +199,18 @@
             set
             {
                 this._width = value;
+            }
+        }
+
+        public bool AutoLoadSubtitle
+        {
+            get
+            {
+                return this._autoLoadSubtitle;
+            }
+            set
+            {
+                this._autoLoadSubtitle = value;
             }
         }
     }

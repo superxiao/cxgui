@@ -367,6 +367,7 @@
             this.audioSourceComboBox.Text = avsConfig.AudioSourceFilter.ToString();
             this.downMixBox.Checked = avsConfig.DownMix;
             this.normalizeBox.Checked = avsConfig.Normalize;
+            this.autoLoadSubtitleCheckBox.Checked = avsConfig.AutoLoadSubtitle;
         }
 
         private void InitializeEncConfig()
@@ -592,6 +593,8 @@
                     this.label14.Text = "质量";
                     if (config.Quality == 0)
                     {
+                        this.neroAacRateFactorBox.DecimalPlaces = 1;
+                        this.neroAacRateFactorBox.Increment = (decimal)0.1;
                         this.neroAacRateFactorBox.Text = "0.5";
                         config.Quality = 0.5;
                     }
@@ -601,8 +604,10 @@
                     this.label14.Text = "码率";
                     if (config.BitRate == 0)
                     {
+                        this.neroAacRateFactorBox.DecimalPlaces = 0;
+                        this.neroAacRateFactorBox.Increment = (decimal)1;
                         this.neroAacRateFactorBox.Text = "96";
-                        config.BitRate = 0x60;
+                        config.BitRate = 96;
                     }
                     break;
 
@@ -610,8 +615,10 @@
                     this.label14.Text = "码率";
                     if (config.ConstantBitRate == 0)
                     {
+                        this.neroAacRateFactorBox.DecimalPlaces = 0;
+                        this.neroAacRateFactorBox.Increment = (decimal)1;
                         this.neroAacRateFactorBox.Text = "96";
-                        config.ConstantBitRate = 0x60;
+                        config.ConstantBitRate = 96;
                     }
                     break;
             }
@@ -619,7 +626,41 @@
 
         private void NeroAacRateFactorBoxValidating(object sender, CancelEventArgs e)
         {
-
+            NeroAacConfig config = this._audioEncConfig as NeroAacConfig;
+            if (this.neroAacRateControlBox.SelectedIndex == 0)
+            {
+                try
+                {
+                    config.Quality = double.Parse(this.neroAacRateFactorBox.Text);
+                }
+                catch (Exception)
+                {
+                    this.neroAacRateFactorBox.Text = config.Quality.ToString();
+                }
+            }
+            else if (this.neroAacRateControlBox.SelectedIndex == 1)
+            {
+                try
+                {
+                    config.BitRate = int.Parse(this.neroAacRateFactorBox.Text);
+                }
+                catch (Exception)
+                {
+                    this.neroAacRateFactorBox.Text = config.BitRate.ToString();
+                }
+            }
+            else
+            {
+                try
+                {
+                    config.ConstantBitRate = int.Parse(this.neroAacRateFactorBox.Text);
+                }
+                catch (Exception)
+                {
+                    this.neroAacRateFactorBox.Text = config.ConstantBitRate.ToString();
+                }
+            }
+            this.RefreshNeroAac();
         }
 
         private void OkButtonClick(object sender, EventArgs e)
@@ -850,56 +891,62 @@
             x264Config config = this._videoEncConfig as x264Config;
             if (this.rateControlBox.SelectedIndex == 0)
             {
-                config.SetNumOption("crf", (double)0x17);
+                config.SetNumOption("crf", (double)23);
+                this.rateFactorBox.DecimalPlaces = 1;
+                this.rateFactorBox.Increment = (decimal)0.1;
             }
             else if (this.rateControlBox.SelectedIndex == 1)
             {
-                config.SetNumOption("qp", (double)0x17);
+                config.SetNumOption("qp", (double)23);
+                this.rateFactorBox.DecimalPlaces = 0;
+                this.rateFactorBox.Increment = (decimal)1;
             }
             else
             {
                 config.SetNumOption("bitrate", (double)700);
                 config.TotalPass = this.rateControlBox.SelectedIndex - 1;
                 config.CurrentPass = 1;
+                this.rateFactorBox.DecimalPlaces = 0;
+                this.rateFactorBox.Increment = (decimal)1;
             }
             this.RefreshX264UI();
         }
 
         private void RateFactorBoxValidating(object sender, CancelEventArgs e)
         {
-            string str = "";
-            double num;
+            string rateOption = "";
+            double rateFactor;
             x264Config config = this._videoEncConfig as x264Config;
             if (this.rateControlBox.SelectedIndex == 0)
             {
-                str = "crf";
+                rateOption = "crf";
             }
             else if (this.rateControlBox.SelectedIndex == 1)
             {
-                str = "qp";
+                rateOption = "qp";
             }
             else
             {
                 if (this.rateControlBox.SelectedIndex > 1)
                 {
-                    str = "bitrate";
+                    rateOption = "bitrate";
                 }
             }
             try
             {
-                num = double.Parse(this.rateFactorBox.Text);
+                rateFactor = double.Parse(this.rateFactorBox.Text);
             }
             catch (Exception)
             {
-                this.rateFactorBox.Text = config.GetNode(str).Num.ToString();
+                this.rateFactorBox.Text = config.GetNode(rateOption).Num.ToString();
                 return;
             }
-            if (str != "crf")
+            if (rateOption != "crf")
             {
-                num = Math.Floor(num);
+                rateFactor = Math.Floor(rateFactor);
             }
-            config.SetNumOption(str, num);
-            this.rateFactorBox.Text = config.GetNode(str).Num.ToString();
+            config.SetNumOption(rateOption, rateFactor);
+            this.rateFactorBox.Text = config.GetNode(rateOption).Num.ToString();
         }
 
         private void RefreshNeroAac()
@@ -907,17 +954,23 @@
             NeroAacConfig config = this._audioEncConfig as NeroAacConfig;
             if (config.Quality > 0)
             {
-                this.neroAacRateControlBox.SelectedIndex = 0;
+                this.neroAacRateControlBox.SelectedIndex = 0; 
+                this.neroAacRateFactorBox.DecimalPlaces = 1;
+                this.neroAacRateFactorBox.Increment = (decimal)0.1;
                 this.neroAacRateFactorBox.Text = config.Quality.ToString();
             }
             else if (config.BitRate > 0)
             {
                 this.neroAacRateControlBox.SelectedIndex = 1;
+                this.neroAacRateFactorBox.DecimalPlaces = 0;
+                this.neroAacRateFactorBox.Increment = (decimal)1;
                 this.neroAacRateFactorBox.Text = config.BitRate.ToString();
             }
             else if (config.ConstantBitRate > 0)
             {
                 this.neroAacRateControlBox.SelectedIndex = 2;
+                this.neroAacRateFactorBox.DecimalPlaces = 0;
+                this.neroAacRateFactorBox.Increment = (decimal)1;
                 this.neroAacRateFactorBox.Text = config.ConstantBitRate.ToString();
             }
         }
@@ -986,19 +1039,25 @@
             {
                 this.rateControlBox.SelectedIndex = 0;
                 this.rateFactorBox.Text = config.GetNode("crf").Num.ToString();
-                this.label9.Text = "量化器";
+                this.label9.Text = "量化器"; 
+                this.rateFactorBox.DecimalPlaces = 1;
+                this.rateFactorBox.Increment = (decimal)0.1;
             }
             else if (config.GetNode("qp").InUse)
             {
                 this.rateControlBox.SelectedIndex = 1;
                 this.rateFactorBox.Text = config.GetNode("qp").Num.ToString();
                 this.label9.Text = "质量";
+                this.rateFactorBox.DecimalPlaces = 0;
+                this.rateFactorBox.Increment = (decimal)1;
             }
             else if (config.GetNode("bitrate").InUse)
             {
                 this.rateControlBox.SelectedIndex = config.TotalPass + 1;
                 this.rateFactorBox.Text = config.GetNode("bitrate").Num.ToString();
                 this.label9.Text = "码率";
+                this.rateFactorBox.DecimalPlaces = 0;
+                this.rateFactorBox.Increment = (decimal)1;
             }
             this.rateControlBox.SelectedIndexChanged += new EventHandler(this.RateControlBoxSelectedIndexChanged);
             this.useCustomCmdBox.Checked = this._videoEncConfig.UsingCustomCmd;
@@ -1061,6 +1120,7 @@
                 avsConfig.Mod = int.Parse(this.modBox.Text);
                 avsConfig.Resizer = (ResizeFilter)Enum.Parse(typeof(ResizeFilter), this.resizerBox.Text);
                 avsConfig.VideoSourceFilter = (VideoSourceFilter)Enum.Parse(typeof(VideoSourceFilter), this.videoSourceBox.Text);
+                avsConfig.AutoLoadSubtitle = this.autoLoadSubtitleCheckBox.Checked;
                 if (this.sourceFrameRateCheckBox.Checked)
                 {
                     avsConfig.UsingSourceFrameRate = true;
@@ -1399,6 +1459,15 @@
                     this.avsAudioModeComboBox.SelectedIndex = 0;
             }
         }
+
+        private void autoLoadSubtitleCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Created && this.autoLoadSubtitleCheckBox.Checked)
+            {
+                this.subtitleTextBox.Text = this._jobItem.FindFirstSubtitleFile();
+            }
+        }
+
     }
 }
 

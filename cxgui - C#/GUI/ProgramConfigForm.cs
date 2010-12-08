@@ -66,7 +66,10 @@
 
         private void ProgramConfigFormLoad(object sender, EventArgs e)
         {
-
+            this._resetter = new ControlResetter();
+            this._resetter.SaveControls(this.groupBox1.Controls as IEnumerable);
+            this._resetter.SaveControls(this.groupBox2.Controls as IEnumerable);
+            this._resetter.SaveControls(this.editGroupBox.Controls as IEnumerable);
         }
 
         private void SaveConfig()

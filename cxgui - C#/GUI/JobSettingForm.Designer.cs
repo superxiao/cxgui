@@ -70,11 +70,12 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.muxerComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.neroAacRateFactorBox = new System.Windows.Forms.DomainUpDown();
+            this.neroAacRateFactorBox = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
             this.neroAacRateControlBox = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rateFactorBox = new System.Windows.Forms.NumericUpDown();
             this.useCustomCmdBox = new System.Windows.Forms.CheckBox();
             this.editCmdButton = new System.Windows.Forms.Button();
             this.tune = new System.Windows.Forms.ComboBox();
@@ -84,12 +85,12 @@
             this.profile = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.rateFactorBox = new System.Windows.Forms.DomainUpDown();
             this.preset = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.rateControlBox = new System.Windows.Forms.ComboBox();
             this.subtitleTabPage = new System.Windows.Forms.TabPage();
+            this.autoLoadSubtitleCheckBox = new System.Windows.Forms.CheckBox();
             this.customSubCheckBox = new System.Windows.Forms.CheckBox();
             this.customSubGroupBox = new System.Windows.Forms.GroupBox();
             this.fontBottomBox = new System.Windows.Forms.DomainUpDown();
@@ -122,7 +123,9 @@
             this.encTabPage.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.neroAacRateFactorBox)).BeginInit();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.rateFactorBox)).BeginInit();
             this.subtitleTabPage.SuspendLayout();
             this.customSubGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -151,7 +154,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(440, 456);
+            this.tabControl1.Size = new System.Drawing.Size(445, 456);
             this.tabControl1.TabIndex = 13;
             // 
             // videoEditTabPage
@@ -163,7 +166,7 @@
             this.videoEditTabPage.Location = new System.Drawing.Point(4, 22);
             this.videoEditTabPage.Name = "videoEditTabPage";
             this.videoEditTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.videoEditTabPage.Size = new System.Drawing.Size(432, 430);
+            this.videoEditTabPage.Size = new System.Drawing.Size(437, 430);
             this.videoEditTabPage.TabIndex = 0;
             this.videoEditTabPage.Text = "视频";
             this.videoEditTabPage.UseVisualStyleBackColor = true;
@@ -338,7 +341,14 @@
             "LanczosResize",
             "Lanczos4Resize",
             "BicubicResize",
-            "BilinearResize"});
+            "BilinearResize",
+            "BlackmanResize",
+            "GaussResize",
+            "PointResize",
+            "SincResize",
+            "Spline16Resize",
+            "Spline36Resize",
+            "Spline64Resize"});
             this.resizerBox.Location = new System.Drawing.Point(85, 85);
             this.resizerBox.Name = "resizerBox";
             this.resizerBox.Size = new System.Drawing.Size(121, 20);
@@ -428,7 +438,7 @@
             this.audioEditTabPage.Location = new System.Drawing.Point(4, 22);
             this.audioEditTabPage.Name = "audioEditTabPage";
             this.audioEditTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.audioEditTabPage.Size = new System.Drawing.Size(432, 430);
+            this.audioEditTabPage.Size = new System.Drawing.Size(437, 430);
             this.audioEditTabPage.TabIndex = 4;
             this.audioEditTabPage.Text = "音频";
             this.audioEditTabPage.UseVisualStyleBackColor = true;
@@ -528,7 +538,7 @@
             this.avsInputTabPage.Location = new System.Drawing.Point(4, 22);
             this.avsInputTabPage.Name = "avsInputTabPage";
             this.avsInputTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.avsInputTabPage.Size = new System.Drawing.Size(432, 430);
+            this.avsInputTabPage.Size = new System.Drawing.Size(437, 430);
             this.avsInputTabPage.TabIndex = 3;
             this.avsInputTabPage.Text = "avs输入";
             this.avsInputTabPage.UseVisualStyleBackColor = true;
@@ -586,7 +596,7 @@
             this.encTabPage.Location = new System.Drawing.Point(4, 22);
             this.encTabPage.Name = "encTabPage";
             this.encTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.encTabPage.Size = new System.Drawing.Size(432, 430);
+            this.encTabPage.Size = new System.Drawing.Size(437, 430);
             this.encTabPage.TabIndex = 1;
             this.encTabPage.Text = "编码器";
             this.encTabPage.UseVisualStyleBackColor = true;
@@ -633,10 +643,16 @@
             // 
             // neroAacRateFactorBox
             // 
-            this.neroAacRateFactorBox.Location = new System.Drawing.Point(71, 43);
+            this.neroAacRateFactorBox.Location = new System.Drawing.Point(71, 41);
+            this.neroAacRateFactorBox.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this.neroAacRateFactorBox.Name = "neroAacRateFactorBox";
-            this.neroAacRateFactorBox.Size = new System.Drawing.Size(75, 21);
-            this.neroAacRateFactorBox.TabIndex = 4;
+            this.neroAacRateFactorBox.Size = new System.Drawing.Size(120, 21);
+            this.neroAacRateFactorBox.TabIndex = 6;
+            this.neroAacRateFactorBox.Validating += new System.ComponentModel.CancelEventHandler(this.NeroAacRateFactorBoxValidating);
             // 
             // label14
             // 
@@ -658,6 +674,7 @@
             this.neroAacRateControlBox.Name = "neroAacRateControlBox";
             this.neroAacRateControlBox.Size = new System.Drawing.Size(127, 20);
             this.neroAacRateControlBox.TabIndex = 1;
+            this.neroAacRateControlBox.SelectedIndexChanged += new System.EventHandler(this.NeroAacRateControlBoxSelectedIndexChanged);
             // 
             // label13
             // 
@@ -671,6 +688,7 @@
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.rateFactorBox);
             this.groupBox4.Controls.Add(this.useCustomCmdBox);
             this.groupBox4.Controls.Add(this.editCmdButton);
             this.groupBox4.Controls.Add(this.tune);
@@ -680,7 +698,6 @@
             this.groupBox4.Controls.Add(this.profile);
             this.groupBox4.Controls.Add(this.label10);
             this.groupBox4.Controls.Add(this.label9);
-            this.groupBox4.Controls.Add(this.rateFactorBox);
             this.groupBox4.Controls.Add(this.preset);
             this.groupBox4.Controls.Add(this.label8);
             this.groupBox4.Controls.Add(this.label7);
@@ -691,6 +708,19 @@
             this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "x264";
+            // 
+            // rateFactorBox
+            // 
+            this.rateFactorBox.Location = new System.Drawing.Point(71, 40);
+            this.rateFactorBox.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.rateFactorBox.Name = "rateFactorBox";
+            this.rateFactorBox.Size = new System.Drawing.Size(120, 21);
+            this.rateFactorBox.TabIndex = 4;
+            this.rateFactorBox.Validating += new System.ComponentModel.CancelEventHandler(this.RateFactorBoxValidating);
             // 
             // useCustomCmdBox
             // 
@@ -807,16 +837,6 @@
             this.label9.TabIndex = 5;
             this.label9.Text = "量化器";
             // 
-            // rateFactorBox
-            // 
-            this.rateFactorBox.Location = new System.Drawing.Point(71, 40);
-            this.rateFactorBox.Name = "rateFactorBox";
-            this.rateFactorBox.Size = new System.Drawing.Size(75, 21);
-            this.rateFactorBox.Sorted = true;
-            this.rateFactorBox.TabIndex = 4;
-            this.rateFactorBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AllowFloat);
-            this.rateFactorBox.Validating += new System.ComponentModel.CancelEventHandler(this.RateFactorBoxValidating);
-            // 
             // preset
             // 
             this.preset.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -872,6 +892,7 @@
             // 
             // subtitleTabPage
             // 
+            this.subtitleTabPage.Controls.Add(this.autoLoadSubtitleCheckBox);
             this.subtitleTabPage.Controls.Add(this.customSubCheckBox);
             this.subtitleTabPage.Controls.Add(this.customSubGroupBox);
             this.subtitleTabPage.Controls.Add(this.subtitleTextBox);
@@ -879,14 +900,25 @@
             this.subtitleTabPage.Controls.Add(this.label18);
             this.subtitleTabPage.Location = new System.Drawing.Point(4, 22);
             this.subtitleTabPage.Name = "subtitleTabPage";
-            this.subtitleTabPage.Size = new System.Drawing.Size(432, 430);
+            this.subtitleTabPage.Size = new System.Drawing.Size(437, 430);
             this.subtitleTabPage.TabIndex = 2;
             this.subtitleTabPage.Text = "字幕";
             this.subtitleTabPage.UseVisualStyleBackColor = true;
             // 
+            // autoLoadSubtitleCheckBox
+            // 
+            this.autoLoadSubtitleCheckBox.AutoSize = true;
+            this.autoLoadSubtitleCheckBox.Location = new System.Drawing.Point(5, 25);
+            this.autoLoadSubtitleCheckBox.Name = "autoLoadSubtitleCheckBox";
+            this.autoLoadSubtitleCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.autoLoadSubtitleCheckBox.TabIndex = 12;
+            this.autoLoadSubtitleCheckBox.Text = "自动加载字幕";
+            this.autoLoadSubtitleCheckBox.UseVisualStyleBackColor = true;
+            this.autoLoadSubtitleCheckBox.CheckedChanged += new System.EventHandler(this.autoLoadSubtitleCheckBox_CheckedChanged);
+            // 
             // customSubCheckBox
             // 
-            this.customSubCheckBox.Location = new System.Drawing.Point(9, 81);
+            this.customSubCheckBox.Location = new System.Drawing.Point(9, 105);
             this.customSubCheckBox.Name = "customSubCheckBox";
             this.customSubCheckBox.Size = new System.Drawing.Size(139, 28);
             this.customSubCheckBox.TabIndex = 10;
@@ -904,9 +936,9 @@
             this.customSubGroupBox.Controls.Add(this.fontButton);
             this.customSubGroupBox.Controls.Add(this.label20);
             this.customSubGroupBox.Controls.Add(this.fontSizeBox);
-            this.customSubGroupBox.Location = new System.Drawing.Point(3, 115);
+            this.customSubGroupBox.Location = new System.Drawing.Point(3, 139);
             this.customSubGroupBox.Name = "customSubGroupBox";
-            this.customSubGroupBox.Size = new System.Drawing.Size(426, 117);
+            this.customSubGroupBox.Size = new System.Drawing.Size(431, 117);
             this.customSubGroupBox.TabIndex = 11;
             this.customSubGroupBox.TabStop = false;
             this.customSubGroupBox.Text = "字幕风格";
@@ -968,18 +1000,18 @@
             // 
             this.subtitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.subtitleTextBox.Location = new System.Drawing.Point(72, 42);
+            this.subtitleTextBox.Location = new System.Drawing.Point(76, 62);
             this.subtitleTextBox.Name = "subtitleTextBox";
             this.subtitleTextBox.ReadOnly = true;
-            this.subtitleTextBox.Size = new System.Drawing.Size(276, 21);
+            this.subtitleTextBox.Size = new System.Drawing.Size(274, 21);
             this.subtitleTextBox.TabIndex = 3;
             // 
             // subtitleButton
             // 
             this.subtitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.subtitleButton.Location = new System.Drawing.Point(354, 40);
+            this.subtitleButton.Location = new System.Drawing.Point(363, 62);
             this.subtitleButton.Name = "subtitleButton";
-            this.subtitleButton.Size = new System.Drawing.Size(75, 23);
+            this.subtitleButton.Size = new System.Drawing.Size(68, 23);
             this.subtitleButton.TabIndex = 2;
             this.subtitleButton.Text = "浏览";
             this.subtitleButton.UseVisualStyleBackColor = true;
@@ -987,9 +1019,9 @@
             // 
             // label18
             // 
-            this.label18.Location = new System.Drawing.Point(3, 38);
+            this.label18.Location = new System.Drawing.Point(7, 60);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(100, 23);
+            this.label18.Size = new System.Drawing.Size(93, 23);
             this.label18.TabIndex = 0;
             this.label18.Text = "字幕路径";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1001,7 +1033,7 @@
             this.destFileBox.FormattingEnabled = true;
             this.destFileBox.Location = new System.Drawing.Point(105, 508);
             this.destFileBox.Name = "destFileBox";
-            this.destFileBox.Size = new System.Drawing.Size(266, 20);
+            this.destFileBox.Size = new System.Drawing.Size(271, 20);
             this.destFileBox.TabIndex = 11;
             // 
             // label6
@@ -1016,7 +1048,7 @@
             // btOutBrowse
             // 
             this.btOutBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btOutBrowse.Location = new System.Drawing.Point(377, 508);
+            this.btOutBrowse.Location = new System.Drawing.Point(382, 508);
             this.btOutBrowse.Name = "btOutBrowse";
             this.btOutBrowse.Size = new System.Drawing.Size(75, 23);
             this.btOutBrowse.TabIndex = 7;
@@ -1041,14 +1073,14 @@
             this.profileBox.FormattingEnabled = true;
             this.profileBox.Location = new System.Drawing.Point(67, 543);
             this.profileBox.Name = "profileBox";
-            this.profileBox.Size = new System.Drawing.Size(121, 20);
+            this.profileBox.Size = new System.Drawing.Size(126, 20);
             this.profileBox.TabIndex = 17;
             this.profileBox.RightToLeftChanged += new System.EventHandler(this.ProfileBoxSelectedIndexChanged);
             // 
             // saveProfileButton
             // 
             this.saveProfileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveProfileButton.Location = new System.Drawing.Point(194, 541);
+            this.saveProfileButton.Location = new System.Drawing.Point(199, 541);
             this.saveProfileButton.Name = "saveProfileButton";
             this.saveProfileButton.Size = new System.Drawing.Size(75, 23);
             this.saveProfileButton.TabIndex = 16;
@@ -1059,7 +1091,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(298, 541);
+            this.okButton.Location = new System.Drawing.Point(303, 541);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 14;
@@ -1071,7 +1103,7 @@
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(379, 541);
+            this.cancelButton.Location = new System.Drawing.Point(384, 541);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(73, 23);
             this.cancelButton.TabIndex = 15;
@@ -1094,7 +1126,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(464, 576);
+            this.ClientSize = new System.Drawing.Size(469, 576);
             this.Controls.Add(this.previewButton);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label6);
@@ -1121,7 +1153,9 @@
             this.encTabPage.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.neroAacRateFactorBox)).EndInit();
             this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.rateFactorBox)).EndInit();
             this.subtitleTabPage.ResumeLayout(false);
             this.subtitleTabPage.PerformLayout();
             this.customSubGroupBox.ResumeLayout(false);
@@ -1172,7 +1206,6 @@
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.ComboBox muxerComboBox;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.DomainUpDown neroAacRateFactorBox;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.ComboBox neroAacRateControlBox;
         private System.Windows.Forms.Label label13;
@@ -1186,7 +1219,6 @@
         private System.Windows.Forms.ComboBox profile;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.DomainUpDown rateFactorBox;
         private System.Windows.Forms.ComboBox preset;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
@@ -1216,6 +1248,9 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.ComboBox avsVideoModeComboBox;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.NumericUpDown neroAacRateFactorBox;
+        private System.Windows.Forms.NumericUpDown rateFactorBox;
+        private System.Windows.Forms.CheckBox autoLoadSubtitleCheckBox;
 
     }
 }
