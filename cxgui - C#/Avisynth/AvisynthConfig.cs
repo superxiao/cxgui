@@ -1,4 +1,4 @@
-﻿namespace CXGUI.Avisynth
+﻿namespace Cxgui.Avisynth
 {
     using System;
 
@@ -6,7 +6,7 @@
     public class AvisynthConfig
     {
         protected double _aspectRatio;
-        protected CXGUI.Avisynth.AudioSourceFilter _audioSourceFilter;
+        protected Cxgui.Avisynth.AudioSourceFilter _audioSourceFilter;
         protected bool _convertFpsForDS;
         protected bool _downMix = true;
         protected double _frameRate;
@@ -18,7 +18,7 @@
         protected ResizeFilter _resizer;
         protected bool _usingSourceFrameRate = true;
         protected bool _usingSourceResolution = true;
-        protected CXGUI.Avisynth.VideoSourceFilter _videoSourceFilter;
+        protected Cxgui.Avisynth.VideoSourceFilter _videoSourceFilter;
         protected int _width;
         protected bool _autoLoadSubtitle;
 
@@ -34,7 +34,7 @@
             }
         }
 
-        public CXGUI.Avisynth.AudioSourceFilter AudioSourceFilter
+        public Cxgui.Avisynth.AudioSourceFilter AudioSourceFilter
         {
             get
             {
@@ -178,7 +178,7 @@
             }
         }
 
-        public CXGUI.Avisynth.VideoSourceFilter VideoSourceFilter
+        public Cxgui.Avisynth.VideoSourceFilter VideoSourceFilter
         {
             get
             {

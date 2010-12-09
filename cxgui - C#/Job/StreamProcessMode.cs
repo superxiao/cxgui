@@ -1,4 +1,4 @@
-﻿namespace CXGUI.Job
+﻿namespace Cxgui.Job
 {
     using System;
 

@@ -1,7 +1,7 @@
-﻿namespace CXGUI.Avisynth
+﻿namespace Cxgui.Avisynth
 {
-    using CXGUI;
-    using CXGUI.External;
+    using Cxgui;
+    using Cxgui.External;
     using System;
     using System.Collections;
     using System.Collections.Generic;

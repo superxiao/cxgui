@@ -62,7 +62,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>CXGUI</RootNamespace>
+    <RootNamespace>Cxgui</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DirectShowLib-2005, Version=2.1.0.0, Culture=neutral, PublicKeyToken=67e7b740cdfc2d3f, processorArchitecture=MSIL">
@@ -254,9 +254,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="VideoEncoding\x264Handler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="VideoEncoding\X264HandlerModule.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MediaInfo\VideoInfo.cs">

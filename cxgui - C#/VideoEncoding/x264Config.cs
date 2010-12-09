@@ -1,6 +1,6 @@
-﻿namespace CXGUI.VideoEncoding
+﻿namespace Cxgui.VideoEncoding
 {
-    using CXGUI.External;
+    using Cxgui.External;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -322,6 +322,8 @@
 
         public override string GetArgument()
         {
+            if (this._usingCustomCmd && this._customCmdLine != null)
+                return this._customCmdLine;
             string s = string.Empty;
             x264ConfigNode node = this._optionDict["pass"];
             bool flag = false;

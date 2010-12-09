@@ -1,12 +1,12 @@
-﻿namespace CXGUI.GUI
+﻿namespace Cxgui.Gui
 {
     using Clinky;
-    using CXGUI;
-    using CXGUI.AudioEncoding;
-    using CXGUI.Avisynth;
-    using CXGUI.Config;
-    using CXGUI.Job;
-    using CXGUI.VideoEncoding;
+    using Cxgui;
+    using Cxgui.AudioEncoding;
+    using Cxgui.Avisynth;
+    using Cxgui.Config;
+    using Cxgui.Job;
+    using Cxgui.VideoEncoding;
     using System;
     using System.Collections;
     using System.ComponentModel;
@@ -24,7 +24,7 @@
         /// 当选用外部音轨时，更新_audioInfo。
         /// </summary>
         protected AudioInfo _audioInfo;
-        protected CommandLineBox _cmdLineBox;
+        protected CommandLineBox cmdLineBox;
         protected JobItem _jobItem;
         protected ControlResetter _resetter;
         protected ResolutionCalculator _resolutionCal;
@@ -310,8 +310,9 @@
 
         private void EditCmdButtonClick(object sender, EventArgs e)
         {
-            this._cmdLineBox.ShowDialog();
-            this._videoEncConfig.CustomCmdLine = this._cmdLineBox.CmdLine;
+            DialogResult result = this.cmdLineBox.ShowDialog();
+            if (result == DialogResult.OK)
+                this._videoEncConfig.CustomCmdLine = this.cmdLineBox.CmdLine;
         }
 
         private void FontButtonClick(object sender, EventArgs e)
@@ -1062,8 +1063,14 @@
                 this.rateFactorBox.Increment = (decimal)1;
             }
             this.rateControlBox.SelectedIndexChanged += new EventHandler(this.RateControlBoxSelectedIndexChanged);
+
+            this.cmdLineBox = new CommandLineBox();
+            bool checkChanged = (this.useCustomCmdBox.Checked != this._videoEncConfig.UsingCustomCmd);
             this.useCustomCmdBox.Checked = this._videoEncConfig.UsingCustomCmd;
-            this.UseCustomCmdBoxCheckedChanged(null, null);
+            if (!checkChanged)
+            {
+                this.UseCustomCmdBoxCheckedChanged(null, null);
+            }
         }
 
         private void ResolutionValidating(object sender, CancelEventArgs e)
@@ -1073,6 +1080,11 @@
 
         private void SaveProfileButtonClick(object sender, EventArgs e)
         {
+            if (this.profileBox.Text == string.Empty || this.profileBox.Text.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            {
+                MessageBox.Show("预设名为空或含非法字符。", "错误的预设名", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             AvisynthConfig avsConfig = null;
             JobItemConfig jobConfig = null;
             SubtitleConfig subtitleConfig = null;
@@ -1325,34 +1337,30 @@
 
         private void UseCustomCmdBoxCheckedChanged(object sender, EventArgs e)
         {
-            if (this._cmdLineBox == null)
-            {
-                this._cmdLineBox = new CommandLineBox();
-            }
             if (this.useCustomCmdBox.Checked)
             {
-                IEnumerator enumerator = this.groupBox4.Controls.GetEnumerator();
-                while (enumerator.MoveNext())
+                foreach(Control control in this.groupBox4.Controls)
                 {
-                    Control current = (Control)enumerator.Current;
-                    current.Enabled = false;
+                    control.Enabled = false;
                 }
                 this.useCustomCmdBox.Enabled = true;
                 this.editCmdButton.Enabled = true;
-                this._cmdLineBox.CmdLine = this._videoEncConfig.GetArgument();
+                if (this._videoEncConfig.CustomCmdLine == null)
+                    this.cmdLineBox.CmdLine = this._videoEncConfig.GetArgument();
+                else
+                    this.cmdLineBox.CmdLine = this._videoEncConfig.CustomCmdLine;
                 this._videoEncConfig.UsingCustomCmd = true;
             }
             else
             {
-                IEnumerator enumerator2 = this.groupBox4.Controls.GetEnumerator();
-                while (enumerator2.MoveNext())
+                foreach (Control control in this.groupBox4.Controls)
                 {
-                    Control control2 = (Control)enumerator2.Current;
-                    control2.Enabled = true;
+                    control.Enabled = true;
                 }
                 this.editCmdButton.Enabled = false;
-                this._cmdLineBox.CmdLine = string.Empty;
+                this.cmdLineBox.CmdLine = string.Empty;
                 this._videoEncConfig.UsingCustomCmd = false;
+                this._videoEncConfig.CustomCmdLine = null;
             }
         }
 
@@ -1473,6 +1481,20 @@
         private void button1_Click(object sender, EventArgs e)
         {
             this.subtitleTextBox.Text = string.Empty;
+        }
+
+        private void delProfileButton_Click(object sender, EventArgs e)
+        {
+            if (this.profileBox.SelectedIndex != -1)
+            {
+                DialogResult result = MessageBox.Show("确定要删除预设项 " + this.profileBox.Text + "?", "确认操作", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                if (result == DialogResult.OK)
+                {
+                    Profile.DeleteProfile(this.profileBox.Text);
+                    this.profileBox.Items.Remove(this.profileBox.SelectedItem);
+                }
+            }
+
         }
 
     }

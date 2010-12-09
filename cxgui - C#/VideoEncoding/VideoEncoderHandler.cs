@@ -1,7 +1,7 @@
-﻿namespace CXGUI.VideoEncoding
+﻿namespace Cxgui.VideoEncoding
 {
-    using CXGUI;
-    using CXGUI.External;
+    using Cxgui;
+    using Cxgui.External;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -15,15 +15,14 @@
         protected int _currentFrame;
         protected int _currentPosition;
         protected string _destinationFile;
-        protected string _encoderPath;
-        protected Process _encodingProcess = new Process();
+        protected Process encodingProcess;
         protected long _estimatedFileSize;
         protected string _log;
         protected double _processingFrameRate;
         protected int _progress;
         protected double _scriptFrameRate;
         protected AviSynthClip _scriptInfo;
-        protected TimeSpan _timeLeft;
+        protected TimeSpan timeLeft;
         protected TimeSpan _timeUsed;
         protected int _totalFrame;
         protected double _totalLength;
@@ -55,10 +54,23 @@
             this._scriptFrameRate = ((double) this._scriptInfo.raten) / ((double) this._scriptInfo.rated);
             this._totalLength = ((double) this._scriptInfo.num_frames) / this._scriptFrameRate;
             this._totalFrame = this._scriptInfo.num_frames;
+            encodingProcess = new Process();
+            this.encodingProcess.StartInfo.UseShellExecute = false;
+            this.encodingProcess.StartInfo.CreateNoWindow = true;
         }
 
         public abstract void Start();
-        public abstract void Stop();
+        public void Stop()
+        {
+            try
+            {
+                this.encodingProcess.Kill();
+                this.encodingProcess.WaitForExit();
+            }
+            catch (Exception)
+            {
+            }
+        }
 
         public double AvgBitRate
         {
@@ -112,22 +124,6 @@
             }
         }
 
-        public string EncoderPath
-        {
-            get
-            {
-                return this._encoderPath;
-            }
-            set
-            {
-                if (!File.Exists(value))
-                {
-                    throw new FileNotFoundException(value);
-                }
-                this._encoderPath = value;
-            }
-        }
-
         public long EstimatedFileSize
         {
             get
@@ -172,7 +168,7 @@
         {
             get
             {
-                return this._timeLeft;
+                return this.timeLeft;
             }
         }
 

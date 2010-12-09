@@ -1,6 +1,6 @@
-﻿namespace CXGUI.StreamMuxer
+﻿namespace Cxgui.StreamMuxer
 {
-    using CXGUI;
+    using Cxgui;
     using System;
     using System.Diagnostics;
 
@@ -10,7 +10,7 @@
         protected string _audioFile;
         protected string _dstFile;
         protected bool _errOccured;
-        protected Process _process = new Process();
+        protected Process muxerProcess = new Process();
         protected int _progress;
         protected TimeSpan _timeLeft;
         protected TimeSpan _timeUsed;
@@ -18,7 +18,18 @@
         protected bool processingDone;
 
         public abstract void Start();
-        public abstract void Stop();
+
+        public void Stop()
+        {
+            try
+            {
+                this.muxerProcess.Kill();
+                this.muxerProcess.WaitForExit();
+            }
+            catch (Exception)
+            {
+            }
+        }
 
         public string AudioFile
         {

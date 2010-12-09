@@ -1,12 +1,12 @@
-﻿namespace CXGUI.GUI
+﻿namespace Cxgui.Gui
 {
     using Clinky;
-    using CXGUI;
-    using CXGUI.AudioEncoding;
-    using CXGUI.Avisynth;
-    using CXGUI.Config;
-    using CXGUI.Job;
-    using CXGUI.VideoEncoding;
+    using Cxgui;
+    using Cxgui.AudioEncoding;
+    using Cxgui.Avisynth;
+    using Cxgui.Config;
+    using Cxgui.Job;
+    using Cxgui.VideoEncoding;
     using External;
     using DirectShowLib.DES;
     using System;
@@ -123,12 +123,12 @@
                 }
             }
             // BOOKMARK: BackgroundWorker1DoWork统一错误处理
-            //catch (Exception exception)
-            //{
-            //MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            //jobItem.Event = JobEvent.Error;
-            //this.JobEventReport(jobItem);
-            //}
+            catch (Exception exception)
+            {
+            MessageBox.Show("发生了一个错误。\n" + exception.ToString(), "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            jobItem.Event = JobEvent.Error;
+            this.JobEventReport(jobItem);
+            }
             finally
             {
                 if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
@@ -327,21 +327,20 @@
 
         private void EncodeAudio(string avsFile, string destFile, AudioEncConfigBase config, DoWorkEventArgs e)
         {
-            JobItem jobItem = (JobItem) e.Argument;
+            JobItem jobItem = (JobItem)e.Argument;
+            ReportInvoke encodingReport = this.EncodingReport;
+            IAsyncResult result = null;
             try
             {
                 NeroAacHandler encoder = new NeroAacHandler(avsFile, destFile);
                 encoder.Config = config as NeroAacConfig;
                 jobItem.AudioEncoder = encoder;
                 jobItem.Event = JobEvent.AudioEncoding;
-                ReportInvoke encodingReport = this.EncodingReport;
-                IAsyncResult result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
+                result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
                 if (!this.backgroundWorker1.CancellationPending)
                 {
                     encoder.Start();
                 }
-                encodingReport.EndInvoke(result);
-                jobItem.AudioEncoder = null;
             }
             // 有效脚本，但不含音频。注意仅当源文件原本含音频流或输入avs脚本含音频时当前函数可能被调用。
             catch (AvisynthAudioStreamNotFoundException)
@@ -400,23 +399,28 @@
                 jobItem.Event = JobEvent.Error;
                 this.JobEventReport(jobItem);
             }
+            finally
+            {
+                if (result != null)
+                encodingReport.EndInvoke(result);
+                jobItem.AudioEncoder = null;
+            }
         }
 
         private void EncodeVideo(string avsFile, string destFile, VideoEncConfigBase config, DoWorkEventArgs e)
         {
             JobItem jobItem = (JobItem)e.Argument;
+            IAsyncResult result = null;
+            ReportInvoke encodingReport = this.EncodingReport;
             try
             {
                 x264Handler encoder = new x264Handler(avsFile, destFile);
                 encoder.Config = config as x264Config;
                 jobItem.VideoEncoder = encoder;
                 jobItem.Event = JobEvent.VideoEncoding;
-                ReportInvoke encodingReport = this.EncodingReport;
-                IAsyncResult result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
+                result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
                 if (!this.backgroundWorker1.CancellationPending)
                     encoder.Start();
-                encodingReport.EndInvoke(result);
-                jobItem.VideoEncoder = null;
             }
             catch (BadEncoderCmdException)
             {
@@ -428,14 +432,14 @@
             // 有效脚本，但不含视频。注意仅当源文件原本含视频流或输入avs脚本含视频时当前函数可能被调用。
             catch (AvisynthVideoStreamNotFoundException)
             {
-                string err = jobItem.SourceFile+"\n";
+                string err = jobItem.SourceFile + "\n";
                 if (jobItem.VideoInfo.Container == "avs")
                 {
                     // 输入视频脚本被改为不含视频的有效的脚本（音频脚本）
                     err += "视频编码失败，原因是输入avs脚本有错误。";
                 }
-                else 
-                { 
+                else
+                {
                     // 由于对于非avs脚本的媒体文件采用内部编写视频脚本的方式，如果出错则该脚本必然无效，因此不会出现以下错误
                     err += "视频编码失败。";
                 }
@@ -446,7 +450,7 @@
             // 无效脚本。注意仅当源文件原本含视频流或输入avs脚本含视频时本函数可能被调用。
             catch (AviSynthException exception)
             {
-                string err = jobItem.SourceFile+"\n";
+                string err = jobItem.SourceFile + "\n";
                 // 输入avs脚本被更改为无效的avs脚本
                 if (jobItem.VideoInfo.Container == "avs")
                     err += "视频编码失败，原因是输入avs脚本有错误。\n\n" + exception.ToString();
@@ -474,11 +478,17 @@
                 jobItem.Event = JobEvent.Error;
                 this.JobEventReport(jobItem);
             }
+            finally
+            {
+                if (result != null)
+                    encodingReport.EndInvoke(result);
+                jobItem.VideoEncoder = null;
+            }
         }
 
         private void EncodingReport(JobItem jobItem, IMediaProcessor encoder, DoWorkEventArgs e)
         {
-            while (1 != 0)
+            while (true)
             {
                 Thread.Sleep(500);
                 if (this.backgroundWorker1.CancellationPending)
@@ -752,16 +762,12 @@
             {
                 Profile profile = new Profile(this.profileBox.Text);
                 string extension = string.Empty;
-                if (profile != null)
+                extension = profile.GetExtByContainer();
+                foreach (CxListViewItem item in this.jobItemListView.Items)
                 {
-                    extension = profile.GetExtByContainer();
-                }
-                IEnumerator enumerator = this.jobItemListView.Items.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    CxListViewItem current = (CxListViewItem) enumerator.Current;
-                    JobItem jobItem = current.JobItem;
+                    JobItem jobItem = item.JobItem;
                     jobItem.ProfileName = this.profileBox.Text;
+                    jobItem.SetUp(true);
                     if (extension != string.Empty)
                     {
                         jobItem.DestFile = Path.ChangeExtension(jobItem.DestFile, extension);
@@ -819,13 +825,13 @@
             {
                 try
                 {
-                    itemArray[index].SetUp();
+                    itemArray[index].SetUp(false);
                 }
                 catch (ProfileNotFoundException)
                 {
                     this.UpdateProfileBox(Profile.GetExistingProfilesNamesOnHardDisk(), this.profileBox.Text);
                     itemArray[index].ProfileName = this.profileBox.Text;
-                    itemArray[index].SetUp();
+                    itemArray[index].SetUp(false);
                 }
                 index++;
             }

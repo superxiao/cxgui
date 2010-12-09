@@ -1,4 +1,4 @@
-﻿namespace CXGUI.VideoEncoding
+﻿namespace Cxgui.VideoEncoding
 {
     using System;
 

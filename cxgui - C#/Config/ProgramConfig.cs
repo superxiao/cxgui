@@ -1,4 +1,4 @@
-﻿namespace CXGUI.Config
+﻿namespace Cxgui.Config
 {
     using Microsoft.Win32;
     using System;

@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace CXGUI.GUI
+namespace Cxgui.Gui
 {
 	public partial class CommandLineBox: Form
     {
@@ -19,7 +19,7 @@ namespace CXGUI.GUI
 
         private void CacelButtonClick(object sender, EventArgs e)
         {
-            this.Close();
+            this.DialogResult = DialogResult.Cancel;
         }
 
         private void CommandLineBoxLoad(object sender, EventArgs e)
@@ -29,6 +29,7 @@ namespace CXGUI.GUI
         private void OKButtonClick(object sender, EventArgs e)
         {
             this._cmdLine = this.commandBox.Text;
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 

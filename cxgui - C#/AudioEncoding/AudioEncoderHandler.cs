@@ -1,7 +1,7 @@
-﻿namespace CXGUI.AudioEncoding
+﻿namespace Cxgui.AudioEncoding
 {
-    using CXGUI;
-    using CXGUI.External;
+    using Cxgui;
+    using Cxgui.External;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -63,7 +63,18 @@
         }
 
         public abstract void Start();
-        public abstract void Stop();
+
+        public void Stop()
+        {
+            try
+            {
+                this.encodingProcess.Kill();
+                this.encodingProcess.WaitForExit();
+            }
+            catch (Exception)
+            {
+            }
+        }
 
         public string AvisynthScriptFile
         {

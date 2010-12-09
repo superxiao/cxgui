@@ -1,6 +1,6 @@
-﻿namespace CXGUI.VideoEncoding
+﻿namespace Cxgui.VideoEncoding
 {
-    using CXGUI;
+    using Cxgui;
     using External;
     using System;
     using System.IO;
@@ -11,21 +11,21 @@
     public class x264Handler : VideoEncoderHandler
     {
         protected x264Config _config;
-        protected bool _errOccured;
-        protected DateTime _startTime;
+        protected bool errOccured;
+        protected DateTime startTime;
 
         public x264Handler(string avisynthScriptFile, string destinationFile) : base(avisynthScriptFile, destinationFile)
         {
-            this._errOccured = false;
-            base._encoderPath = "x264.exe";
-            base._encodingProcess.StartInfo.FileName = base._encoderPath;
+            this.errOccured = false;
+            base.encodingProcess.StartInfo.FileName = "x264.exe";
+            base.encodingProcess.StartInfo.RedirectStandardError = true;
         }
 
         private void ReadStdErr()
         {
-            StreamReader standardError = base._encodingProcess.StandardError;
+            StreamReader standardError = base.encodingProcess.StandardError;
             string line = string.Empty;
-            while (1 != 0)
+            while (true)
             {
                 line = standardError.ReadLine();
                 if (line == null)
@@ -38,13 +38,18 @@
                 }
                 else if (line.Contains("error"))
                 {
-                    this._errOccured = true;
+                    this.errOccured = true;
                 }
             }
         }
 
         public override void Start()
         {
+            if (this._config.UsingCustomCmd)
+            {
+                this.Start(1);
+                return;
+            }
             this.Start(1);
             if (this._config.TotalPass > 1)
             {
@@ -59,51 +64,39 @@
 
         private void Start(int currentPass)
         {
-            string str;
+            string outputFile;
             this._config.CurrentPass = currentPass;
             if (this._config.CurrentPass < this._config.TotalPass)
             {
-                str = "NUL";
+                outputFile = "NUL";
             }
             else
             {
-                str = new StringBuilder("\"").Append(base._destinationFile).Append("\"").ToString();
+                outputFile = "\""+base._destinationFile+"\"";
             }
-            base._encodingProcess.StartInfo.Arguments = new StringBuilder().Append(this._config.GetArgument()).Append(" --output ").Append(str).Append(" \"").Append(base._avisynthScriptFile).Append("\"").ToString();
-            base._encodingProcess.StartInfo.UseShellExecute = false;
-            base._encodingProcess.StartInfo.RedirectStandardError = true;
-            base._encodingProcess.StartInfo.CreateNoWindow = true;
+            base.encodingProcess.StartInfo.Arguments = new StringBuilder().Append(this._config.GetArgument()).Append(" --output ").Append(outputFile).Append(" \"").Append(base._avisynthScriptFile).Append("\"").ToString();
             Thread thread = new Thread(new ThreadStart(this.ReadStdErr));
-            this._startTime = DateTime.Now;
-            base._encodingProcess.Start();
+            this.startTime = DateTime.Now;
+            base.encodingProcess.Start();
             thread.Start();
-            base._encodingProcess.WaitForExit();
-            if (this._errOccured)
+            base.encodingProcess.WaitForExit();
+            if (this.errOccured)
             {
                 if (this._config.UsingCustomCmd)
                 {
                     throw new BadEncoderCmdException("Encoding failed due to bad custom command line.");
                 }
-                throw new AviSynthException(base._avisynthScriptFile);
+                else
+                {
+                    throw new AviSynthException(base._avisynthScriptFile);
+                }
             }
-            if (base._progress >= 0x63)
+            if (base._progress >= 99)
             {
                 base._progress = 100;
             }
-            base._timeLeft = new TimeSpan((long) 0);
+            base.timeLeft = new TimeSpan((long) 0);
             thread.Abort();
-        }
-
-        public override void Stop()
-        {
-            try
-            {
-                base._encodingProcess.Kill();
-                base._encodingProcess.WaitForExit();
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void UpdateProgress(string line)
@@ -121,8 +114,8 @@
             string str3 = strArray[1];
             base._processingFrameRate = double.Parse(str3.Substring(0, str3.IndexOf("f")));
             string str4 = strArray[3];
-            base._timeLeft = TimeSpan.Parse(str4.Substring(str4.IndexOf("a") + 1));
-            base._timeUsed = (TimeSpan) (DateTime.Now - this._startTime);
+            base.timeLeft = TimeSpan.Parse(str4.Substring(str4.IndexOf("a") + 1));
+            base._timeUsed = (TimeSpan) (DateTime.Now - this.startTime);
             base._timeUsed = TimeSpan.FromSeconds((double) ((int) this._timeUsed.TotalSeconds));
         }
 

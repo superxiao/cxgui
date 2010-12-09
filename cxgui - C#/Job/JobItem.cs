@@ -1,11 +1,11 @@
-﻿namespace CXGUI.Job
+﻿namespace Cxgui.Job
 {
-    using CXGUI;
-    using CXGUI.AudioEncoding;
-    using CXGUI.Avisynth;
-    using CXGUI.Config;
-    using CXGUI.StreamMuxer;
-    using CXGUI.VideoEncoding;
+    using Cxgui;
+    using Cxgui.AudioEncoding;
+    using Cxgui.Avisynth;
+    using Cxgui.Config;
+    using Cxgui.StreamMuxer;
+    using Cxgui.VideoEncoding;
     using System;
     using System.IO;
     using System.Collections.Generic;
@@ -22,7 +22,7 @@
         protected List<string> _filesToDeleteWhenProcessingFails = new List<string>(3);
         protected string _customAudioScript;
         protected string _customVideoScript;
-        protected CXGUI.Job.CxListViewItem _cxListViewItem;
+        protected Cxgui.Job.CxListViewItem _cxListViewItem;
         protected string _destFile;
         protected string _encodedAudio;
         protected string _encodedVideo;
@@ -39,7 +39,7 @@
         protected bool _readVideoCfg;
         protected string _sourceFile;
         protected JobState _state;
-        protected CXGUI.Avisynth.SubtitleConfig _subtitleConfig;
+        protected Cxgui.Avisynth.SubtitleConfig _subtitleConfig;
         protected string _subtitleFile;
         protected bool _usingCustomAudioScript;
         protected bool _usingCustomVideoScript;
@@ -58,7 +58,7 @@
             this._videoInfo = new VideoInfo(sourceFile);
             this._audioInfo = new AudioInfo(sourceFile);
             string[] items = new string[] { "未处理", sourceFile, destFile };
-            this._cxListViewItem = new CXGUI.Job.CxListViewItem(items);
+            this._cxListViewItem = new Cxgui.Job.CxListViewItem(items);
             this._cxListViewItem.JobItem = this;
             this._state = JobState.NotProccessed;
         }
@@ -145,25 +145,26 @@
         /// <summary>
         /// 根据ProfileName获取各设置，附加混流控制器，并根据源文件内容修正音频和视频处理模式
         /// </summary>
-        public void SetUp()
+        /// <param name="overWriteConfig">是否覆盖已存在的设置项。如为false，则仅当该设置项为null时读取。</param>
+        public void SetUp(bool overWriteConfig)
         {
-            if (this._avsConfig == null)
+            if (this._avsConfig == null || overWriteConfig)
             {
                 this._readAvsCfg = true;
             }
-            if (this._videoEncConfig == null)
+            if (this._videoEncConfig == null || overWriteConfig)
             {
                 this._readVideoCfg = true;
             }
-            if (this._audioEncConfig == null)
+            if (this._audioEncConfig == null || overWriteConfig)
             {
                 this._readAudioCfg = true;
             }
-            if (this.JobConfig == null)
+            if (this.JobConfig == null || overWriteConfig)
             {
                 this._readJobCfg = true;
             }
-            if (this.SubtitleConfig == null)
+            if (this.SubtitleConfig == null || overWriteConfig)
             {
                 this._readSubCfg = true;
             }
@@ -274,7 +275,7 @@
             }
         }
 
-        public CXGUI.Job.CxListViewItem CxListViewItem
+        public Cxgui.Job.CxListViewItem CxListViewItem
         {
             get
             {
@@ -442,7 +443,7 @@
             }
         }
 
-        public CXGUI.Avisynth.SubtitleConfig SubtitleConfig
+        public Cxgui.Avisynth.SubtitleConfig SubtitleConfig
         {
             get
             {

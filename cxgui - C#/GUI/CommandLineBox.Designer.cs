@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace Cxgui.Gui
 {
 	partial class CommandLineBox
 	{

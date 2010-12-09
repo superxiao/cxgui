@@ -1,4 +1,4 @@
-﻿namespace CXGUI
+﻿namespace Cxgui
 {
     using System;
     using System.IO;

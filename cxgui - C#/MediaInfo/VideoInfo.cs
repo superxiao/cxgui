@@ -1,6 +1,6 @@
-﻿namespace CXGUI
+﻿namespace Cxgui
 {
-    using CXGUI.External;
+    using Cxgui.External;
     using System;
     using System.IO;
     using System.Collections.Generic;

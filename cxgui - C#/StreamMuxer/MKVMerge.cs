@@ -1,7 +1,7 @@
-﻿namespace CXGUI.StreamMuxer
+﻿namespace Cxgui.StreamMuxer
 {
     using Clinky;
-    using CXGUI;
+    using Cxgui;
     using System;
     using System.IO;
     using System.Text;
@@ -13,7 +13,7 @@
 
         public MKVMerge()
         {
-            base._process.StartInfo.FileName = "mkvmerge.exe";
+            base.muxerProcess.StartInfo.FileName = "mkvmerge.exe";
         }
 
         private string GetArgument(VideoInfo vInfo, AudioInfo aInfo)
@@ -36,7 +36,7 @@
 
         private void ReadStdErr()
         {
-            StreamReader standardOutput = base._process.StandardOutput;
+            StreamReader standardOutput = base.muxerProcess.StandardOutput;
             string line = string.Empty;
             while (1 != 0)
             {
@@ -74,29 +74,17 @@
             VideoInfo info = new VideoInfo(base._videoFile);
             AudioInfo info2 = new AudioInfo(base._audioFile);
             string argument = this.GetArgument(info as VideoInfo, info2 as AudioInfo);
-            base._process.StartInfo.Arguments = argument;
-            base._process.StartInfo.UseShellExecute = false;
-            base._process.StartInfo.RedirectStandardOutput = true;
-            base._process.StartInfo.CreateNoWindow = true;
+            base.muxerProcess.StartInfo.Arguments = argument;
+            base.muxerProcess.StartInfo.UseShellExecute = false;
+            base.muxerProcess.StartInfo.RedirectStandardOutput = true;
+            base.muxerProcess.StartInfo.CreateNoWindow = true;
             this._startTime = DateTime.Now;
-            base._process.Start();
+            base.muxerProcess.Start();
             this.ReadStdErr();
-            base._process.WaitForExit();
+            base.muxerProcess.WaitForExit();
             base.processingDone = true;
             if (File.Exists(uniqueName))
                 File.Delete(uniqueName);
-        }
-
-        public override void Stop()
-        {
-            try
-            {
-                base._process.Kill();
-                base._process.WaitForExit();
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void UpdateProgress(string line)

@@ -1,4 +1,4 @@
-﻿namespace CXGUI.Avisynth
+﻿namespace Cxgui.Avisynth
 {
     using Clinky;
     using System;

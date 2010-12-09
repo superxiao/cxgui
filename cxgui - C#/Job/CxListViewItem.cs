@@ -1,4 +1,4 @@
-﻿namespace CXGUI.Job
+﻿namespace Cxgui.Job
 {
     using System;
     using System.Runtime.Serialization;
@@ -7,7 +7,7 @@
     [Serializable]
     public class CxListViewItem : ListViewItem, ISerializable
     {
-        protected CXGUI.Job.JobItem _jobItem;
+        protected Cxgui.Job.JobItem _jobItem;
 
         public CxListViewItem(string[] items) : base(items)
         {
@@ -23,7 +23,7 @@
             this.Serialize(info, context);
         }
 
-        public CXGUI.Job.JobItem JobItem
+        public Cxgui.Job.JobItem JobItem
         {
             get
             {

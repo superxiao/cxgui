@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace Cxgui.Gui
 {
     using System;
     using System.Collections;

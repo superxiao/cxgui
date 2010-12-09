@@ -1,10 +1,10 @@
-﻿namespace CXGUI.Config
+﻿namespace Cxgui.Config
 {
-    using CXGUI;
-    using CXGUI.AudioEncoding;
-    using CXGUI.Avisynth;
-    using CXGUI.Job;
-    using CXGUI.VideoEncoding;
+    using Cxgui;
+    using Cxgui.AudioEncoding;
+    using Cxgui.Avisynth;
+    using Cxgui.Job;
+    using Cxgui.VideoEncoding;
     using System;
     using System.IO;
     using System.Collections.Generic;
@@ -17,7 +17,7 @@
         protected AvisynthConfig _avsConfig;
         protected JobItemConfig _jobConfig;
         protected static readonly string _profileDir = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "profile");
-        protected CXGUI.Avisynth.SubtitleConfig _subtitleConfig;
+        protected Cxgui.Avisynth.SubtitleConfig _subtitleConfig;
         protected x264Config _videoEncConfig;
 
         static Profile()
@@ -36,7 +36,7 @@
                 this._videoEncConfig = new x264Config();
                 this._audioEncConfig = new NeroAacConfig();
                 this._jobConfig = new JobItemConfig();
-                this._subtitleConfig = new CXGUI.Avisynth.SubtitleConfig();
+                this._subtitleConfig = new Cxgui.Avisynth.SubtitleConfig();
             }
         }
 
@@ -119,7 +119,7 @@
             serializationStream.Close();
         }
 
-        public static void Save(string profileName, JobItemConfig jobConfig, AvisynthConfig avsConfig, VideoEncConfigBase videoEncConfig, AudioEncConfigBase audioEncConfig, CXGUI.Avisynth.SubtitleConfig subtitleConfig)
+        public static void Save(string profileName, JobItemConfig jobConfig, AvisynthConfig avsConfig, VideoEncConfigBase videoEncConfig, AudioEncConfigBase audioEncConfig, Cxgui.Avisynth.SubtitleConfig subtitleConfig)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             string path = Path.Combine(_profileDir, profileName + ".profile");
@@ -134,6 +134,10 @@
             serializationStream.Close();
         }
 
+        public static void DeleteProfile(string profileName)
+        {
+            File.Delete(Path.Combine(Profile._profileDir, profileName+".profile"));
+        }
         public NeroAacConfig AudioEncConfig
         {
             get
@@ -170,7 +174,7 @@
             }
         }
 
-        public CXGUI.Avisynth.SubtitleConfig SubtitleConfig
+        public Cxgui.Avisynth.SubtitleConfig SubtitleConfig
         {
             get
             {

@@ -1,4 +1,4 @@
-﻿namespace CXGUI.AudioEncoding
+﻿namespace Cxgui.AudioEncoding
 {
     using System;
 

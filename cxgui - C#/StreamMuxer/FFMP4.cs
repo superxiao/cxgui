@@ -1,6 +1,6 @@
-﻿namespace CXGUI.StreamMuxer
+﻿namespace Cxgui.StreamMuxer
 {
-    using CXGUI;
+    using Cxgui;
     using System;
     using System.IO;
     using System.Text;
@@ -13,7 +13,7 @@
 
         public FFMP4()
         {
-            base._process.StartInfo.FileName = "ffmpeg.exe";
+            base.muxerProcess.StartInfo.FileName = "ffmpeg.exe";
         }
 
         private string GetArgument(VideoInfo vInfo, AudioInfo aInfo)
@@ -36,7 +36,7 @@
 
         private void ReadStdErr(double length)
         {
-            StreamReader standardError = base._process.StandardError;
+            StreamReader standardError = base.muxerProcess.StandardError;
             string line = string.Empty;
             while (1 != 0)
             {
@@ -75,10 +75,10 @@
             VideoInfo videoInfo = new VideoInfo(base._videoFile);
             AudioInfo audioInfo = new AudioInfo(base._audioFile);
             string argument = this.GetArgument(videoInfo, audioInfo);
-            base._process.StartInfo.Arguments = argument;
-            base._process.StartInfo.UseShellExecute = false;
-            base._process.StartInfo.RedirectStandardError = true;
-            base._process.StartInfo.CreateNoWindow = true;
+            base.muxerProcess.StartInfo.Arguments = argument;
+            base.muxerProcess.StartInfo.UseShellExecute = false;
+            base.muxerProcess.StartInfo.RedirectStandardError = true;
+            base.muxerProcess.StartInfo.CreateNoWindow = true;
             this._startTime = DateTime.Now;
             if (videoInfo.HasVideo)
             {
@@ -88,23 +88,11 @@
             {
                 length = audioInfo.Length;
             }
-            base._process.Start();
+            base.muxerProcess.Start();
             this.ReadStdErr(length);
-            base._process.WaitForExit();
+            base.muxerProcess.WaitForExit();
             base.processingDone = true; 
             File.Delete(tempVideoOrAudio);
-        }
-
-        public override void Stop()
-        {
-            try
-            {
-                base._process.Kill();
-                base._process.WaitForExit();
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void UpdateProgress(string line, double length)

@@ -1,6 +1,6 @@
-﻿namespace CXGUI.GUI
+﻿namespace Cxgui.Gui
 {
-    using CXGUI.Config;
+    using Cxgui.Config;
     using System;
     using System.Collections;
     using System.ComponentModel;

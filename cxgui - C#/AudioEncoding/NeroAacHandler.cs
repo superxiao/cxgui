@@ -1,6 +1,6 @@
-﻿namespace CXGUI.AudioEncoding
+﻿namespace Cxgui.AudioEncoding
 {
-    using CXGUI.External;
+    using Cxgui.External;
     using System;
     using System.IO;
     using System.Runtime.InteropServices;
@@ -69,18 +69,6 @@
             }
             base.encodingProcess.WaitForExit();
             base.processingDone = true;
-        }
-
-        public override void Stop()
-        {
-            try
-            {
-                base.encodingProcess.Kill();
-                base.encodingProcess.WaitForExit();
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void UpdateProgress(int currentSample)

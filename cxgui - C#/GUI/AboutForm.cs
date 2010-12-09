@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace CXGUI.GUI
+namespace Cxgui.Gui
 {
 	public partial class AboutForm: Form
 	{

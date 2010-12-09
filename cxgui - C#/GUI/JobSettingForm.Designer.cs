@@ -1,4 +1,4 @@
-﻿namespace CXGUI.GUI
+﻿namespace Cxgui.Gui
 {
 	partial class JobSettingForm
 	{
@@ -90,11 +90,12 @@
             this.label7 = new System.Windows.Forms.Label();
             this.rateControlBox = new System.Windows.Forms.ComboBox();
             this.subtitleTabPage = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.autoLoadSubtitleCheckBox = new System.Windows.Forms.CheckBox();
-            this.customSubCheckBox = new System.Windows.Forms.CheckBox();
             this.customSubGroupBox = new System.Windows.Forms.GroupBox();
             this.fontBottomBox = new System.Windows.Forms.DomainUpDown();
             this.label19 = new System.Windows.Forms.Label();
+            this.customSubCheckBox = new System.Windows.Forms.CheckBox();
             this.label21 = new System.Windows.Forms.Label();
             this.fontButton = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
@@ -114,7 +115,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
-            this.button1 = new System.Windows.Forms.Button();
+            this.delProfileButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.videoEditTabPage.SuspendLayout();
             this.gbVideoSource.SuspendLayout();
@@ -906,6 +907,17 @@
             this.subtitleTabPage.Text = "字幕";
             this.subtitleTabPage.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(368, 89);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 23);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "取消";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // autoLoadSubtitleCheckBox
             // 
             this.autoLoadSubtitleCheckBox.AutoSize = true;
@@ -916,16 +928,6 @@
             this.autoLoadSubtitleCheckBox.Text = "自动加载字幕";
             this.autoLoadSubtitleCheckBox.UseVisualStyleBackColor = true;
             this.autoLoadSubtitleCheckBox.CheckedChanged += new System.EventHandler(this.autoLoadSubtitleCheckBox_CheckedChanged);
-            // 
-            // customSubCheckBox
-            // 
-            this.customSubCheckBox.Location = new System.Drawing.Point(8, 17);
-            this.customSubCheckBox.Name = "customSubCheckBox";
-            this.customSubCheckBox.Size = new System.Drawing.Size(139, 28);
-            this.customSubCheckBox.TabIndex = 10;
-            this.customSubCheckBox.Text = "自定义字幕风格";
-            this.customSubCheckBox.UseVisualStyleBackColor = true;
-            this.customSubCheckBox.CheckedChanged += new System.EventHandler(this.CustomSubCheckBoxCheckedChanged);
             // 
             // customSubGroupBox
             // 
@@ -961,6 +963,16 @@
             this.label19.TabIndex = 4;
             this.label19.Text = "字体";
             this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // customSubCheckBox
+            // 
+            this.customSubCheckBox.Location = new System.Drawing.Point(8, 17);
+            this.customSubCheckBox.Name = "customSubCheckBox";
+            this.customSubCheckBox.Size = new System.Drawing.Size(139, 28);
+            this.customSubCheckBox.TabIndex = 10;
+            this.customSubCheckBox.Text = "自定义字幕风格";
+            this.customSubCheckBox.UseVisualStyleBackColor = true;
+            this.customSubCheckBox.CheckedChanged += new System.EventHandler(this.CustomSubCheckBoxCheckedChanged);
             // 
             // label21
             // 
@@ -1073,7 +1085,7 @@
             this.profileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.profileBox.FormattingEnabled = true;
-            this.profileBox.Location = new System.Drawing.Point(67, 543);
+            this.profileBox.Location = new System.Drawing.Point(48, 541);
             this.profileBox.Name = "profileBox";
             this.profileBox.Size = new System.Drawing.Size(126, 20);
             this.profileBox.TabIndex = 17;
@@ -1082,9 +1094,9 @@
             // saveProfileButton
             // 
             this.saveProfileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveProfileButton.Location = new System.Drawing.Point(199, 541);
+            this.saveProfileButton.Location = new System.Drawing.Point(180, 541);
             this.saveProfileButton.Name = "saveProfileButton";
-            this.saveProfileButton.Size = new System.Drawing.Size(75, 23);
+            this.saveProfileButton.Size = new System.Drawing.Size(49, 23);
             this.saveProfileButton.TabIndex = 16;
             this.saveProfileButton.Text = "保存";
             this.saveProfileButton.UseVisualStyleBackColor = true;
@@ -1122,16 +1134,16 @@
             // 
             this.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*.ssa|srt|*.srt|ass|*.ass|ssa|*.ssa";
             // 
-            // button1
+            // delProfileButton
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(368, 89);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(60, 23);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "取消";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.delProfileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.delProfileButton.Location = new System.Drawing.Point(235, 541);
+            this.delProfileButton.Name = "delProfileButton";
+            this.delProfileButton.Size = new System.Drawing.Size(49, 23);
+            this.delProfileButton.TabIndex = 20;
+            this.delProfileButton.Text = "删除";
+            this.delProfileButton.UseVisualStyleBackColor = true;
+            this.delProfileButton.Click += new System.EventHandler(this.delProfileButton_Click);
             // 
             // JobSettingForm
             // 
@@ -1140,6 +1152,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(469, 576);
+            this.Controls.Add(this.delProfileButton);
             this.Controls.Add(this.previewButton);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label6);
@@ -1265,6 +1278,7 @@
         private System.Windows.Forms.NumericUpDown rateFactorBox;
         private System.Windows.Forms.CheckBox autoLoadSubtitleCheckBox;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button delProfileButton;
 
     }
 }

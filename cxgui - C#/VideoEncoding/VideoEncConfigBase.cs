@@ -1,11 +1,11 @@
-﻿namespace CXGUI.VideoEncoding
+﻿namespace Cxgui.VideoEncoding
 {
     using System;
 
     [Serializable]
     public abstract class VideoEncConfigBase
     {
-        protected string _customCmdLine;
+        protected string _customCmdLine = null;
         protected bool _usingCustomCmd;
 
         public abstract string GetArgument();
