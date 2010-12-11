@@ -20,8 +20,6 @@
         protected AudioEncoderHandler _audioEncoder;
         protected AvisynthConfig _avsConfig;
         protected List<string> _filesToDeleteWhenProcessingFails = new List<string>(3);
-        protected string _customAudioScript;
-        protected string _customVideoScript;
         protected Cxgui.Job.CxListViewItem _cxListViewItem;
         protected string _destFile;
         protected string _encodedAudio;
@@ -41,8 +39,6 @@
         protected JobState _state;
         protected Cxgui.Avisynth.SubtitleConfig _subtitleConfig;
         protected string _subtitleFile;
-        protected bool _usingCustomAudioScript;
-        protected bool _usingCustomVideoScript;
         protected bool _usingExternalAudio;
         protected VideoEncConfigBase _videoEncConfig;
         [NonSerialized]
@@ -251,30 +247,6 @@
             }
         }
 
-        public string CustomAudioScript
-        {
-            get
-            {
-                return this._customAudioScript;
-            }
-            set
-            {
-                this._customAudioScript = value;
-            }
-        }
-
-        public string CustomVideoScript
-        {
-            get
-            {
-                return this._customVideoScript;
-            }
-            set
-            {
-                this._customVideoScript = value;
-            }
-        }
-
         public Cxgui.Job.CxListViewItem CxListViewItem
         {
             get
@@ -464,30 +436,6 @@
             set
             {
                 this._subtitleFile = value;
-            }
-        }
-
-        public bool UsingCustomAudioScript
-        {
-            get
-            {
-                return this._usingCustomAudioScript;
-            }
-            set
-            {
-                this._usingCustomAudioScript = value;
-            }
-        }
-
-        public bool UsingCustomVideoScript
-        {
-            get
-            {
-                return this._usingCustomVideoScript;
-            }
-            set
-            {
-                this._usingCustomVideoScript = value;
             }
         }
 

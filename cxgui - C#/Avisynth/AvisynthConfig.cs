@@ -21,6 +21,10 @@
         protected Cxgui.Avisynth.VideoSourceFilter _videoSourceFilter;
         protected int _width;
         protected bool _autoLoadSubtitle;
+        protected string _customVideoScript;
+        protected string _customAudioScript;
+        protected bool _paddingCustomVideoScript = true;
+        protected bool _paddingCustomAudioScript = true;
 
         public double AspectRatio
         {
@@ -213,6 +217,43 @@
                 this._autoLoadSubtitle = value;
             }
         }
+
+        /// <summary>
+        /// 自定义视频avs脚本内容。默认值为null。如果设为任何字符串（包括空字符串），将覆盖其他avs设置。对于avs脚本输入暂不生效。
+        /// </summary>
+        public string CustomVideoScript
+        {
+            get
+            {
+                return this._customVideoScript;
+            }
+            set
+            {
+                this._customVideoScript = value;
+            }
+        }
+
+        /// <summary>
+        /// 自定义音频avs脚本内容。默认值为null。如果设为任何字符串（包括空字符串），将覆盖其他avs设置。对于avs脚本输入暂不生效。
+        /// </summary>
+        public string CustomAudioScript
+        {
+            get 
+            {
+                return this._customAudioScript;
+            }
+            set
+            {
+                this._customAudioScript = value;
+            }
+        }
+
+        public bool PaddingCustomVideoScript
+        { get { return this._paddingCustomVideoScript; } set { this._paddingCustomVideoScript = value; } }
+
+        public bool PaddingCustomAudioScript
+        { get { return this._paddingCustomAudioScript; } set { this._paddingCustomAudioScript = value; } }
+
     }
 }
 

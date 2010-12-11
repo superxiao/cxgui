@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
             this.previewButton = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.mainTabControl = new System.Windows.Forms.TabControl();
             this.videoEditTabPage = new System.Windows.Forms.TabPage();
             this.videoModeComboBox = new System.Windows.Forms.ComboBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -53,6 +53,7 @@
             this.heightBox = new System.Windows.Forms.TextBox();
             this.widthBox = new System.Windows.Forms.TextBox();
             this.audioEditTabPage = new System.Windows.Forms.TabPage();
+            this.label28 = new System.Windows.Forms.Label();
             this.normalizeBox = new System.Windows.Forms.CheckBox();
             this.downMixBox = new System.Windows.Forms.CheckBox();
             this.sepAudioButton = new System.Windows.Forms.Button();
@@ -103,6 +104,23 @@
             this.subtitleTextBox = new System.Windows.Forms.TextBox();
             this.subtitleButton = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
+            this.scriptTabPage = new System.Windows.Forms.TabPage();
+            this.scriptTabControl = new System.Windows.Forms.TabControl();
+            this.videoScriptTabPage = new System.Windows.Forms.TabPage();
+            this.disableAutoVideoScriptCheckBox = new System.Windows.Forms.CheckBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.CustomVideoScriptTextBox = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.autoVideoScriptTextBox = new System.Windows.Forms.TextBox();
+            this.audioScriptTabPage = new System.Windows.Forms.TabPage();
+            this.disableAutoAudioScriptCheckBox = new System.Windows.Forms.CheckBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.CustomAudioScriptTextBox = new System.Windows.Forms.TextBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.autoAudioScriptTextBox = new System.Windows.Forms.TextBox();
+            this.inputScriptTabPage = new System.Windows.Forms.TabPage();
+            this.avsInputScriptSaveButton = new System.Windows.Forms.Button();
+            this.avsInputScriptEditTextBox = new System.Windows.Forms.TextBox();
             this.destFileBox = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.btOutBrowse = new System.Windows.Forms.Button();
@@ -116,7 +134,7 @@
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.delProfileButton = new System.Windows.Forms.Button();
-            this.tabControl1.SuspendLayout();
+            this.mainTabControl.SuspendLayout();
             this.videoEditTabPage.SuspendLayout();
             this.gbVideoSource.SuspendLayout();
             this.gbResolution.SuspendLayout();
@@ -130,6 +148,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.rateFactorBox)).BeginInit();
             this.subtitleTabPage.SuspendLayout();
             this.customSubGroupBox.SuspendLayout();
+            this.scriptTabPage.SuspendLayout();
+            this.scriptTabControl.SuspendLayout();
+            this.videoScriptTabPage.SuspendLayout();
+            this.audioScriptTabPage.SuspendLayout();
+            this.inputScriptTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // previewButton
@@ -143,21 +166,22 @@
             this.previewButton.UseVisualStyleBackColor = true;
             this.previewButton.Click += new System.EventHandler(this.PreviewButtonClick);
             // 
-            // tabControl1
+            // mainTabControl
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.videoEditTabPage);
-            this.tabControl1.Controls.Add(this.audioEditTabPage);
-            this.tabControl1.Controls.Add(this.avsInputTabPage);
-            this.tabControl1.Controls.Add(this.encTabPage);
-            this.tabControl1.Controls.Add(this.subtitleTabPage);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(445, 456);
-            this.tabControl1.TabIndex = 13;
+            this.mainTabControl.Controls.Add(this.videoEditTabPage);
+            this.mainTabControl.Controls.Add(this.audioEditTabPage);
+            this.mainTabControl.Controls.Add(this.avsInputTabPage);
+            this.mainTabControl.Controls.Add(this.encTabPage);
+            this.mainTabControl.Controls.Add(this.subtitleTabPage);
+            this.mainTabControl.Controls.Add(this.scriptTabPage);
+            this.mainTabControl.Location = new System.Drawing.Point(12, 12);
+            this.mainTabControl.Name = "mainTabControl";
+            this.mainTabControl.SelectedIndex = 0;
+            this.mainTabControl.Size = new System.Drawing.Size(445, 456);
+            this.mainTabControl.TabIndex = 13;
             // 
             // videoEditTabPage
             // 
@@ -189,12 +213,11 @@
             // 
             // label16
             // 
-            this.label16.Location = new System.Drawing.Point(13, 24);
+            this.label16.Location = new System.Drawing.Point(13, 27);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(55, 23);
             this.label16.TabIndex = 12;
             this.label16.Text = "视频模式";
-            this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // gbVideoSource
             // 
@@ -205,7 +228,7 @@
             this.gbVideoSource.Controls.Add(this.label4);
             this.gbVideoSource.Controls.Add(this.frameRateBox);
             this.gbVideoSource.Controls.Add(this.videoSourceBox);
-            this.gbVideoSource.Location = new System.Drawing.Point(6, 225);
+            this.gbVideoSource.Location = new System.Drawing.Point(6, 319);
             this.gbVideoSource.Name = "gbVideoSource";
             this.gbVideoSource.Size = new System.Drawing.Size(415, 79);
             this.gbVideoSource.TabIndex = 1;
@@ -214,7 +237,7 @@
             // 
             // convertFPSCheckBox
             // 
-            this.convertFPSCheckBox.Location = new System.Drawing.Point(133, 17);
+            this.convertFPSCheckBox.Location = new System.Drawing.Point(166, 16);
             this.convertFPSCheckBox.Name = "convertFPSCheckBox";
             this.convertFPSCheckBox.Size = new System.Drawing.Size(147, 24);
             this.convertFPSCheckBox.TabIndex = 4;
@@ -232,12 +255,11 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(14, 44);
+            this.label4.Location = new System.Drawing.Point(7, 49);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(49, 23);
             this.label4.TabIndex = 2;
             this.label4.Text = "帧率：";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // frameRateBox
             // 
@@ -247,7 +269,7 @@
             "25",
             "29.970",
             "30"});
-            this.frameRateBox.Location = new System.Drawing.Point(85, 48);
+            this.frameRateBox.Location = new System.Drawing.Point(60, 47);
             this.frameRateBox.Name = "frameRateBox";
             this.frameRateBox.Size = new System.Drawing.Size(67, 20);
             this.frameRateBox.TabIndex = 1;
@@ -285,14 +307,14 @@
             this.gbResolution.Controls.Add(this.widthBox);
             this.gbResolution.Location = new System.Drawing.Point(6, 75);
             this.gbResolution.Name = "gbResolution";
-            this.gbResolution.Size = new System.Drawing.Size(415, 144);
+            this.gbResolution.Size = new System.Drawing.Size(415, 207);
             this.gbResolution.TabIndex = 0;
             this.gbResolution.TabStop = false;
             this.gbResolution.Text = "分辨率";
             // 
             // lockToSourceARCheckBox
             // 
-            this.lockToSourceARCheckBox.Location = new System.Drawing.Point(275, 55);
+            this.lockToSourceARCheckBox.Location = new System.Drawing.Point(18, 141);
             this.lockToSourceARCheckBox.Name = "lockToSourceARCheckBox";
             this.lockToSourceARCheckBox.Size = new System.Drawing.Size(120, 24);
             this.lockToSourceARCheckBox.TabIndex = 10;
@@ -302,7 +324,7 @@
             // 
             // sourceResolutionCheckBox
             // 
-            this.sourceResolutionCheckBox.Location = new System.Drawing.Point(165, 18);
+            this.sourceResolutionCheckBox.Location = new System.Drawing.Point(19, 34);
             this.sourceResolutionCheckBox.Name = "sourceResolutionCheckBox";
             this.sourceResolutionCheckBox.Size = new System.Drawing.Size(104, 24);
             this.sourceResolutionCheckBox.TabIndex = 9;
@@ -320,7 +342,7 @@
             "8",
             "16",
             "32"});
-            this.modBox.Location = new System.Drawing.Point(340, 21);
+            this.modBox.Location = new System.Drawing.Point(189, 64);
             this.modBox.Name = "modBox";
             this.modBox.Size = new System.Drawing.Size(60, 20);
             this.modBox.TabIndex = 8;
@@ -328,12 +350,11 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(275, 20);
+            this.label3.Location = new System.Drawing.Point(156, 67);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 23);
+            this.label3.Size = new System.Drawing.Size(27, 20);
             this.label3.TabIndex = 7;
             this.label3.Text = "mod";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // resizerBox
             // 
@@ -351,14 +372,14 @@
             "Spline16Resize",
             "Spline36Resize",
             "Spline64Resize"});
-            this.resizerBox.Location = new System.Drawing.Point(85, 85);
+            this.resizerBox.Location = new System.Drawing.Point(305, 20);
             this.resizerBox.Name = "resizerBox";
-            this.resizerBox.Size = new System.Drawing.Size(121, 20);
+            this.resizerBox.Size = new System.Drawing.Size(87, 20);
             this.resizerBox.TabIndex = 2;
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(6, 82);
+            this.label5.Location = new System.Drawing.Point(231, 17);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 23);
             this.label5.TabIndex = 3;
@@ -367,17 +388,17 @@
             // 
             // allowAutoChangeARCheckBox
             // 
-            this.allowAutoChangeARCheckBox.Location = new System.Drawing.Point(180, 55);
+            this.allowAutoChangeARCheckBox.Location = new System.Drawing.Point(18, 171);
             this.allowAutoChangeARCheckBox.Name = "allowAutoChangeARCheckBox";
-            this.allowAutoChangeARCheckBox.Size = new System.Drawing.Size(100, 24);
+            this.allowAutoChangeARCheckBox.Size = new System.Drawing.Size(190, 24);
             this.allowAutoChangeARCheckBox.TabIndex = 5;
-            this.allowAutoChangeARCheckBox.Text = "允许自动更改";
+            this.allowAutoChangeARCheckBox.Text = "修改分辨率时自动更改宽高比";
             this.allowAutoChangeARCheckBox.UseVisualStyleBackColor = true;
             this.allowAutoChangeARCheckBox.CheckedChanged += new System.EventHandler(this.AllowAutoChangeARCheckBoxCheckedChanged);
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(7, 55);
+            this.label2.Location = new System.Drawing.Point(16, 114);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 21);
             this.label2.TabIndex = 4;
@@ -387,7 +408,7 @@
             // aspectRatioBox
             // 
             this.aspectRatioBox.FormattingEnabled = true;
-            this.aspectRatioBox.Location = new System.Drawing.Point(85, 55);
+            this.aspectRatioBox.Location = new System.Drawing.Point(85, 115);
             this.aspectRatioBox.MaxLength = 8;
             this.aspectRatioBox.Name = "aspectRatioBox";
             this.aspectRatioBox.Size = new System.Drawing.Size(80, 20);
@@ -398,7 +419,7 @@
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(56, 21);
+            this.label1.Location = new System.Drawing.Point(66, 63);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(19, 21);
             this.label1.TabIndex = 2;
@@ -407,7 +428,7 @@
             // 
             // heightBox
             // 
-            this.heightBox.Location = new System.Drawing.Point(85, 22);
+            this.heightBox.Location = new System.Drawing.Point(86, 64);
             this.heightBox.MaxLength = 4;
             this.heightBox.Name = "heightBox";
             this.heightBox.Size = new System.Drawing.Size(43, 21);
@@ -418,7 +439,7 @@
             // 
             // widthBox
             // 
-            this.widthBox.Location = new System.Drawing.Point(6, 21);
+            this.widthBox.Location = new System.Drawing.Point(19, 64);
             this.widthBox.MaxLength = 4;
             this.widthBox.Name = "widthBox";
             this.widthBox.Size = new System.Drawing.Size(43, 21);
@@ -429,6 +450,7 @@
             // 
             // audioEditTabPage
             // 
+            this.audioEditTabPage.Controls.Add(this.label28);
             this.audioEditTabPage.Controls.Add(this.normalizeBox);
             this.audioEditTabPage.Controls.Add(this.downMixBox);
             this.audioEditTabPage.Controls.Add(this.sepAudioButton);
@@ -445,9 +467,18 @@
             this.audioEditTabPage.Text = "音频";
             this.audioEditTabPage.UseVisualStyleBackColor = true;
             // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(13, 66);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(41, 12);
+            this.label28.TabIndex = 18;
+            this.label28.Text = "源滤镜";
+            // 
             // normalizeBox
             // 
-            this.normalizeBox.Location = new System.Drawing.Point(288, 61);
+            this.normalizeBox.Location = new System.Drawing.Point(327, 61);
             this.normalizeBox.Name = "normalizeBox";
             this.normalizeBox.Size = new System.Drawing.Size(104, 24);
             this.normalizeBox.TabIndex = 0;
@@ -456,7 +487,7 @@
             // 
             // downMixBox
             // 
-            this.downMixBox.Location = new System.Drawing.Point(178, 61);
+            this.downMixBox.Location = new System.Drawing.Point(217, 61);
             this.downMixBox.Name = "downMixBox";
             this.downMixBox.Size = new System.Drawing.Size(104, 24);
             this.downMixBox.TabIndex = 1;
@@ -502,12 +533,11 @@
             // 
             // label17
             // 
-            this.label17.Location = new System.Drawing.Point(13, 24);
+            this.label17.Location = new System.Drawing.Point(13, 27);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(61, 23);
             this.label17.TabIndex = 16;
             this.label17.Text = "音频模式";
-            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // sepAudioCheckBox
             // 
@@ -526,7 +556,7 @@
             this.audioSourceComboBox.Items.AddRange(new object[] {
             "FFAudioSource",
             "DirectShowSource"});
-            this.audioSourceComboBox.Location = new System.Drawing.Point(51, 63);
+            this.audioSourceComboBox.Location = new System.Drawing.Point(74, 63);
             this.audioSourceComboBox.Name = "audioSourceComboBox";
             this.audioSourceComboBox.Size = new System.Drawing.Size(121, 20);
             this.audioSourceComboBox.TabIndex = 2;
@@ -658,7 +688,7 @@
             // 
             // label14
             // 
-            this.label14.Location = new System.Drawing.Point(9, 43);
+            this.label14.Location = new System.Drawing.Point(6, 43);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(56, 21);
             this.label14.TabIndex = 2;
@@ -680,7 +710,7 @@
             // 
             // label13
             // 
-            this.label13.Location = new System.Drawing.Point(6, 17);
+            this.label13.Location = new System.Drawing.Point(6, 20);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(59, 20);
             this.label13.TabIndex = 0;
@@ -736,7 +766,7 @@
             // 
             // editCmdButton
             // 
-            this.editCmdButton.Location = new System.Drawing.Point(326, 40);
+            this.editCmdButton.Location = new System.Drawing.Point(326, 37);
             this.editCmdButton.Name = "editCmdButton";
             this.editCmdButton.Size = new System.Drawing.Size(75, 23);
             this.editCmdButton.TabIndex = 13;
@@ -767,7 +797,7 @@
             // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(9, 120);
+            this.label12.Location = new System.Drawing.Point(9, 123);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(59, 20);
             this.label12.TabIndex = 10;
@@ -794,7 +824,7 @@
             "4.2",
             "5",
             "5.1"});
-            this.level.Location = new System.Drawing.Point(200, 91);
+            this.level.Location = new System.Drawing.Point(204, 94);
             this.level.Name = "level";
             this.level.Size = new System.Drawing.Size(75, 20);
             this.level.TabIndex = 9;
@@ -802,7 +832,7 @@
             // 
             // label11
             // 
-            this.label11.Location = new System.Drawing.Point(152, 94);
+            this.label11.Location = new System.Drawing.Point(156, 97);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(42, 20);
             this.label11.TabIndex = 8;
@@ -825,7 +855,7 @@
             // 
             // label10
             // 
-            this.label10.Location = new System.Drawing.Point(6, 94);
+            this.label10.Location = new System.Drawing.Point(6, 97);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(59, 20);
             this.label10.TabIndex = 6;
@@ -833,7 +863,7 @@
             // 
             // label9
             // 
-            this.label9.Location = new System.Drawing.Point(9, 40);
+            this.label9.Location = new System.Drawing.Point(9, 45);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(56, 21);
             this.label9.TabIndex = 5;
@@ -862,7 +892,7 @@
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(6, 68);
+            this.label8.Location = new System.Drawing.Point(6, 70);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(59, 20);
             this.label8.TabIndex = 2;
@@ -870,7 +900,7 @@
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(6, 14);
+            this.label7.Location = new System.Drawing.Point(6, 17);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(59, 20);
             this.label7.TabIndex = 1;
@@ -1040,6 +1070,211 @@
             this.label18.Text = "字幕路径";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // scriptTabPage
+            // 
+            this.scriptTabPage.Controls.Add(this.scriptTabControl);
+            this.scriptTabPage.Location = new System.Drawing.Point(4, 22);
+            this.scriptTabPage.Name = "scriptTabPage";
+            this.scriptTabPage.Size = new System.Drawing.Size(437, 430);
+            this.scriptTabPage.TabIndex = 5;
+            this.scriptTabPage.Text = "avs脚本";
+            this.scriptTabPage.UseVisualStyleBackColor = true;
+            this.scriptTabPage.Enter += new System.EventHandler(this.scriptTabPage_Enter);
+            // 
+            // scriptTabControl
+            // 
+            this.scriptTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.scriptTabControl.Controls.Add(this.videoScriptTabPage);
+            this.scriptTabControl.Controls.Add(this.audioScriptTabPage);
+            this.scriptTabControl.Controls.Add(this.inputScriptTabPage);
+            this.scriptTabControl.Location = new System.Drawing.Point(6, 14);
+            this.scriptTabControl.Name = "scriptTabControl";
+            this.scriptTabControl.SelectedIndex = 0;
+            this.scriptTabControl.Size = new System.Drawing.Size(428, 413);
+            this.scriptTabControl.TabIndex = 0;
+            // 
+            // videoScriptTabPage
+            // 
+            this.videoScriptTabPage.Controls.Add(this.disableAutoVideoScriptCheckBox);
+            this.videoScriptTabPage.Controls.Add(this.label25);
+            this.videoScriptTabPage.Controls.Add(this.CustomVideoScriptTextBox);
+            this.videoScriptTabPage.Controls.Add(this.label24);
+            this.videoScriptTabPage.Controls.Add(this.autoVideoScriptTextBox);
+            this.videoScriptTabPage.Location = new System.Drawing.Point(4, 22);
+            this.videoScriptTabPage.Name = "videoScriptTabPage";
+            this.videoScriptTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.videoScriptTabPage.Size = new System.Drawing.Size(420, 387);
+            this.videoScriptTabPage.TabIndex = 0;
+            this.videoScriptTabPage.Text = "视频";
+            this.videoScriptTabPage.UseVisualStyleBackColor = true;
+            // 
+            // disableAutoVideoScriptCheckBox
+            // 
+            this.disableAutoVideoScriptCheckBox.AutoSize = true;
+            this.disableAutoVideoScriptCheckBox.Location = new System.Drawing.Point(80, 16);
+            this.disableAutoVideoScriptCheckBox.Name = "disableAutoVideoScriptCheckBox";
+            this.disableAutoVideoScriptCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.disableAutoVideoScriptCheckBox.TabIndex = 9;
+            this.disableAutoVideoScriptCheckBox.Text = "禁用自动生成";
+            this.disableAutoVideoScriptCheckBox.UseVisualStyleBackColor = true;
+            this.disableAutoVideoScriptCheckBox.CheckedChanged += new System.EventHandler(this.disableAutoVideoScriptCheckBox_CheckedChanged);
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(21, 176);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(65, 12);
+            this.label25.TabIndex = 8;
+            this.label25.Text = "自定义部分";
+            // 
+            // CustomVideoScriptTextBox
+            // 
+            this.CustomVideoScriptTextBox.AcceptsReturn = true;
+            this.CustomVideoScriptTextBox.AcceptsTab = true;
+            this.CustomVideoScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomVideoScriptTextBox.Location = new System.Drawing.Point(23, 191);
+            this.CustomVideoScriptTextBox.Multiline = true;
+            this.CustomVideoScriptTextBox.Name = "CustomVideoScriptTextBox";
+            this.CustomVideoScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.CustomVideoScriptTextBox.Size = new System.Drawing.Size(377, 180);
+            this.CustomVideoScriptTextBox.TabIndex = 7;
+            this.CustomVideoScriptTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(21, 17);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(53, 12);
+            this.label24.TabIndex = 6;
+            this.label24.Text = "自动生成";
+            // 
+            // autoVideoScriptTextBox
+            // 
+            this.autoVideoScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.autoVideoScriptTextBox.Location = new System.Drawing.Point(23, 38);
+            this.autoVideoScriptTextBox.Multiline = true;
+            this.autoVideoScriptTextBox.Name = "autoVideoScriptTextBox";
+            this.autoVideoScriptTextBox.ReadOnly = true;
+            this.autoVideoScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.autoVideoScriptTextBox.Size = new System.Drawing.Size(377, 128);
+            this.autoVideoScriptTextBox.TabIndex = 5;
+            // 
+            // audioScriptTabPage
+            // 
+            this.audioScriptTabPage.Controls.Add(this.disableAutoAudioScriptCheckBox);
+            this.audioScriptTabPage.Controls.Add(this.label26);
+            this.audioScriptTabPage.Controls.Add(this.CustomAudioScriptTextBox);
+            this.audioScriptTabPage.Controls.Add(this.label27);
+            this.audioScriptTabPage.Controls.Add(this.autoAudioScriptTextBox);
+            this.audioScriptTabPage.Location = new System.Drawing.Point(4, 22);
+            this.audioScriptTabPage.Name = "audioScriptTabPage";
+            this.audioScriptTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.audioScriptTabPage.Size = new System.Drawing.Size(420, 387);
+            this.audioScriptTabPage.TabIndex = 1;
+            this.audioScriptTabPage.Text = "音频";
+            this.audioScriptTabPage.UseVisualStyleBackColor = true;
+            // 
+            // disableAutoAudioScriptCheckBox
+            // 
+            this.disableAutoAudioScriptCheckBox.AutoSize = true;
+            this.disableAutoAudioScriptCheckBox.Location = new System.Drawing.Point(80, 16);
+            this.disableAutoAudioScriptCheckBox.Name = "disableAutoAudioScriptCheckBox";
+            this.disableAutoAudioScriptCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.disableAutoAudioScriptCheckBox.TabIndex = 9;
+            this.disableAutoAudioScriptCheckBox.Text = "禁用自动生成";
+            this.disableAutoAudioScriptCheckBox.UseVisualStyleBackColor = true;
+            this.disableAutoAudioScriptCheckBox.CheckedChanged += new System.EventHandler(this.disableAutoAudioScriptCheckBox_CheckedChanged);
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(21, 176);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(65, 12);
+            this.label26.TabIndex = 8;
+            this.label26.Text = "自定义部分";
+            // 
+            // CustomAudioScriptTextBox
+            // 
+            this.CustomAudioScriptTextBox.AcceptsReturn = true;
+            this.CustomAudioScriptTextBox.AcceptsTab = true;
+            this.CustomAudioScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomAudioScriptTextBox.Location = new System.Drawing.Point(23, 191);
+            this.CustomAudioScriptTextBox.Multiline = true;
+            this.CustomAudioScriptTextBox.Name = "CustomAudioScriptTextBox";
+            this.CustomAudioScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.CustomAudioScriptTextBox.Size = new System.Drawing.Size(377, 180);
+            this.CustomAudioScriptTextBox.TabIndex = 7;
+            this.CustomAudioScriptTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(21, 17);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(53, 12);
+            this.label27.TabIndex = 6;
+            this.label27.Text = "自动生成";
+            // 
+            // autoAudioScriptTextBox
+            // 
+            this.autoAudioScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.autoAudioScriptTextBox.Location = new System.Drawing.Point(23, 38);
+            this.autoAudioScriptTextBox.Multiline = true;
+            this.autoAudioScriptTextBox.Name = "autoAudioScriptTextBox";
+            this.autoAudioScriptTextBox.ReadOnly = true;
+            this.autoAudioScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.autoAudioScriptTextBox.Size = new System.Drawing.Size(377, 128);
+            this.autoAudioScriptTextBox.TabIndex = 5;
+            // 
+            // inputScriptTabPage
+            // 
+            this.inputScriptTabPage.Controls.Add(this.avsInputScriptSaveButton);
+            this.inputScriptTabPage.Controls.Add(this.avsInputScriptEditTextBox);
+            this.inputScriptTabPage.Location = new System.Drawing.Point(4, 22);
+            this.inputScriptTabPage.Name = "inputScriptTabPage";
+            this.inputScriptTabPage.Size = new System.Drawing.Size(420, 387);
+            this.inputScriptTabPage.TabIndex = 2;
+            this.inputScriptTabPage.Text = "输入avs脚本";
+            this.inputScriptTabPage.UseVisualStyleBackColor = true;
+            // 
+            // avsInputScriptSaveButton
+            // 
+            this.avsInputScriptSaveButton.Location = new System.Drawing.Point(327, 346);
+            this.avsInputScriptSaveButton.Name = "avsInputScriptSaveButton";
+            this.avsInputScriptSaveButton.Size = new System.Drawing.Size(75, 23);
+            this.avsInputScriptSaveButton.TabIndex = 9;
+            this.avsInputScriptSaveButton.Text = "保存";
+            this.avsInputScriptSaveButton.UseVisualStyleBackColor = true;
+            this.avsInputScriptSaveButton.Click += new System.EventHandler(this.avsInputScriptSaveButton_Click);
+            // 
+            // avsInputScriptEditTextBox
+            // 
+            this.avsInputScriptEditTextBox.AcceptsReturn = true;
+            this.avsInputScriptEditTextBox.AcceptsTab = true;
+            this.avsInputScriptEditTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.avsInputScriptEditTextBox.Location = new System.Drawing.Point(15, 30);
+            this.avsInputScriptEditTextBox.Multiline = true;
+            this.avsInputScriptEditTextBox.Name = "avsInputScriptEditTextBox";
+            this.avsInputScriptEditTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.avsInputScriptEditTextBox.Size = new System.Drawing.Size(387, 310);
+            this.avsInputScriptEditTextBox.TabIndex = 8;
+            this.avsInputScriptEditTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            // 
             // destFileBox
             // 
             this.destFileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -1085,9 +1320,9 @@
             this.profileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.profileBox.FormattingEnabled = true;
-            this.profileBox.Location = new System.Drawing.Point(48, 541);
+            this.profileBox.Location = new System.Drawing.Point(66, 541);
             this.profileBox.Name = "profileBox";
-            this.profileBox.Size = new System.Drawing.Size(126, 20);
+            this.profileBox.Size = new System.Drawing.Size(108, 20);
             this.profileBox.TabIndex = 17;
             this.profileBox.RightToLeftChanged += new System.EventHandler(this.ProfileBoxSelectedIndexChanged);
             // 
@@ -1132,7 +1367,7 @@
             // 
             // openFileDialog2
             // 
-            this.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*.ssa|srt|*.srt|ass|*.ass|ssa|*.ssa";
+            this.openFileDialog2.Filter = "支持的字幕格式|*.srt;*.ass;*.ssa;*.sub|srt|*.srt|ass|*.ass|ssa|*.ssa|sub|*.sub";
             // 
             // delProfileButton
             // 
@@ -1154,7 +1389,7 @@
             this.ClientSize = new System.Drawing.Size(469, 576);
             this.Controls.Add(this.delProfileButton);
             this.Controls.Add(this.previewButton);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.destFileBox);
             this.Controls.Add(this.label15);
@@ -1168,7 +1403,7 @@
             this.Text = "设置";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MediaSettingFormFormClosed);
             this.Load += new System.EventHandler(this.JobSettingFormLoad);
-            this.tabControl1.ResumeLayout(false);
+            this.mainTabControl.ResumeLayout(false);
             this.videoEditTabPage.ResumeLayout(false);
             this.gbVideoSource.ResumeLayout(false);
             this.gbResolution.ResumeLayout(false);
@@ -1185,6 +1420,14 @@
             this.subtitleTabPage.ResumeLayout(false);
             this.subtitleTabPage.PerformLayout();
             this.customSubGroupBox.ResumeLayout(false);
+            this.scriptTabPage.ResumeLayout(false);
+            this.scriptTabControl.ResumeLayout(false);
+            this.videoScriptTabPage.ResumeLayout(false);
+            this.videoScriptTabPage.PerformLayout();
+            this.audioScriptTabPage.ResumeLayout(false);
+            this.audioScriptTabPage.PerformLayout();
+            this.inputScriptTabPage.ResumeLayout(false);
+            this.inputScriptTabPage.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -1192,7 +1435,7 @@
 		#endregion
 
         private System.Windows.Forms.Button previewButton;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl mainTabControl;
         private System.Windows.Forms.TabPage videoEditTabPage;
         private System.Windows.Forms.ComboBox videoModeComboBox;
         private System.Windows.Forms.Label label16;
@@ -1279,6 +1522,24 @@
         private System.Windows.Forms.CheckBox autoLoadSubtitleCheckBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button delProfileButton;
+        private System.Windows.Forms.TabPage scriptTabPage;
+        private System.Windows.Forms.TabControl scriptTabControl;
+        private System.Windows.Forms.TabPage videoScriptTabPage;
+        private System.Windows.Forms.TabPage audioScriptTabPage;
+        private System.Windows.Forms.CheckBox disableAutoAudioScriptCheckBox;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.TextBox CustomAudioScriptTextBox;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TextBox autoAudioScriptTextBox;
+        private System.Windows.Forms.CheckBox disableAutoVideoScriptCheckBox;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.TextBox CustomVideoScriptTextBox;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox autoVideoScriptTextBox;
+        private System.Windows.Forms.TabPage inputScriptTabPage;
+        private System.Windows.Forms.TextBox avsInputScriptEditTextBox;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Button avsInputScriptSaveButton;
 
     }
 }

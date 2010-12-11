@@ -19,17 +19,17 @@
     [Serializable]
     public partial class JobSettingForm : Form
     {
-        protected AudioEncConfigBase _audioEncConfig;
+        protected AudioEncConfigBase audioEncConfig;
         /// <summary>
-        /// 当选用外部音轨时，更新_audioInfo。
+        /// 当选用外部音轨时，更新audioInfo。
         /// </summary>
-        protected AudioInfo _audioInfo;
+        protected AudioInfo audioInfo;
         protected CommandLineBox cmdLineBox;
-        protected JobItem _jobItem;
-        protected ControlResetter _resetter;
-        protected ResolutionCalculator _resolutionCal;
-        protected VideoEncConfigBase _videoEncConfig;
-        protected VideoInfo _videoInfo;
+        protected JobItem jobItem;
+        protected ControlResetter resetter;
+        protected ResolutionCalculator resolutionCal;
+        protected VideoEncConfigBase videoEncConfig;
+        protected VideoInfo videoInfo;
 
         public JobSettingForm()
         {
@@ -38,7 +38,7 @@
 
         private void AllowAutoChangeARCheckBoxCheckedChanged(object sender, EventArgs e)
         {
-            this._resolutionCal.LockAspectRatio = !this.allowAutoChangeARCheckBox.Checked;
+            this.resolutionCal.LockAspectRatio = !this.allowAutoChangeARCheckBox.Checked;
         }
 
         private void AllowFloat(object sender, KeyPressEventArgs e)
@@ -72,25 +72,27 @@
             double.TryParse(this.aspectRatioBox.Text, out result);
             if (result > 0)
             {
-                double aspectRatio = this._resolutionCal.AspectRatio;
-                this._resolutionCal.AspectRatio = result;
-                if ((this._resolutionCal.Width <= 0x780) && (this._resolutionCal.Height <= 0x438))
+                double aspectRatio = this.resolutionCal.AspectRatio;
+                this.resolutionCal.AspectRatio = result;
+                if ((this.resolutionCal.Width <= 0x780) && (this.resolutionCal.Height <= 0x438))
                 {
                     this.RefreshResolution(this.aspectRatioBox);
                 }
                 else
                 {
-                    this._resolutionCal.AspectRatio = aspectRatio;
+                    this.resolutionCal.AspectRatio = aspectRatio;
                 }
             }
         }
 
         private void AvsInputInitializeConfig(JobItem jobItem)
         {
-            if (this._videoInfo.HasVideo)
+            // TODO 错误处理，读到无效文件
+            this.avsInputScriptEditTextBox.Text = File.ReadAllText(this.jobItem.SourceFile, Encoding.Default);
+            if (this.videoInfo.HasVideo)
             {
                 this.avsVideoModeComboBox.Enabled = true;
-                if (jobItem.JobConfig.VideoMode == StreamProcessMode.None && this._audioInfo.StreamsCount > 0)
+                if (jobItem.JobConfig.VideoMode == StreamProcessMode.None && this.audioInfo.StreamsCount > 0)
                     this.avsVideoModeComboBox.SelectedIndex = 1;
                 else
                     this.avsVideoModeComboBox.SelectedIndex = 0;
@@ -104,17 +106,17 @@
             if (this.avsVideoModeComboBox.SelectedIndex != -1)
             {
                 this.sepAudioCheckBox.Enabled = true;
-                this.sepAudioCheckBox.Checked = this._jobItem.UsingExternalAudio;
+                this.sepAudioCheckBox.Checked = this.jobItem.UsingExternalAudio;
             }
             else
             {
                 this.sepAudioCheckBox.Enabled = false;
                 this.sepAudioCheckBox.Checked = false;
             }
-            if (this.sepAudioCheckBox.Checked || (this._audioInfo.StreamsCount != 0))
+            if (this.sepAudioCheckBox.Checked || (this.audioInfo.StreamsCount != 0))
             {
                 this.avsAudioModeComboBox.Enabled = true;
-                if (jobItem.JobConfig.AudioMode == StreamProcessMode.None && this._videoInfo.HasVideo)
+                if (jobItem.JobConfig.AudioMode == StreamProcessMode.None && this.videoInfo.HasVideo)
                     this.avsAudioModeComboBox.SelectedIndex = 2;
                 else if (jobItem.JobConfig.AudioMode == StreamProcessMode.Copy)
                     this.avsAudioModeComboBox.SelectedIndex = 1;
@@ -161,7 +163,7 @@
             if (box.Enabled)
             {
                 string name = box.Name.Replace('_', '-');
-                (this._videoEncConfig as x264Config).SetBooleanOption(name, box.Checked);
+                (this.videoEncConfig as x264Config).SetBooleanOption(name, box.Checked);
                 this.RefreshX264UI();
             }
         }
@@ -170,7 +172,7 @@
         {
             if (this.destFileBox.Text == string.Empty)
             {
-                this.destFileBox.Text = this._jobItem.DestFile;
+                this.destFileBox.Text = this.jobItem.DestFile;
             }
             try
             {
@@ -198,7 +200,7 @@
                 {
                     this.sepAudioTextBox.Text = this.openFileDialog1.FileName;
                     this.audioModeComboBox.SelectedIndex = 0;
-                    this._audioInfo = info;
+                    this.audioInfo = info;
                 }
                 this.SettleAudioControls();
             }
@@ -206,8 +208,8 @@
 
         private void CancelButtonClick(object sender, EventArgs e)
         {
-            this._resetter.ResetControls();
-            this._resetter.Clear();
+            this.resetter.ResetControls();
+            this.resetter.Clear();
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
@@ -284,11 +286,11 @@
 
         public void Clear()
         {
-            this._videoEncConfig = null;
-            this._audioEncConfig = null;
-            this._videoInfo = null;
-            this._audioInfo = null;
-            this._resolutionCal = null;
+            this.videoEncConfig = null;
+            this.audioEncConfig = null;
+            this.videoInfo = null;
+            this.audioInfo = null;
+            this.resolutionCal = null;
             this.widthBox.Text = string.Empty;
             this.heightBox.Text = string.Empty;
             this.aspectRatioBox.Text = string.Empty;
@@ -312,7 +314,7 @@
         {
             DialogResult result = this.cmdLineBox.ShowDialog();
             if (result == DialogResult.OK)
-                this._videoEncConfig.CustomCmdLine = this.cmdLineBox.CmdLine;
+                this.videoEncConfig.CustomCmdLine = this.cmdLineBox.CmdLine;
         }
 
         private void FontButtonClick(object sender, EventArgs e)
@@ -342,11 +344,11 @@
             int.TryParse(this.heightBox.Text, out result);
             if ((result > 0) && (result <= 0x438))
             {
-                int height = this._resolutionCal.Height;
-                this._resolutionCal.Height = result;
-                if (this._resolutionCal.Width > 0x780)
+                int height = this.resolutionCal.Height;
+                this.resolutionCal.Height = result;
+                if (this.resolutionCal.Width > 0x780)
                 {
-                    this._resolutionCal.Height = height;
+                    this.resolutionCal.Height = height;
                 }
                 else
                 {
@@ -357,13 +359,23 @@
 
         private void InitializeAvsConfig(AvisynthConfig avsConfig)
         {
-            this._resolutionCal = new ResolutionCalculator();
+            this.resolutionCal = new ResolutionCalculator();
             this.InitializeResolutionCfg(avsConfig);
             this.InitializeFrameRateCfg(avsConfig);
-            if (this._videoInfo.HasVideo)
+            if (this.videoInfo.HasVideo)
             {
-                this.InitializeResolution(avsConfig, this._videoInfo);
-                this.InitializeFrameRate(avsConfig, this._videoInfo);
+                this.InitializeResolution(avsConfig, this.videoInfo);
+                this.InitializeFrameRate(avsConfig, this.videoInfo);
+                this.disableAutoVideoScriptCheckBox.Checked = !avsConfig.PaddingCustomVideoScript;
+                this.autoVideoScriptTextBox.Enabled = avsConfig.PaddingCustomVideoScript;
+                this.CustomVideoScriptTextBox.Text = avsConfig.CustomVideoScript;
+            }
+            if (this.audioInfo.StreamsCount > 0)
+            {
+                this.CustomAudioScriptTextBox.Text = avsConfig.CustomAudioScript;
+                this.disableAutoAudioScriptCheckBox.Checked = !avsConfig.PaddingCustomAudioScript;
+                this.autoAudioScriptTextBox.Enabled = avsConfig.PaddingCustomAudioScript;
+                this.CustomAudioScriptTextBox.Text = avsConfig.CustomAudioScript;
             }
             this.audioSourceComboBox.Text = avsConfig.AudioSourceFilter.ToString();
             this.downMixBox.Checked = avsConfig.DownMix;
@@ -379,7 +391,7 @@
 
         private void InitializeFrameRate(AvisynthConfig avsConfig, VideoInfo videoInfo)
         {
-            if (this._jobItem.AvsConfig.UsingSourceFrameRate)
+            if (this.jobItem.AvsConfig.UsingSourceFrameRate)
             {
                 this.frameRateBox.Text = videoInfo.FrameRate.ToString();
                 this.sourceFrameRateCheckBox.Checked = true;
@@ -405,7 +417,7 @@
         {
             this.videoModeComboBox.SelectedIndex = 1;
             this.audioModeComboBox.SelectedIndex = 1;
-            if (this._videoInfo.HasVideo)
+            if (this.videoInfo.HasVideo)
             {
                 this.videoModeComboBox.Enabled = true;
                 this.videoModeComboBox.SelectedIndex = (int)jobConfig.VideoMode;
@@ -419,14 +431,14 @@
             if (this.videoModeComboBox.SelectedIndex != -1)
             {
                 this.sepAudioCheckBox.Enabled = true;
-                this.sepAudioCheckBox.Checked = this._jobItem.UsingExternalAudio;
+                this.sepAudioCheckBox.Checked = this.jobItem.UsingExternalAudio;
             }
             else
             {
                 this.sepAudioCheckBox.Enabled = false;
                 this.sepAudioCheckBox.Checked = false;
             }
-            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) || (this._audioInfo.StreamsCount != 0))
+            if ((this.sepAudioCheckBox.Enabled && this.sepAudioCheckBox.Checked) || (this.audioInfo.StreamsCount != 0))
             {
                 this.audioModeComboBox.Enabled = true;
                 this.audioModeComboBox.SelectedIndex = (int)jobConfig.AudioMode;
@@ -463,32 +475,32 @@
             {
                 avsConfig.Mod = 2;
             }
-            this._resolutionCal.Mod = avsConfig.Mod;
-            this._resolutionCal.LockAspectRatio = avsConfig.LockAspectRatio;
-            this._resolutionCal.LockToSourceAR = avsConfig.LockToSourceAR;
+            this.resolutionCal.Mod = avsConfig.Mod;
+            this.resolutionCal.LockAspectRatio = avsConfig.LockAspectRatio;
+            this.resolutionCal.LockToSourceAR = avsConfig.LockToSourceAR;
             if (!avsConfig.LockToSourceAR && (avsConfig.AspectRatio > 0))
             {
-                this._resolutionCal.AspectRatio = avsConfig.AspectRatio;
+                this.resolutionCal.AspectRatio = avsConfig.AspectRatio;
             }
             else
             {
-                this._resolutionCal.AspectRatio = videoInfo.DisplayAspectRatio;
+                this.resolutionCal.AspectRatio = videoInfo.DisplayAspectRatio;
             }
             if (avsConfig.Height > 0)
             {
-                this._resolutionCal.Height = avsConfig.Height;
+                this.resolutionCal.Height = avsConfig.Height;
             }
             else
             {
-                this._resolutionCal.Height = videoInfo.Height;
+                this.resolutionCal.Height = videoInfo.Height;
             }
             if (avsConfig.Width > 0)
             {
-                this._resolutionCal.Width = avsConfig.Width;
+                this.resolutionCal.Width = avsConfig.Width;
             }
             else
             {
-                this._resolutionCal.Width = videoInfo.Width;
+                this.resolutionCal.Width = videoInfo.Width;
             }
             this.RefreshResolution(null);
         }
@@ -548,17 +560,21 @@
 
         private void JobSettingFormLoad(object sender, EventArgs e)
         {
-            if (this._resetter == null)
+            if (this.resetter == null)
             {
-                this._resetter = new ControlResetter();
+                this.resetter = new ControlResetter();
             }
-            this._resetter.SaveControls(this);
+            this.resetter.SaveControls(this);
+            // 这两个文本框是进入编辑脚本标签页才初始化，是故不计之
+            this.resetter.RemoveControls(new Control[] { this.autoVideoScriptTextBox, this.autoAudioScriptTextBox });
         }
 
         private void MediaSettingFormFormClosed(object sender, FormClosedEventArgs e)
         {
-            if ((e.CloseReason == CloseReason.UserClosing) && this._resetter.Changed())
+            if ((e.CloseReason == CloseReason.UserClosing) && this.resetter.Changed())
             {
+                //foreach (Control control in this.resetter.GetChangedControls())
+                //    MessageBox.Show(control.Name);
                 if (MessageBox.Show("保存更改吗？", string.Empty, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     this.OkButtonClick(null, null);
@@ -572,9 +588,9 @@
 
         private void ModBoxSelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this._videoInfo.HasVideo)
+            if (this.videoInfo.HasVideo)
             {
-                this._resolutionCal.Mod = int.Parse(this.modBox.Text);
+                this.resolutionCal.Mod = int.Parse(this.modBox.Text);
                 this.RefreshResolution(this.modBox);
             }
         }
@@ -582,12 +598,12 @@
         private void MuxerComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
             string extension = this.muxerComboBox.Text.ToLower();
-            this.destFileBox.Text = MyIO.GetUniqueName(Path.ChangeExtension(this._jobItem.DestFile, extension));
+            this.destFileBox.Text = MyIO.GetUniqueName(Path.ChangeExtension(this.jobItem.DestFile, extension));
         }
 
         private void NeroAacRateControlBoxSelectedIndexChanged(object sender, EventArgs e)
         {
-            NeroAacConfig config = this._audioEncConfig as NeroAacConfig;
+            NeroAacConfig config = this.audioEncConfig as NeroAacConfig;
             switch (this.neroAacRateControlBox.SelectedIndex)
             {
                 case 0:
@@ -627,7 +643,7 @@
 
         private void NeroAacRateFactorBoxValidating(object sender, CancelEventArgs e)
         {
-            NeroAacConfig config = this._audioEncConfig as NeroAacConfig;
+            NeroAacConfig config = this.audioEncConfig as NeroAacConfig;
             if (this.neroAacRateControlBox.SelectedIndex == 0)
             {
                 try
@@ -666,32 +682,31 @@
 
         private void OkButtonClick(object sender, EventArgs e)
         {
-            //_videoEncConfig和_audioEncConfig由_jobItem克隆得来，跟随GUI即时变化
-            this._jobItem.VideoEncConfig = this._videoEncConfig;
-            this._jobItem.AudioEncConfig = this._audioEncConfig;
-            this._jobItem.State = JobState.NotProccessed;
-            this._jobItem.ProfileName = this.profileBox.Text;
-            if (this._videoInfo.Container == "avs")
-                this.AvsInputSaveConfig(this._jobItem.JobConfig);
+            //videoEncConfig和audioEncConfig由jobItem克隆得来，跟随GUI即时变化
+            this.jobItem.VideoEncConfig = this.videoEncConfig;
+            this.jobItem.AudioEncConfig = this.audioEncConfig;
+            this.jobItem.State = JobState.NotProccessed;
+            this.jobItem.ProfileName = this.profileBox.Text;
+            if (this.videoInfo.Container == "avs")
+            {
+                this.AvsInputSaveConfig(this.jobItem.JobConfig);
+                this.avsInputScriptSaveButton.PerformClick();
+            }
+
             else
             {
-                if (this.subtitleTextBox.Text != string.Empty)
-                {
-                    this._jobItem.SubtitleFile = this.subtitleTextBox.Text;
-                }
-                else
-                    this._jobItem.SubtitleFile = string.Empty;
-                this.SaveToAvsConfig(this._jobItem.AvsConfig);
-                this.SaveToJobConfig(this._jobItem.JobConfig);
-                this.SaveToSubtitleConfig(this._jobItem.SubtitleConfig);
+                this.jobItem.SubtitleFile = this.subtitleTextBox.Text;
+                this.SaveToAvsConfig(this.jobItem.AvsConfig);
+                this.SaveToJobConfig(this.jobItem.JobConfig);
+                this.SaveToSubtitleConfig(this.jobItem.SubtitleConfig);
             } 
             
             try
             {
                 string destDir = Path.GetDirectoryName(this.destFileBox.Text);
                 if (destDir == "" || destDir == null)
-                    this.destFileBox.Text = this._jobItem.DestFile;
-                else if (MyIO.IsSameFile(this._jobItem.SourceFile, this.destFileBox.Text))
+                    this.destFileBox.Text = this.jobItem.DestFile;
+                else if (MyIO.IsSameFile(this.jobItem.SourceFile, this.destFileBox.Text))
                 {
                     MessageBox.Show("与源媒体文件同名。请更改文件名。", "文件重名", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
@@ -700,40 +715,40 @@
                 {
                     if (MessageBox.Show(Path.GetFileName(this.destFileBox.Text) + " 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                         return;
-                    this._jobItem.DestFile = this.destFileBox.Text;
+                    this.jobItem.DestFile = this.destFileBox.Text;
                 }
                 else if (Directory.Exists(destDir))
                 {
-                    this._jobItem.DestFile = this.destFileBox.Text;
+                    this.jobItem.DestFile = this.destFileBox.Text;
                 }
                 else if (!Directory.Exists(destDir))
                 {
                     if (MessageBox.Show("目标文件夹不存在。是否新建？", "文件夹不存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Asterisk) == DialogResult.OK)
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(this.destFileBox.Text));
-                        this._jobItem.DestFile = this.destFileBox.Text;
+                        this.jobItem.DestFile = this.destFileBox.Text;
                     }
                     else
                     {
-                        this.destFileBox.Text = this._jobItem.DestFile;
+                        this.destFileBox.Text = this.jobItem.DestFile;
                     }
                 }
                 else
                 {
-                    this._jobItem.DestFile = this.destFileBox.Text;
+                    this.jobItem.DestFile = this.destFileBox.Text;
                 }
             }
             catch (Exception)
             {
-                this.destFileBox.Text = this._jobItem.DestFile;
+                this.destFileBox.Text = this.jobItem.DestFile;
             }
 
             if (this.sepAudioCheckBox.Checked)
             {
                 if (this.sepAudioTextBox.Text != string.Empty)
                 {
-                    this._jobItem.UsingExternalAudio = true;
-                    this._jobItem.ExternalAudio = this.sepAudioTextBox.Text;
+                    this.jobItem.UsingExternalAudio = true;
+                    this.jobItem.ExternalAudio = this.sepAudioTextBox.Text;
                 }
                 else
                 {
@@ -744,17 +759,17 @@
                     else if (result == DialogResult.Yes)
                     {
                         this.sepAudioCheckBox.Checked = false;
-                        this._jobItem.UsingExternalAudio = false;
-                        this._jobItem.ExternalAudio = string.Empty;
+                        this.jobItem.UsingExternalAudio = false;
+                        this.jobItem.ExternalAudio = string.Empty;
                     }
                 }
             }
             else
             {
-                this._jobItem.UsingExternalAudio = false;
-                this._jobItem.ExternalAudio = string.Empty;
+                this.jobItem.UsingExternalAudio = false;
+                this.jobItem.ExternalAudio = string.Empty;
             }
-            this._resetter.Clear();
+            this.resetter.Clear();
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -777,7 +792,7 @@
                 bool writeVideoScript = false;
                 bool writeAudioScript = false;
 
-                if (this._videoInfo.Container == "avs")
+                if (this.videoInfo.Container == "avs")
                 {
                     this.AvsInputSaveConfig(jobConfig);
                 }
@@ -808,7 +823,7 @@
                         avsConfig.UsingSourceResolution = true;
                         avsConfig.ConvertFPS = true;
                     }
-                    new VideoAvsWriter(this._jobItem.SourceFile, avsConfig, subtitle, this._videoInfo).WriteScript("video.avs");
+                    new VideoAvsWriter(this.jobItem.SourceFile, avsConfig, subtitle, this.videoInfo).WriteScript("video.avs");
                     contents += "video = import(\"video.avs\")";
                 }
 
@@ -822,7 +837,7 @@
                 }
                 else
                 {
-                    sourceFile = this._jobItem.SourceFile;
+                    sourceFile = this.jobItem.SourceFile;
                 }
                 if (jobConfig.AudioMode != StreamProcessMode.None)
                 {
@@ -832,7 +847,7 @@
                         avsConfig.Normalize = false;
                         avsConfig.DownMix = false;
                     }
-                    new AudioAvsWriter(sourceFile, avsConfig, this._audioInfo).WriteScript("audio.avs");
+                    new AudioAvsWriter(sourceFile, avsConfig, this.audioInfo).WriteScript("audio.avs");
                     contents += "\r\naudio = import(\"audio.avs\")";
                 }
 
@@ -884,14 +899,14 @@
             this.InitializeJobConfig(profile.JobConfig);
             this.InitializeAvsConfig(profile.AvsConfig);
             this.InitializeSubtitleConfig(profile.SubtitleConfig);
-            this._videoEncConfig = profile.VideoEncConfig;
-            this._audioEncConfig = profile.AudioEncConfig;
+            this.videoEncConfig = profile.VideoEncConfig;
+            this.audioEncConfig = profile.AudioEncConfig;
             this.InitializeEncConfig();
         }
 
         private void RateControlBoxSelectedIndexChanged(object sender, EventArgs e)
         {
-            x264Config config = this._videoEncConfig as x264Config;
+            x264Config config = this.videoEncConfig as x264Config;
             if (this.rateControlBox.SelectedIndex == 0)
             {
                 config.SetNumOption("crf", (double)23);
@@ -919,7 +934,7 @@
         {
             string rateOption = "";
             double rateFactor;
-            x264Config config = this._videoEncConfig as x264Config;
+            x264Config config = this.videoEncConfig as x264Config;
             if (this.rateControlBox.SelectedIndex == 0)
             {
                 rateOption = "crf";
@@ -954,7 +969,7 @@
 
         private void RefreshNeroAac()
         {
-            NeroAacConfig config = this._audioEncConfig as NeroAacConfig;
+            NeroAacConfig config = this.audioEncConfig as NeroAacConfig;
             if (config.Quality > 0)
             {
                 this.neroAacRateControlBox.SelectedIndex = 0; 
@@ -982,24 +997,24 @@
         {
             if (caller != this.heightBox)
             {
-                this.heightBox.Text = this._resolutionCal.Height.ToString();
+                this.heightBox.Text = this.resolutionCal.Height.ToString();
             }
             if (caller != this.widthBox)
             {
-                this.widthBox.Text = this._resolutionCal.Width.ToString();
+                this.widthBox.Text = this.resolutionCal.Width.ToString();
             }
             if (caller != this.aspectRatioBox)
             {
-                this.aspectRatioBox.Text = this._resolutionCal.AspectRatio.ToString();
+                this.aspectRatioBox.Text = this.resolutionCal.AspectRatio.ToString();
             }
             this.modBox.SelectedIndexChanged -= new EventHandler(this.ModBoxSelectedIndexChanged);
-            this.modBox.Text = this._resolutionCal.Mod.ToString();
+            this.modBox.Text = this.resolutionCal.Mod.ToString();
             this.modBox.SelectedIndexChanged += new EventHandler(this.ModBoxSelectedIndexChanged);
         }
 
         private void RefreshX264UI()
         {
-            x264Config config = this._videoEncConfig as x264Config;
+            x264Config config = this.videoEncConfig as x264Config;
             IEnumerator enumerator = this.groupBox4.Controls.GetEnumerator();
             while (enumerator.MoveNext())
             {
@@ -1065,8 +1080,8 @@
             this.rateControlBox.SelectedIndexChanged += new EventHandler(this.RateControlBoxSelectedIndexChanged);
 
             this.cmdLineBox = new CommandLineBox();
-            bool checkChanged = (this.useCustomCmdBox.Checked != this._videoEncConfig.UsingCustomCmd);
-            this.useCustomCmdBox.Checked = this._videoEncConfig.UsingCustomCmd;
+            bool checkChanged = (this.useCustomCmdBox.Checked != this.videoEncConfig.UsingCustomCmd);
+            this.useCustomCmdBox.Checked = this.videoEncConfig.UsingCustomCmd;
             if (!checkChanged)
             {
                 this.UseCustomCmdBoxCheckedChanged(null, null);
@@ -1088,10 +1103,10 @@
             AvisynthConfig avsConfig = null;
             JobItemConfig jobConfig = null;
             SubtitleConfig subtitleConfig = null;
-            if (this._videoInfo.Container == "avs")
+            if (this.videoInfo.Container == "avs")
             {
-                avsConfig = this._jobItem.AvsConfig;
-                subtitleConfig = this._jobItem.SubtitleConfig;
+                avsConfig = this.jobItem.AvsConfig;
+                subtitleConfig = this.jobItem.SubtitleConfig;
                 jobConfig = new JobItemConfig();
                 this.AvsInputSaveConfig(jobConfig);
             }
@@ -1104,7 +1119,7 @@
                 this.SaveToJobConfig(jobConfig);
                 this.SaveToSubtitleConfig(subtitleConfig);
             }
-            Profile.Save(this.profileBox.Text, jobConfig, avsConfig, this._videoEncConfig, this._audioEncConfig, subtitleConfig);
+            Profile.Save(this.profileBox.Text, jobConfig, avsConfig, this.videoEncConfig, this.audioEncConfig, subtitleConfig);
             if (!this.profileBox.Items.Contains(this.profileBox.Text))
             {
                 this.profileBox.Items.Add(this.profileBox.Text);
@@ -1113,7 +1128,7 @@
 
         private void SaveToAvsConfig(AvisynthConfig avsConfig)
         {
-            if (this._videoInfo.HasVideo)
+            if (this.videoInfo.HasVideo)
             {
                 if (this.sourceResolutionCheckBox.Checked)
                 {
@@ -1135,6 +1150,8 @@
                 avsConfig.Resizer = (ResizeFilter)Enum.Parse(typeof(ResizeFilter), this.resizerBox.Text);
                 avsConfig.VideoSourceFilter = (VideoSourceFilter)Enum.Parse(typeof(VideoSourceFilter), this.videoSourceBox.Text);
                 avsConfig.AutoLoadSubtitle = this.autoLoadSubtitleCheckBox.Checked;
+                avsConfig.PaddingCustomVideoScript = !this.disableAutoVideoScriptCheckBox.Checked;
+                avsConfig.PaddingCustomAudioScript = !this.disableAutoAudioScriptCheckBox.Checked;
                 if (this.sourceFrameRateCheckBox.Checked)
                 {
                     avsConfig.UsingSourceFrameRate = true;
@@ -1146,22 +1163,24 @@
                     avsConfig.FrameRate = double.Parse(this.frameRateBox.Text);
                 }
                 avsConfig.ConvertFPS = this.convertFPSCheckBox.Checked;
+                avsConfig.CustomVideoScript = this.CustomVideoScriptTextBox.Text;
             }
-            if (this._audioInfo.StreamsCount != 0)
+            if (this.audioInfo.StreamsCount != 0)
             {
                 avsConfig.AudioSourceFilter = (AudioSourceFilter)Enum.Parse(typeof(AudioSourceFilter), this.audioSourceComboBox.Text);
                 avsConfig.DownMix = this.downMixBox.Checked;
                 avsConfig.Normalize = this.normalizeBox.Checked;
+                avsConfig.CustomAudioScript = this.CustomAudioScriptTextBox.Text;
             }
         }
 
         private void SaveToJobConfig(JobItemConfig jobConfig)
         {
-            if (this._videoInfo.Container == "avs")
+            if (this.videoInfo.Container == "avs")
             {
-                if (!this._videoInfo.HasVideo)
+                if (!this.videoInfo.HasVideo)
                     jobConfig.VideoMode = StreamProcessMode.None;
-                if (this._audioInfo.StreamsCount==0)
+                if (this.audioInfo.StreamsCount==0)
                     jobConfig.AudioMode = StreamProcessMode.None;
             }
             else
@@ -1197,7 +1216,7 @@
 
         private void SettleAudioControls()
         {
-            if ((this._audioInfo.StreamsCount != 0) || this.sepAudioCheckBox.Checked)
+            if ((this.audioInfo.StreamsCount != 0) || this.sepAudioCheckBox.Checked)
             {
                 this.audioModeComboBox.Enabled = true;
             }
@@ -1222,35 +1241,43 @@
 
         public void SetUpFormForItem(JobItem jobItem)
         {
-            this._jobItem = jobItem;
-            this.destFileBox.Text = this._jobItem.DestFile;
-            this.sepAudioTextBox.Text = this._jobItem.ExternalAudio;
+            this.jobItem = jobItem;
+            this.destFileBox.Text = this.jobItem.DestFile;
+            this.sepAudioTextBox.Text = this.jobItem.ExternalAudio;
             this.subtitleTextBox.Text = jobItem.SubtitleFile;
-            this._videoInfo = this._jobItem.VideoInfo;
-            this._audioInfo = this._jobItem.AudioInfo;
-            if (this._videoInfo.Container != "avs")
+            this.videoInfo = this.jobItem.VideoInfo;
+            this.audioInfo = this.jobItem.AudioInfo;
+            if (this.videoInfo.Container != "avs")
             {
-                if (this.tabControl1.Controls.Count != 3)
-                {
-                    this.tabControl1.Controls.Clear();
-                    TabPage[] tabPages = new TabPage[] { this.videoEditTabPage, this.audioEditTabPage, this.encTabPage, this.subtitleTabPage };
-                    this.tabControl1.Controls.AddRange(tabPages);
-                    this.audioEditTabPage.Controls.AddRange(new Control[] { this.sepAudioButton, this.sepAudioTextBox, this.sepAudioCheckBox });
-                }
-                this.InitializeJobConfig(this._jobItem.JobConfig);
-                this.InitializeAvsConfig(this._jobItem.AvsConfig);
-                this.InitializeSubtitleConfig(this._jobItem.SubtitleConfig);
+                this.mainTabControl.Controls.Clear();
+                TabPage[] tabPages = new TabPage[] { this.videoEditTabPage, this.audioEditTabPage, this.encTabPage, this.subtitleTabPage, this.scriptTabPage };
+                this.mainTabControl.Controls.AddRange(tabPages);
+                this.audioEditTabPage.Controls.AddRange(new Control[] { this.sepAudioButton, this.sepAudioTextBox, this.sepAudioCheckBox });
+                this.scriptTabControl.Controls.Clear();
+                tabPages = new TabPage[] { this.videoScriptTabPage, this.audioScriptTabPage };
+                if (this.jobItem.JobConfig.VideoMode == StreamProcessMode.Encode)
+                    this.scriptTabControl.Controls.Add(this.videoScriptTabPage);
+                if (this.jobItem.JobConfig.AudioMode == StreamProcessMode.Encode)
+                    this.scriptTabControl.Controls.Add(this.audioScriptTabPage);
+
+                this.InitializeJobConfig(this.jobItem.JobConfig);
+                this.InitializeAvsConfig(this.jobItem.AvsConfig);
+                this.InitializeSubtitleConfig(this.jobItem.SubtitleConfig);
             }
-            else if (this.tabControl1.Controls.Count != 2)
+            else
             {
-                this.tabControl1.Controls.Clear();
-                TabPage[] tabPages = new TabPage[] { this.avsInputTabPage, this.encTabPage };
-                this.tabControl1.Controls.AddRange(tabPages);
-                this.avsInputTabPage.Controls.AddRange(new Control[] { this.sepAudioButton, this.sepAudioTextBox, this.sepAudioCheckBox});
+                this.mainTabControl.Controls.Clear();
+                TabPage[] tabPages = new TabPage[] { this.avsInputTabPage, this.encTabPage, this.scriptTabPage };
+                this.mainTabControl.Controls.AddRange(tabPages);
+                this.avsInputTabPage.Controls.AddRange(new Control[] { this.sepAudioButton, this.sepAudioTextBox, this.sepAudioCheckBox });
+                this.scriptTabControl.Controls.Clear();
+                if (this.jobItem.JobConfig.VideoMode == StreamProcessMode.Encode || this.jobItem.JobConfig.AudioMode == StreamProcessMode.Encode)
+                    this.scriptTabControl.Controls.Add(this.inputScriptTabPage);
+
+                this.AvsInputInitializeConfig(jobItem);
             }
-            this.AvsInputInitializeConfig(jobItem);
-            this._videoEncConfig = MyIO.Clone<VideoEncConfigBase>(this._jobItem.VideoEncConfig);
-            this._audioEncConfig = MyIO.Clone<AudioEncConfigBase>(this._jobItem.AudioEncConfig);
+            this.videoEncConfig = MyIO.Clone<VideoEncConfigBase>(this.jobItem.VideoEncConfig);
+            this.audioEncConfig = MyIO.Clone<AudioEncConfigBase>(this.jobItem.AudioEncConfig);
             this.InitializeEncConfig();
         }
 
@@ -1258,7 +1285,7 @@
         {
             if (this.sourceFrameRateCheckBox.Checked)
             {
-                this.frameRateBox.Text = this._videoInfo.FrameRate.ToString();
+                this.frameRateBox.Text = this.videoInfo.FrameRate.ToString();
                 this.frameRateBox.Enabled = false;
                 this.convertFPSCheckBox.Enabled = false;
             }
@@ -1273,12 +1300,12 @@
         {
             if (this.sourceResolutionCheckBox.Checked)
             {
-                if (this._videoInfo.HasVideo)
+                if (this.videoInfo.HasVideo)
                 {
-                    this._resolutionCal.Mod = 2;
-                    this._resolutionCal.AspectRatio = this._videoInfo.DisplayAspectRatio;
-                    this._resolutionCal.Height = this._videoInfo.Height;
-                    this._resolutionCal.Width = this._videoInfo.Width;
+                    this.resolutionCal.Mod = 2;
+                    this.resolutionCal.AspectRatio = this.videoInfo.DisplayAspectRatio;
+                    this.resolutionCal.Height = this.videoInfo.Height;
+                    this.resolutionCal.Width = this.videoInfo.Width;
                     this.RefreshResolution(null);
                 }
                 IEnumerator enumerator = this.gbResolution.Controls.GetEnumerator();
@@ -1310,7 +1337,7 @@
             if (box.Enabled)
             {
                 string name = box.Name.Replace('_', '-');
-                (this._videoEncConfig as x264Config).SelectStringOption(name, box.SelectedIndex);
+                (this.videoEncConfig as x264Config).SelectStringOption(name, box.SelectedIndex);
                 this.RefreshX264UI();
             }
         }
@@ -1321,7 +1348,7 @@
                 this.openFileDialog2.FileName = this.subtitleTextBox.Text;
             else
                 this.openFileDialog2.FileName = "";
-                this.openFileDialog2.InitialDirectory = Path.GetDirectoryName(this._jobItem.SourceFile);
+                this.openFileDialog2.InitialDirectory = Path.GetDirectoryName(this.jobItem.SourceFile);
             this.openFileDialog2.ShowDialog();
             this.subtitleTextBox.Text = this.openFileDialog2.FileName;
         }
@@ -1345,11 +1372,11 @@
                 }
                 this.useCustomCmdBox.Enabled = true;
                 this.editCmdButton.Enabled = true;
-                if (this._videoEncConfig.CustomCmdLine == null)
-                    this.cmdLineBox.CmdLine = this._videoEncConfig.GetArgument();
+                if (this.videoEncConfig.CustomCmdLine == null)
+                    this.cmdLineBox.CmdLine = this.videoEncConfig.GetArgument();
                 else
-                    this.cmdLineBox.CmdLine = this._videoEncConfig.CustomCmdLine;
-                this._videoEncConfig.UsingCustomCmd = true;
+                    this.cmdLineBox.CmdLine = this.videoEncConfig.CustomCmdLine;
+                this.videoEncConfig.UsingCustomCmd = true;
             }
             else
             {
@@ -1359,19 +1386,19 @@
                 }
                 this.editCmdButton.Enabled = false;
                 this.cmdLineBox.CmdLine = string.Empty;
-                this._videoEncConfig.UsingCustomCmd = false;
-                this._videoEncConfig.CustomCmdLine = null;
+                this.videoEncConfig.UsingCustomCmd = false;
+                this.videoEncConfig.CustomCmdLine = null;
             }
         }
 
         private void UseSourceARCheckedChanged(object sender, EventArgs e)
         {
-            this._resolutionCal.LockToSourceAR = this.lockToSourceARCheckBox.Checked;
+            this.resolutionCal.LockToSourceAR = this.lockToSourceARCheckBox.Checked;
             if (this.lockToSourceARCheckBox.Checked)
             {
-                this.aspectRatioBox.Text = this._videoInfo.DisplayAspectRatio.ToString();
+                this.aspectRatioBox.Text = this.videoInfo.DisplayAspectRatio.ToString();
                 this.aspectRatioBox.Enabled = false;
-                this._resolutionCal.AspectRatio = this._videoInfo.DisplayAspectRatio;
+                this.resolutionCal.AspectRatio = this.videoInfo.DisplayAspectRatio;
                 this.RefreshResolution(this.aspectRatioBox);
             }
             else
@@ -1386,11 +1413,11 @@
             int.TryParse(this.widthBox.Text, out result);
             if ((result > 0) && (result <= 0x780))
             {
-                int width = this._resolutionCal.Width;
-                this._resolutionCal.Width = result;
-                if (this._resolutionCal.Height > 0x438)
+                int width = this.resolutionCal.Width;
+                this.resolutionCal.Width = result;
+                if (this.resolutionCal.Height > 0x438)
                 {
-                    this._resolutionCal.Width = width;
+                    this.resolutionCal.Width = width;
                 }
                 else
                 {
@@ -1458,7 +1485,7 @@
             {
                 this.sepAudioButton.Enabled = false;
                 this.sepAudioTextBox.Enabled = false;
-                if (this._audioInfo.StreamsCount == 0)
+                if (this.audioInfo.StreamsCount == 0)
                 {
                     this.avsAudioModeComboBox.Enabled = false;
                     this.avsAudioModeComboBox.SelectedIndex = -1;
@@ -1474,7 +1501,7 @@
         {
             if (this.Created && this.autoLoadSubtitleCheckBox.Checked)
             {
-                this.subtitleTextBox.Text = this._jobItem.FindFirstSubtitleFile();
+                this.subtitleTextBox.Text = this.jobItem.FindFirstSubtitleFile();
             }
         }
 
@@ -1497,6 +1524,85 @@
 
         }
 
+        private void disableAutoVideoScriptCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Created)
+            {
+                AvisynthConfig avsConfig = new AvisynthConfig();
+                this.SaveToAvsConfig(avsConfig);
+                VideoAvsWriter writer = new VideoAvsWriter(this.videoInfo.FilePath, avsConfig, this.subtitleTextBox.Text, this.videoInfo);
+                if (this.disableAutoVideoScriptCheckBox.Checked)
+                {
+                    this.autoVideoScriptTextBox.Enabled = false;
+                    DialogResult result = MessageBox.Show("是否增加源滤镜语句到自定义脚本的开头？", "", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (result == DialogResult.Yes)
+                        this.CustomVideoScriptTextBox.Text = writer.GetFilterStatement("SourceFilter") + Environment.NewLine + this.CustomVideoScriptTextBox.Text;
+                    this.autoVideoScriptTextBox.Text = "";
+
+                }
+                else
+                {
+                    this.autoVideoScriptTextBox.Enabled = true;
+                    this.autoVideoScriptTextBox.Text = writer.GetScriptContent(false);
+                }
+            }
+        }
+
+        private void avsInputScriptSaveButton_Click(object sender, EventArgs e)
+        {
+            File.WriteAllText(this.jobItem.SourceFile, this.avsInputScriptEditTextBox.Text, Encoding.Default);
+        }
+
+        private void scriptTabPage_Enter(object sender, EventArgs e)
+        {
+            AvisynthConfig avsConfig = new AvisynthConfig();
+            if (this.videoInfo.Container!="avs")
+                    this.SaveToAvsConfig(avsConfig);
+            if (!this.disableAutoVideoScriptCheckBox.Checked)
+                this.autoVideoScriptTextBox.Text = new VideoAvsWriter(this.videoInfo.FilePath, avsConfig, this.subtitleTextBox.Text, this.videoInfo).GetScriptContent(false);
+            if (!this.disableAutoAudioScriptCheckBox.Checked)
+                this.autoAudioScriptTextBox.Text = new AudioAvsWriter(this.audioInfo.FilePath, avsConfig, this.audioInfo).GetScriptContent(false);
+        }
+
+        private void disableAutoAudioScriptCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Created)
+            {
+                AvisynthConfig avsConfig = new AvisynthConfig();
+                this.SaveToAvsConfig(avsConfig);
+                AudioAvsWriter writer = new AudioAvsWriter(this.audioInfo.FilePath, avsConfig, this.audioInfo);
+                if (this.disableAutoAudioScriptCheckBox.Checked)
+                {
+                    this.autoAudioScriptTextBox.Enabled = false;
+                    DialogResult result = MessageBox.Show("是否增加源滤镜语句到自定义脚本的开头？", "", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (result == DialogResult.Yes)
+                        // 去除"audio="
+                        this.CustomAudioScriptTextBox.Text = writer.GetFilterStatement("SourceFilter").Remove(0, 6) + Environment.NewLine + this.CustomAudioScriptTextBox.Text;
+                    this.autoAudioScriptTextBox.Text = "";
+
+                }
+                else
+                {
+                    this.autoAudioScriptTextBox.Enabled = true;
+                    this.autoAudioScriptTextBox.Text = writer.GetScriptContent(false);
+                }
+            }
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                if (e.KeyCode == System.Windows.Forms.Keys.A)
+                {
+                    (sender as TextBox).SelectAll();
+                    e.SuppressKeyPress = true;
+                    e.Handled = true;
+                }
+                if (e.KeyCode == System.Windows.Forms.Keys.S)
+                    this.avsInputScriptSaveButton.PerformClick();
+            }
+        }
     }
 }
 

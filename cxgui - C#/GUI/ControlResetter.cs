@@ -111,7 +111,7 @@
             foreach (Control control in controls)
             {
                 System.Type type = control.GetType();
-                if (control.GetType() == typeof(TextBox) || control.GetType() == typeof(ComboBox) || control.GetType() == typeof(DomainUpDown))
+                if (type == typeof(TextBox) || type == typeof(ComboBox) || type == typeof(NumericUpDown) || type == typeof(DomainUpDown))
                 {
                     this._savedTextControl[control] = control.Text;
                 }
@@ -130,6 +130,15 @@
             {
                 Control current = (Control) enumerator.Current;
                 this.SaveControls(current);
+            }
+        }
+
+        public void RemoveControls(IEnumerable<Control> controls)
+        {
+            foreach (Control control in controls)
+            {
+                if(!this._savedCheckBox.Remove(control))
+                    this._savedTextControl.Remove(control);
             }
         }
     }

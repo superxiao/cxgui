@@ -11,7 +11,7 @@
     public class NeroAacHandler : AudioEncoderHandler
     {
         protected NeroAacConfig _config;
-        protected DateTime _startTime;
+        protected DateTime startTime;
 
         public NeroAacHandler(string avisynthScriptFile, string destFile) : base("neroAacEnc.exe", avisynthScriptFile, destFile)
         {
@@ -28,7 +28,7 @@
             byte[] buffer = new byte[num2];
             GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             IntPtr addr = handle.AddrOfPinnedObject();
-            this._startTime = DateTime.Now;
+            this.startTime = DateTime.Now;
             try
             {
                 IDisposable disposable = (base.scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(base.avisynthScriptFile)) as IDisposable;
@@ -80,7 +80,7 @@
             {
                 base.estimatedFileSize = (long) ((((double) base.currentFileSize) / base.progress) * 100);
             }
-            base.timeUsed = (TimeSpan) (DateTime.Now - this._startTime);
+            base.timeUsed = (TimeSpan) (DateTime.Now - this.startTime);
             if (base.progress != 0)
             {
                 base.timeLeft = TimeSpan.FromSeconds((double) ((int) ((this.timeUsed.TotalSeconds * (100.0 - base.progress)) / base.progress)));

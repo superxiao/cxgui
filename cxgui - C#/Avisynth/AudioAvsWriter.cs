@@ -11,29 +11,29 @@
     [Serializable]
     public class AudioAvsWriter
     {
-        protected AudioInfo _audioInfo;
-        protected AvisynthConfig _avsConfig;
+        protected AudioInfo audioInfo;
+        protected AvisynthConfig avsConfig;
         protected bool _downMix;
-        protected OrderedDictionary<string, string> _filters;
-        protected List<string> _loadingsAndImportings;
+        protected OrderedDictionary<string, string> filters;
+        protected List<string> loadingsAndImportings;
         protected bool _normalize;
         protected AudioSourceFilter _sourceFilter;
 
         public AudioAvsWriter(string sourceFile, AvisynthConfig avsConfig, AudioInfo audioInfo)
         {
-            this._avsConfig = avsConfig;
-            this._filters = new OrderedDictionary<string, string>();
-            this._loadingsAndImportings = new List<string>();
-            this._audioInfo = audioInfo;
-            if (this._audioInfo.Format == "avs")
+            this.avsConfig = avsConfig;
+            this.filters = new OrderedDictionary<string, string>();
+            this.loadingsAndImportings = new List<string>();
+            this.audioInfo = audioInfo;
+            if (this.audioInfo.Format == "avs")
             {
                 this.AvsInputInitialize(sourceFile);
             }
             else
             {
-                this.SourceFilter = this._avsConfig.AudioSourceFilter;
-                this.DownMix = this._avsConfig.DownMix;
-                this.Normalize = this._avsConfig.Normalize;
+                this.SourceFilter = this.avsConfig.AudioSourceFilter;
+                this.DownMix = this.avsConfig.DownMix;
+                this.Normalize = this.avsConfig.Normalize;
             }
         }
 
@@ -46,43 +46,54 @@
 
         public bool ContainsFilter(string filterName)
         {
-            return this._filters.ContainsKey(filterName);
+            return this.filters.ContainsKey(filterName);
         }
 
         public string GetFilterStatement(string filterName)
         {
-            return this._filters[filterName];
+            return this.filters[filterName];
         }
 
-        public string GetScriptContent()
+        /// <summary>
+        /// 获取音频avs脚本内容。
+        /// </summary>
+        /// <returns>音频avs脚本内容，当初始化时的avsConfig的CustomAudioScript非null时，为该属性。否则由avsConfig其他设置决定。</returns>
+        public string GetScriptContent(bool useCustomScript)
         {
-            string str = null;
-            foreach (string str2 in this._loadingsAndImportings)
+            string content = null;
+            if (this.avsConfig.PaddingCustomAudioScript)
             {
-                str += new StringBuilder().Append(str2).Append("\r\n").ToString();
+                foreach (string loadingAndImporting in this.loadingsAndImportings)
+                {
+                    content += new StringBuilder().Append(loadingAndImporting).Append("\r\n").ToString();
+                }
+                foreach (KeyValuePair<string, string> filter in this.filters)
+                {
+                    content += new StringBuilder().Append(filter.Value).Append("\r\n").ToString();
+                }
+                if (this.audioInfo.Format != "avs")
+                {
+                    content += "audio\r\n";
+                }
             }
-            foreach (KeyValuePair<string, string> filter in this._filters)
+            if (this.audioInfo.Format != "avs" && useCustomScript)
             {
-                str += new StringBuilder().Append(filter.Value).Append("\r\n").ToString();
+                content += this.avsConfig.CustomAudioScript;
             }
-            if (this._audioInfo.Format != "avs")
-            {
-                str += "audio\r\n";
-            }
-            return str;
+            return content;
         }
 
         public void RemoveFilter(string filterName)
         {
-            if (this._filters.ContainsKey(filterName))
+            if (this.filters.ContainsKey(filterName))
             {
-                this._filters.Remove(filterName);
+                this.filters.Remove(filterName);
             }
         }
 
         private void SetFilter(string filterName, string statement)
         {
-            this._filters[filterName] = statement;
+            this.filters[filterName] = statement;
         }
 
         public void SetImport(params string[] externalFilters)
@@ -96,15 +107,15 @@
                 {
                     case ".dll":
                         string str = new StringBuilder("LoadPlugin(\"").Append(strArray[index]).Append("\")").ToString();
-                        if (!this._loadingsAndImportings.Contains(str))
-                            this._loadingsAndImportings.Add(str);
+                        if (!this.loadingsAndImportings.Contains(str))
+                            this.loadingsAndImportings.Add(str);
                         break;
 
                     case ".avs":
                     case "avis":
                         str = new StringBuilder("Import(\"").Append(strArray[index]).Append("\")").ToString();
-                        if (!this._loadingsAndImportings.Contains(str))
-                            this._loadingsAndImportings.Add(str);
+                        if (!this.loadingsAndImportings.Contains(str))
+                            this.loadingsAndImportings.Add(str);
                         break;
                 }
                 index++;
@@ -113,7 +124,7 @@
 
         public void WriteScript(string avsDestFile)
         {
-            File.WriteAllText(avsDestFile, this.GetScriptContent(), Encoding.Default);
+            File.WriteAllText(avsDestFile, this.GetScriptContent(true), Encoding.Default);
         }
 
         public bool DownMix
@@ -169,13 +180,13 @@
                 this._sourceFilter = value;
                 if (this._sourceFilter == AudioSourceFilter.DirectShowSource)
                 {
-                    this.SetFilter("SourceFilter", new StringBuilder("audio=DirectShowSource(\"").Append(this._audioInfo.FilePath).Append("\", video=false)").ToString());
+                    this.SetFilter("SourceFilter", new StringBuilder("audio=DirectShowSource(\"").Append(this.audioInfo.FilePath).Append("\", video=false)").ToString());
                 }
                 else if (this._sourceFilter == AudioSourceFilter.FFAudioSource)
                 {
                     string[] externalFilters = new string[] { Path.GetFullPath("ffms2.dll") };
                     this.SetImport(externalFilters);
-                    this.SetFilter("SourceFilter", new StringBuilder("audio=FFAudioSource(\"").Append(this._audioInfo.FilePath).Append("\", track=-1)").ToString());
+                    this.SetFilter("SourceFilter", new StringBuilder("audio=FFAudioSource(\"").Append(this.audioInfo.FilePath).Append("\", track=-1)").ToString());
                 }
                 else if (this._sourceFilter == AudioSourceFilter.None)
                 {
