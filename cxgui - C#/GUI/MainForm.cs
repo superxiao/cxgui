@@ -25,12 +25,12 @@
     [Serializable]
     public partial class MainForm : Form
     {
-        protected ProgramConfigForm _configForm;
-        protected JobSettingForm _jobSettingForm;
+        protected ProgramConfigForm configForm;
+        protected JobSettingForm jobSettingForm;
         protected AboutForm _aboutForm;
-        protected bool _workerReporting;
-        protected JobItem _workingJobItem;
-        protected List<JobItem> _workingJobItems;
+        protected bool workerReporting;
+        protected JobItem workingJobItem;
+        protected List<JobItem> workingJobItems;
         private delegate void ReportInvoke(JobItem jobItem, IMediaProcessor encoder, DoWorkEventArgs e);
         
         [STAThread]
@@ -50,7 +50,7 @@
         {
             this.InitializeComponent();
             ProgramConfig configSection = ProgramConfig.Get();
-            this._configForm = new ProgramConfigForm(configSection);
+            this.configForm = new ProgramConfigForm(configSection);
         }
 
         private void AddButtonClick(object sender, EventArgs e)
@@ -58,7 +58,7 @@
             this.openFileDialog1.ShowDialog();
         }
 
-        private void BackgroundWorker1DoWork(object sender, DoWorkEventArgs e)
+        private void BackgroundWorkerDoWork(object sender, DoWorkEventArgs e)
         {
             JobItem jobItem = null;
             try
@@ -69,7 +69,7 @@
                     jobItem.Event = JobEvent.Error;
                     this.JobEventReport(jobItem);
                     MessageBox.Show(jobItem.SourceFile + "\n源文件不是视频文件，或设置有错误。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    if (this._workingJobItems[this._workingJobItems.Count - 1] == jobItem)
+                    if (this.workingJobItems[this.workingJobItems.Count - 1] == jobItem)
                     {
                         jobItem.Event = JobEvent.AllDone;
                         this.JobEventReport(jobItem);
@@ -80,7 +80,7 @@
                 {
                     jobItem.Event = JobEvent.OneJobItemCancelled;
                     this.JobEventReport(jobItem);
-                    if (this._workingJobItems[this._workingJobItems.Count - 1] == jobItem)
+                    if (this.workingJobItems[this.workingJobItems.Count - 1] == jobItem)
                     {
                         jobItem.Event = JobEvent.AllDone;
                         this.JobEventReport(jobItem);
@@ -131,7 +131,7 @@
             }
             finally
             {
-                if (this._workingJobItems[this._workingJobItems.Count-1] == jobItem)
+                if (this.workingJobItems[this.workingJobItems.Count-1] == jobItem)
                 {
                     jobItem.Event = JobEvent.AllDone;
                     this.JobEventReport(jobItem);
@@ -140,7 +140,7 @@
             }
         }
 
-        private void BackgroundWorker1ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void BackgroundWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             JobItem jobItem = (JobItem)e.UserState;
             if (jobItem.Event == JobEvent.VideoEncoding)
@@ -176,19 +176,19 @@
                     this.ResetProgress();
                     jobItem.State = JobState.Working;
                     this.startButton.Enabled = false;
-                    index = this._workingJobItems.IndexOf(jobItem);
-                    this.statusLable.Text = new StringBuilder("正在处理第").Append(index + 1).Append("个文件，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
+                    index = this.workingJobItems.IndexOf(jobItem);
+                    this.statusLable.Text = new StringBuilder("正在处理第").Append(index + 1).Append("个文件，共").Append(this.workingJobItems.Count).Append("个文件").ToString();
                 }
                 else if (jobItem.Event == JobEvent.OneJobItemDone)
                 {
                     jobItem.FilesToDeleteWhenProcessingFails.Clear();
                     jobItem.State = JobState.Done;
-                    index = this._workingJobItems.IndexOf(jobItem);
-                    this.statusLable.Text = new StringBuilder("第").Append(index + 1).Append("个文件处理完毕，共").Append(this._workingJobItems.Count).Append("个文件").ToString();
+                    index = this.workingJobItems.IndexOf(jobItem);
+                    this.statusLable.Text = new StringBuilder("第").Append(index + 1).Append("个文件处理完毕，共").Append(this.workingJobItems.Count).Append("个文件").ToString();
                 }
                 else if (jobItem.Event == JobEvent.AllDone)
                 {
-                    this.statusLable.Text = new StringBuilder().Append(this._workingJobItems.Count).Append("个文件处理完成").ToString();
+                    this.statusLable.Text = new StringBuilder().Append(this.workingJobItems.Count).Append("个文件处理完成").ToString();
                     this.startButton.Enabled = true;
                 }
                 else if (jobItem.Event == JobEvent.QuitAllProcessing)
@@ -197,7 +197,7 @@
                     jobItem.State = JobState.Stop;
                     this.startButton.Enabled = true;
                     this.statusLable.Text = "中止";
-                    this.tabControl1.SelectTab(this.inputPage);
+                    this.mainTabControl.SelectTab(this.inputPage);
                     foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
                     {
                         File.Delete(file);
@@ -218,7 +218,7 @@
                 {
                     jobItem.State = JobState.Error;
                     this.statusLable.Text = "错误";
-                    this.backgroundWorker1.CancelAsync();
+                    this.backgroundWorker.CancelAsync();
                     foreach (string file in jobItem.FilesToDeleteWhenProcessingFails)
                     {
                         File.Delete(file);
@@ -226,7 +226,7 @@
                     jobItem.FilesToDeleteWhenProcessingFails.Clear();
                 }
             }
-            this._workerReporting = false;
+            this.workerReporting = false;
         }
 
         private void ClearButtonClick(object sender, EventArgs e)
@@ -266,16 +266,16 @@
             {
                 CxListViewItem current = (CxListViewItem) enumerator.Current;
                 this.jobItemListView.Items.Remove(current);
-                if (((this._workingJobItems != null) && this._workingJobItems.Contains(current.JobItem)) && (this._workingJobItems.IndexOf(current.JobItem) > this._workingJobItems.IndexOf(this._workingJobItem)))
+                if (((this.workingJobItems != null) && this.workingJobItems.Contains(current.JobItem)) && (this.workingJobItems.IndexOf(current.JobItem) > this.workingJobItems.IndexOf(this.workingJobItem)))
                 {
-                    this._workingJobItems.Remove(current.JobItem);
+                    this.workingJobItems.Remove(current.JobItem);
                 }
             }
         }
 
         private bool DidUserPressStopButton(JobItem jobItem, DoWorkEventArgs e)
         {
-            if (this.backgroundWorker1.CancellationPending)
+            if (this.backgroundWorker.CancellationPending)
             {
                 jobItem.Event = JobEvent.QuitAllProcessing;
                 this.JobEventReport(jobItem);
@@ -337,7 +337,7 @@
                 jobItem.AudioEncoder = encoder;
                 jobItem.Event = JobEvent.AudioEncoding;
                 result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
-                if (!this.backgroundWorker1.CancellationPending)
+                if (!this.backgroundWorker.CancellationPending)
                 {
                     encoder.Start();
                 }
@@ -419,13 +419,13 @@
                 jobItem.VideoEncoder = encoder;
                 jobItem.Event = JobEvent.VideoEncoding;
                 result = encodingReport.BeginInvoke(jobItem, encoder, e, null, null);
-                if (!this.backgroundWorker1.CancellationPending)
+                if (!this.backgroundWorker.CancellationPending)
                     encoder.Start();
             }
             catch (BadEncoderCmdException)
             {
                 MessageBox.Show("视频编码失败。是否使用了不正确的命令行？", "编码失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.backgroundWorker1.CancelAsync();
+                this.backgroundWorker.CancelAsync();
                 jobItem.Event = JobEvent.Error;
                 this.JobEventReport(jobItem);
             }
@@ -491,7 +491,7 @@
             while (true)
             {
                 Thread.Sleep(500);
-                if (this.backgroundWorker1.CancellationPending)
+                if (this.backgroundWorker.CancellationPending)
                 {
                     this.StopWorker(encoder, e);
                     break;
@@ -520,7 +520,7 @@
                 }
                 if (jobItem.State == JobState.Stop)
                 {
-                    if (this._configForm.chbSilentRestart.Checked)
+                    if (this.configForm.chbSilentRestart.Checked)
                     {
                         jobItem.State = JobState.Waiting;
                     }
@@ -545,22 +545,22 @@
 
         private void JobEventReport(JobItem jobItem)
         {
-            this._workerReporting = true;
-            this.backgroundWorker1.ReportProgress(0, jobItem);
-            while (this._workerReporting)
+            this.workerReporting = true;
+            this.backgroundWorker.ReportProgress(0, jobItem);
+            while (this.workerReporting)
             {
                 Thread.Sleep(1);
             }
         }
 
-        private void ListView1ItemDrag(object sender, ItemDragEventArgs e)
+        private void JobItemListViewItemDrag(object sender, ItemDragEventArgs e)
         {
             this.jobItemListView.DoDragDrop(this.jobItemListView.SelectedItems, DragDropEffects.Move);
         }
 
         private void MainFormFormClosing(object sender, FormClosingEventArgs e)
         {
-            if ((this._workingJobItem != null) && (this._workingJobItem.State == JobState.Working))
+            if ((this.workingJobItem != null) && (this.workingJobItem.State == JobState.Working))
             {
                 if (MessageBox.Show("正在工作中，是否中止并退出？", "工作中", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
                 {
@@ -624,7 +624,7 @@
             jobItem.Event = JobEvent.Muxing;
             ReportInvoke muxingReport = this.EncodingReport;
             IAsyncResult result = muxingReport.BeginInvoke(jobItem, jobItem.Muxer, e, null, null);
-            if (!this.backgroundWorker1.CancellationPending)
+            if (!this.backgroundWorker.CancellationPending)
             {
                 try
                 {
@@ -650,23 +650,25 @@
             }
         }
 
-        private void NextJobOrExist(object sender, RunWorkerCompletedEventArgs e)
+        private void NextJobOrExit(object sender, RunWorkerCompletedEventArgs e)
         {
-            this._workingJobItem = null;
+            this.workingJobItem = null;
             if (e.Result != null)
             {
                 JobItem result = (JobItem) e.Result;
                 if (result.Event == JobEvent.AllDone || result.Event == JobEvent.QuitAllProcessing)
                 {
                     result.Event = JobEvent.None;
-                    this._workingJobItems.Clear();
+                    foreach (JobItem jobItem in this.workingJobItems)
+                        if (jobItem.State == JobState.Waiting)
+                            jobItem.State = JobState.NotProccessed;
+                    this.workingJobItems.Clear();
                 }
-                else if (this._workingJobItems[this._workingJobItems.Count - 1] != result)
+                else if (this.workingJobItems[this.workingJobItems.Count - 1] != result)
                 {
-                    int num = this._workingJobItems.IndexOf(result) + 1;
-                    JobItem argument = this._workingJobItems[num];
-                    this._workingJobItem = argument;
-                    this.backgroundWorker1.RunWorkerAsync(argument);
+                    int newIndex = this.workingJobItems.IndexOf(result) + 1;
+                    this.workingJobItem = this.workingJobItems[newIndex];
+                    this.backgroundWorker.RunWorkerAsync(this.workingJobItem);
                 }
             }
         }
@@ -758,7 +760,7 @@
 
         private void ProfileBoxSelectedIndexChanged(object sender, EventArgs e)
         {
-            if (MessageBox.Show("是否应用更改到所有项目？", "预设更改", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+            if (this.jobItemListView.Items.Count > 0 && MessageBox.Show("是否应用更改到所有项目？", "预设更改", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
             {
                 Profile profile = new Profile(this.profileBox.Text);
                 string extension = string.Empty;
@@ -805,15 +807,15 @@
             JobItem jobItem = item.JobItem;
             JobItem[] items = new JobItem[] { jobItem };
             this.SetUpJobItems(items);
-            if (this._jobSettingForm == null)
+            if (this.jobSettingForm == null)
             {
-                this._jobSettingForm = new JobSettingForm();
+                this.jobSettingForm = new JobSettingForm();
             }
-            this._jobSettingForm.UpdateProfiles(ArrayBuilder.Build<string>(this.profileBox.Items), jobItem.ProfileName);
-            this._jobSettingForm.SetUpFormForItem(jobItem);
-            DialogResult result = this._jobSettingForm.ShowDialog();
-            this.UpdateProfileBox(this._jobSettingForm.GetProfiles(), this.profileBox.Text);
-            this._jobSettingForm.Clear();
+            this.jobSettingForm.UpdateProfiles(ArrayBuilder.Build<string>(this.profileBox.Items), jobItem.ProfileName);
+            this.jobSettingForm.SetUpFormForItem(jobItem);
+            DialogResult result = this.jobSettingForm.ShowDialog();
+            this.UpdateProfileBox(this.jobSettingForm.GetProfiles(), this.profileBox.Text);
+            this.jobSettingForm.Clear();
         }
 
         private void SetUpJobItems(JobItem[] items)
@@ -839,27 +841,27 @@
 
         private void StartButtonClick(object sender, EventArgs e)
         {
-            this._workingJobItems = this.GetWorkingJobItems();
-            string str = string.Empty;
-            foreach (JobItem item in this._workingJobItems)
+            this.workingJobItems = this.GetWorkingJobItems();
+            string notExistingSourceFile = string.Empty;
+            foreach (JobItem item in this.workingJobItems)
             {
                 if (!MyIO.Exists(item.SourceFile))
                 {
-                    str += new StringBuilder("\n").Append(item.SourceFile).ToString();
+                    notExistingSourceFile += new StringBuilder("\n").Append(item.SourceFile).ToString();
                     item.State = JobState.Error;
-                    this._workingJobItems.Remove(item);
+                    this.workingJobItems.Remove(item);
                 }
             }
-            if ((str != string.Empty) && (MessageBox.Show(new StringBuilder("以下媒体文件不存在：").Append(str).Append("\n单击“确定”将处理其他文件。").ToString(), "错误", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.Cancel))
+            if ((notExistingSourceFile != string.Empty) && (MessageBox.Show(new StringBuilder("以下媒体文件不存在：").Append(notExistingSourceFile).Append("\n单击“确定”将处理其他文件。").ToString(), "错误", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.Cancel))
             {
-                this._workingJobItems.Clear();
+                this.workingJobItems.Clear();
             }
-            else if (this._workingJobItems.Count > 0)
+            else if (this.workingJobItems.Count > 0)
             {
-                this.SetUpJobItems(this._workingJobItems.ToArray());
-                this._workingJobItem = this._workingJobItems[0];
-                this.backgroundWorker1.RunWorkerAsync(this._workingJobItem);
-                this.tabControl1.SelectTab(this.progressPage);
+                this.SetUpJobItems(this.workingJobItems.ToArray());
+                this.workingJobItem = this.workingJobItems[0];
+                this.backgroundWorker.RunWorkerAsync(this.workingJobItem);
+                this.mainTabControl.SelectTab(this.progressPage);
             }
         }
 
@@ -867,7 +869,7 @@
         {
             try
             {
-                this.backgroundWorker1.CancelAsync();
+                this.backgroundWorker.CancelAsync();
             }
             catch (Exception)
             {
@@ -921,7 +923,7 @@
 
         private void 选项ToolStripMenuItemClick(object sender, EventArgs e)
         {
-            this._configForm.ShowDialog();
+            this.configForm.ShowDialog();
         }
 
         private void jobItemListView_DoubleClick(object sender, EventArgs e)
@@ -960,20 +962,16 @@
                 return;
             int dragToIndex = dragToItem.Index;
             foreach (ListViewItem item in this.jobItemListView.SelectedItems)
+            {
                 this.jobItemListView.Items.Remove(item);
-            if (this.jobItemListView.Items.Count < dragToIndex)
-                dragToIndex = this.jobItemListView.Items.Count;
-            foreach (ListViewItem item in this.jobItemListView.SelectedItems)
-            {
                 this.jobItemListView.Items.Insert(dragToIndex, item);
-                dragToIndex++;
             }
-            if (this._workingJobItems.Count > 1)
+            if (this.workingJobItems != null && this.workingJobItems.Count > 0)
             {
-                List<JobItem> newWorkingItems = new List<JobItem>(this._workingJobItems.Count);
-                foreach (JobItem jobItem in this._workingJobItems)
+                List<JobItem> newWorkingItems = new List<JobItem>(this.workingJobItems.Count);
+                foreach (JobItem jobItem in this.workingJobItems)
                     newWorkingItems[jobItem.CxListViewItem.Index] = jobItem;
-                this._workingJobItems = newWorkingItems;
+                this.workingJobItems = newWorkingItems;
             }
         }
 
@@ -985,14 +983,14 @@
             }
         }
 
-        private ListViewItem AddNewJobItem(string filePath, bool checkMedia)
+        private ListViewItem AddNewJobItem(string filePath, bool validateMedia)
         {
             string fileName = filePath;
-            if (!this._configForm.chbInputDir.Checked)
+            if (!this.configForm.showInputDirCheckBox.Checked)
             {
                 fileName = Path.GetFileName(fileName);
             }
-            if (checkMedia&&Path.GetExtension(fileName).ToLower()!=".avs")
+            if (validateMedia&&Path.GetExtension(fileName).ToLower()!=".avs")
             {
                 int errorCode = ((IMediaDet)new MediaDet()).put_Filename(filePath);
                 try
@@ -1015,10 +1013,10 @@
                 ext = profile.GetExtByContainer();
             }
             string destFile = string.Empty;
-            if (this._configForm.destDirComboBox.Text == string.Empty)
+            if (this.configForm.destDirComboBox.Text == string.Empty)
                 destFile = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ext);
             else
-                destFile = Path.Combine(this._configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(filePath) + ext);
+                destFile = Path.Combine(this.configForm.destDirComboBox.Text, Path.GetFileNameWithoutExtension(filePath) + ext);
             destFile = MyIO.GetUniqueName(destFile);
             jobItem = new JobItem(filePath, destFile, this.profileBox.Text);
             if (Path.GetExtension(filePath).ToLower()==".avs"&&jobItem.VideoInfo.Container!="avs")
@@ -1027,6 +1025,13 @@
                     return null;
                 }
             this.jobItemListView.Items.Add(jobItem.CxListViewItem);
+            if ((this.workingJobItem != null) && (this.workingJobItem.State == JobState.Working))
+                if (MessageBox.Show("是否加入工作队列？", "工作中", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    this.SetUpJobItems(new JobItem[] { jobItem });
+                    this.workingJobItems.Add(jobItem);
+                    jobItem.State = JobState.Waiting;
+                }
             return jobItem.CxListViewItem;
         }
 

@@ -926,6 +926,7 @@
             // 
             this.subtitleTabPage.Controls.Add(this.button1);
             this.subtitleTabPage.Controls.Add(this.autoLoadSubtitleCheckBox);
+            this.subtitleTabPage.Controls.Add(this.customSubCheckBox);
             this.subtitleTabPage.Controls.Add(this.customSubGroupBox);
             this.subtitleTabPage.Controls.Add(this.subtitleTextBox);
             this.subtitleTabPage.Controls.Add(this.subtitleButton);
@@ -965,12 +966,11 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.customSubGroupBox.Controls.Add(this.fontBottomBox);
             this.customSubGroupBox.Controls.Add(this.label19);
-            this.customSubGroupBox.Controls.Add(this.customSubCheckBox);
             this.customSubGroupBox.Controls.Add(this.label21);
             this.customSubGroupBox.Controls.Add(this.fontButton);
             this.customSubGroupBox.Controls.Add(this.label20);
             this.customSubGroupBox.Controls.Add(this.fontSizeBox);
-            this.customSubGroupBox.Location = new System.Drawing.Point(3, 139);
+            this.customSubGroupBox.Location = new System.Drawing.Point(3, 180);
             this.customSubGroupBox.Name = "customSubGroupBox";
             this.customSubGroupBox.Size = new System.Drawing.Size(431, 194);
             this.customSubGroupBox.TabIndex = 11;
@@ -996,7 +996,7 @@
             // 
             // customSubCheckBox
             // 
-            this.customSubCheckBox.Location = new System.Drawing.Point(8, 17);
+            this.customSubCheckBox.Location = new System.Drawing.Point(6, 146);
             this.customSubCheckBox.Name = "customSubCheckBox";
             this.customSubCheckBox.Size = new System.Drawing.Size(139, 28);
             this.customSubCheckBox.TabIndex = 10;
@@ -1273,6 +1273,7 @@
             this.avsInputScriptEditTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.avsInputScriptEditTextBox.Size = new System.Drawing.Size(387, 310);
             this.avsInputScriptEditTextBox.TabIndex = 8;
+            this.avsInputScriptEditTextBox.TextChanged += new System.EventHandler(this.avsInputScriptEditTextBox_TextChanged);
             this.avsInputScriptEditTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
             // 
             // destFileBox

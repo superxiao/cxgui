@@ -37,7 +37,7 @@
             this.cacelButton = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chbInputDir = new System.Windows.Forms.CheckBox();
+            this.showInputDirCheckBox = new System.Windows.Forms.CheckBox();
             this.chbSilentRestart = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.destDirComboBox = new System.Windows.Forms.ComboBox();
@@ -142,7 +142,7 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.chbInputDir);
+            this.groupBox1.Controls.Add(this.showInputDirCheckBox);
             this.groupBox1.Controls.Add(this.chbSilentRestart);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.destDirComboBox);
@@ -156,12 +156,12 @@
             // 
             // chbInputDir
             // 
-            this.chbInputDir.Location = new System.Drawing.Point(6, 79);
-            this.chbInputDir.Name = "chbInputDir";
-            this.chbInputDir.Size = new System.Drawing.Size(165, 24);
-            this.chbInputDir.TabIndex = 5;
-            this.chbInputDir.Text = "显示输入文件所在目录";
-            this.chbInputDir.UseVisualStyleBackColor = true;
+            this.showInputDirCheckBox.Location = new System.Drawing.Point(6, 79);
+            this.showInputDirCheckBox.Name = "chbInputDir";
+            this.showInputDirCheckBox.Size = new System.Drawing.Size(165, 24);
+            this.showInputDirCheckBox.TabIndex = 5;
+            this.showInputDirCheckBox.Text = "显示输入文件所在目录";
+            this.showInputDirCheckBox.UseVisualStyleBackColor = true;
             // 
             // chbSilentRestart
             // 
@@ -239,7 +239,7 @@
         private System.Windows.Forms.Button cacelButton;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.GroupBox groupBox1;
-        public System.Windows.Forms.CheckBox chbInputDir;
+        public System.Windows.Forms.CheckBox showInputDirCheckBox;
         public System.Windows.Forms.CheckBox chbSilentRestart;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.ComboBox destDirComboBox;

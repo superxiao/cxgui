@@ -36,7 +36,7 @@
             this.选项ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.listViewMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,13 +85,13 @@
             this.clearButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
             this.delButton = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.mainTabControl = new System.Windows.Forms.TabControl();
             this.menuStrip1.SuspendLayout();
             this.listViewMenu.SuspendLayout();
             this.progressPage.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.inputPage.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.mainTabControl.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -154,11 +154,11 @@
             // 
             // backgroundWorker1
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorker1DoWork);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.BackgroundWorker1ProgressChanged);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.NextJobOrExist);
+            this.backgroundWorker.WorkerReportsProgress = true;
+            this.backgroundWorker.WorkerSupportsCancellation = true;
+            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorkerDoWork);
+            this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.BackgroundWorkerProgressChanged);
+            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.NextJobOrExit);
             // 
             // openFileDialog1
             // 
@@ -528,7 +528,7 @@
             this.jobItemListView.TabIndex = 3;
             this.jobItemListView.UseCompatibleStateImageBehavior = false;
             this.jobItemListView.View = System.Windows.Forms.View.Details;
-            this.jobItemListView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.ListView1ItemDrag);
+            this.jobItemListView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.JobItemListViewItemDrag);
             this.jobItemListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.JobItemListViewItemSelectionChanged);
             this.jobItemListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.jobItemListView_DragDrop);
             this.jobItemListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ListView1DragEnter);
@@ -606,23 +606,23 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.inputPage);
-            this.tabControl1.Controls.Add(this.progressPage);
-            this.tabControl1.Location = new System.Drawing.Point(0, 28);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(521, 460);
-            this.tabControl1.TabIndex = 9;
+            this.mainTabControl.Controls.Add(this.inputPage);
+            this.mainTabControl.Controls.Add(this.progressPage);
+            this.mainTabControl.Location = new System.Drawing.Point(0, 28);
+            this.mainTabControl.Name = "tabControl1";
+            this.mainTabControl.SelectedIndex = 0;
+            this.mainTabControl.Size = new System.Drawing.Size(521, 460);
+            this.mainTabControl.TabIndex = 9;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(521, 489);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(510, 38);
@@ -638,7 +638,7 @@
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.inputPage.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
+            this.mainTabControl.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -651,7 +651,7 @@
         private System.Windows.Forms.ToolStripMenuItem 添加ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 工具ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 选项ToolStripMenuItem;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ContextMenuStrip listViewMenu;
         private System.Windows.Forms.ToolStripMenuItem 设置ToolStripMenuItem;
@@ -694,7 +694,7 @@
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.Button delButton;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl mainTabControl;
         private System.Windows.Forms.ToolStripMenuItem 帮助ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 关于ToolStripMenuItem;
         private System.Windows.Forms.Label videoEncodingFpsLable;

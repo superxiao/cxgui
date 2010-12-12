@@ -30,6 +30,7 @@
         protected ResolutionCalculator resolutionCal;
         protected VideoEncConfigBase videoEncConfig;
         protected VideoInfo videoInfo;
+        protected bool avsInputScriptEdited;
 
         public JobSettingForm()
         {
@@ -685,7 +686,8 @@
             //videoEncConfig和audioEncConfig由jobItem克隆得来，跟随GUI即时变化
             this.jobItem.VideoEncConfig = this.videoEncConfig;
             this.jobItem.AudioEncConfig = this.audioEncConfig;
-            this.jobItem.State = JobState.NotProccessed;
+            if (this.jobItem.State != JobState.Waiting)
+                this.jobItem.State = JobState.NotProccessed;
             this.jobItem.ProfileName = this.profileBox.Text;
             if (this.videoInfo.Container == "avs")
             {
@@ -782,6 +784,15 @@
             }
             else
             {
+                if (this.videoInfo.Container == "avs")
+                    if (this.avsInputScriptEdited)
+                    {
+                        if (MessageBox.Show("是否保存对avs脚本的修改？", "avs脚本未保存", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+                            File.WriteAllText(this.jobItem.SourceFile, this.avsInputScriptEditTextBox.Text, Encoding.Default);
+                        else
+                            return;
+                    }
+
                 string sourceFile;
                 AvisynthConfig avsConfig = new AvisynthConfig();
                 JobItemConfig jobConfig = new JobItemConfig();
@@ -1551,10 +1562,12 @@
         private void avsInputScriptSaveButton_Click(object sender, EventArgs e)
         {
             File.WriteAllText(this.jobItem.SourceFile, this.avsInputScriptEditTextBox.Text, Encoding.Default);
+            this.avsInputScriptEdited = false;
         }
 
         private void scriptTabPage_Enter(object sender, EventArgs e)
         {
+            
             AvisynthConfig avsConfig = new AvisynthConfig();
             if (this.videoInfo.Container!="avs")
                     this.SaveToAvsConfig(avsConfig);
@@ -1602,6 +1615,12 @@
                 if (e.KeyCode == System.Windows.Forms.Keys.S)
                     this.avsInputScriptSaveButton.PerformClick();
             }
+        }
+
+        private void avsInputScriptEditTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (this.Created)
+                this.avsInputScriptEdited = true;
         }
     }
 }

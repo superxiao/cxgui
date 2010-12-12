@@ -17,7 +17,7 @@
         {
             this.InitializeComponent();
             this.destDirComboBox.Text = configSection.DestDir;
-            this.chbInputDir.Checked = configSection.OmitInputDir;
+            this.showInputDirCheckBox.Checked = configSection.OmitInputDir;
             this.chbSilentRestart.Checked = configSection.SilentRestart;
             this.previewPlayerComboBox.Text = configSection.PlayerPath;
             this.autoChangeAudioSourceFilterCheckBox.Checked = configSection.AutoChangeAudioSourceFilter;
@@ -76,7 +76,7 @@
         {
             ProgramConfig config = ProgramConfig.Get();
             config.DestDir = this.destDirComboBox.Text;
-            config.OmitInputDir = this.chbInputDir.Checked;
+            config.OmitInputDir = this.showInputDirCheckBox.Checked;
             config.SilentRestart = this.chbSilentRestart.Checked;
             config.PlayerPath = this.previewPlayerComboBox.Text;
             config.AutoChangeAudioSourceFilter = this.autoChangeAudioSourceFilterCheckBox.Checked;
