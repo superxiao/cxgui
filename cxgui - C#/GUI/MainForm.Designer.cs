@@ -152,7 +152,7 @@
             this.关于ToolStripMenuItem.Text = "关于";
             this.关于ToolStripMenuItem.Click += new System.EventHandler(this.关于ToolStripMenuItem_Click);
             // 
-            // backgroundWorker1
+            // backgroundWorker
             // 
             this.backgroundWorker.WorkerReportsProgress = true;
             this.backgroundWorker.WorkerSupportsCancellation = true;
@@ -251,7 +251,7 @@
             this.progressPage.Location = new System.Drawing.Point(4, 22);
             this.progressPage.Name = "progressPage";
             this.progressPage.Padding = new System.Windows.Forms.Padding(3);
-            this.progressPage.Size = new System.Drawing.Size(513, 434);
+            this.progressPage.Size = new System.Drawing.Size(513, 384);
             this.progressPage.TabIndex = 1;
             this.progressPage.Text = "进度";
             // 
@@ -304,7 +304,7 @@
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusLable});
-            this.statusStrip.Location = new System.Drawing.Point(3, 409);
+            this.statusStrip.Location = new System.Drawing.Point(3, 359);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(507, 22);
             this.statusStrip.TabIndex = 19;
@@ -342,24 +342,24 @@
             this.audioTimeUsed.Size = new System.Drawing.Size(100, 23);
             this.audioTimeUsed.TabIndex = 15;
             // 
-            // videoTimeLeft
+            // videoTimeLeftLable
             // 
             this.videoTimeLeftLable.Location = new System.Drawing.Point(183, 79);
-            this.videoTimeLeftLable.Name = "videoTimeLeft";
+            this.videoTimeLeftLable.Name = "videoTimeLeftLable";
             this.videoTimeLeftLable.Size = new System.Drawing.Size(100, 23);
             this.videoTimeLeftLable.TabIndex = 14;
             // 
-            // videoTimeUsed
+            // videoTimeUsedLable
             // 
             this.videoTimeUsedLable.Location = new System.Drawing.Point(183, 56);
-            this.videoTimeUsedLable.Name = "videoTimeUsed";
+            this.videoTimeUsedLable.Name = "videoTimeUsedLable";
             this.videoTimeUsedLable.Size = new System.Drawing.Size(100, 23);
             this.videoTimeUsedLable.TabIndex = 13;
             // 
             // stopButton
             // 
             this.stopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.stopButton.Location = new System.Drawing.Point(430, 363);
+            this.stopButton.Location = new System.Drawing.Point(430, 313);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(75, 30);
             this.stopButton.TabIndex = 12;
@@ -482,14 +482,14 @@
             this.inputPage.Location = new System.Drawing.Point(4, 22);
             this.inputPage.Name = "inputPage";
             this.inputPage.Padding = new System.Windows.Forms.Padding(3);
-            this.inputPage.Size = new System.Drawing.Size(513, 434);
+            this.inputPage.Size = new System.Drawing.Size(513, 483);
             this.inputPage.TabIndex = 0;
             this.inputPage.Text = "输入";
             // 
             // label10
             // 
             this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label10.Location = new System.Drawing.Point(8, 389);
+            this.label10.Location = new System.Drawing.Point(8, 438);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(59, 23);
             this.label10.TabIndex = 9;
@@ -502,7 +502,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.profileBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.profileBox.FormattingEnabled = true;
-            this.profileBox.Location = new System.Drawing.Point(89, 392);
+            this.profileBox.Location = new System.Drawing.Point(89, 441);
             this.profileBox.Name = "profileBox";
             this.profileBox.Size = new System.Drawing.Size(237, 20);
             this.profileBox.TabIndex = 8;
@@ -524,7 +524,7 @@
             this.jobItemListView.FullRowSelect = true;
             this.jobItemListView.Location = new System.Drawing.Point(8, 26);
             this.jobItemListView.Name = "jobItemListView";
-            this.jobItemListView.Size = new System.Drawing.Size(499, 324);
+            this.jobItemListView.Size = new System.Drawing.Size(499, 373);
             this.jobItemListView.TabIndex = 3;
             this.jobItemListView.UseCompatibleStateImageBehavior = false;
             this.jobItemListView.View = System.Windows.Forms.View.Details;
@@ -552,7 +552,7 @@
             // 
             this.settingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.settingButton.Enabled = false;
-            this.settingButton.Location = new System.Drawing.Point(89, 356);
+            this.settingButton.Location = new System.Drawing.Point(89, 405);
             this.settingButton.Name = "settingButton";
             this.settingButton.Size = new System.Drawing.Size(75, 30);
             this.settingButton.TabIndex = 7;
@@ -563,7 +563,7 @@
             // startButton
             // 
             this.startButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.startButton.Location = new System.Drawing.Point(370, 363);
+            this.startButton.Location = new System.Drawing.Point(370, 412);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(137, 49);
             this.startButton.TabIndex = 5;
@@ -574,7 +574,7 @@
             // clearButton
             // 
             this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.clearButton.Location = new System.Drawing.Point(251, 356);
+            this.clearButton.Location = new System.Drawing.Point(251, 405);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(75, 30);
             this.clearButton.TabIndex = 6;
@@ -585,7 +585,7 @@
             // addButton
             // 
             this.addButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addButton.Location = new System.Drawing.Point(8, 356);
+            this.addButton.Location = new System.Drawing.Point(8, 405);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(75, 30);
             this.addButton.TabIndex = 3;
@@ -596,7 +596,7 @@
             // delButton
             // 
             this.delButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.delButton.Location = new System.Drawing.Point(170, 356);
+            this.delButton.Location = new System.Drawing.Point(170, 405);
             this.delButton.Name = "delButton";
             this.delButton.Size = new System.Drawing.Size(75, 30);
             this.delButton.TabIndex = 4;
@@ -604,7 +604,7 @@
             this.delButton.UseVisualStyleBackColor = true;
             this.delButton.Click += new System.EventHandler(this.DelButtonClick);
             // 
-            // tabControl1
+            // mainTabControl
             // 
             this.mainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
@@ -612,20 +612,20 @@
             this.mainTabControl.Controls.Add(this.inputPage);
             this.mainTabControl.Controls.Add(this.progressPage);
             this.mainTabControl.Location = new System.Drawing.Point(0, 28);
-            this.mainTabControl.Name = "tabControl1";
+            this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
-            this.mainTabControl.Size = new System.Drawing.Size(521, 460);
+            this.mainTabControl.Size = new System.Drawing.Size(521, 509);
             this.mainTabControl.TabIndex = 9;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(521, 489);
+            this.ClientSize = new System.Drawing.Size(521, 542);
             this.Controls.Add(this.mainTabControl);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(510, 38);
+            this.MinimumSize = new System.Drawing.Size(510, 418);
             this.Name = "MainForm";
             this.Text = "CXGUI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);

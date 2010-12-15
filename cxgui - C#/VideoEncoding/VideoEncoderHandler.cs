@@ -32,7 +32,7 @@
         /// </summary>
         /// <param name="avisynthScriptFile"></param>
         /// <param name="destinationFile"></param>
-        public VideoEncoderHandler(string avisynthScriptFile, string destinationFile)
+        protected VideoEncoderHandler(string avisynthScriptFile, string destinationFile)
         {
             if (!File.Exists(avisynthScriptFile))
             {
@@ -60,6 +60,7 @@
         }
 
         public abstract void Start();
+
         public void Stop()
         {
             try

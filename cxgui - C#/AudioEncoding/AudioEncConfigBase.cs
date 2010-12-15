@@ -5,6 +5,8 @@
     [Serializable]
     public class AudioEncConfigBase
     {
+        protected AudioEncConfigBase()
+        { }
     }
 }
 

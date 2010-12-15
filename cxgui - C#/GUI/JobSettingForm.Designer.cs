@@ -93,14 +93,12 @@
             this.subtitleTabPage = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.autoLoadSubtitleCheckBox = new System.Windows.Forms.CheckBox();
-            this.customSubGroupBox = new System.Windows.Forms.GroupBox();
-            this.fontBottomBox = new System.Windows.Forms.DomainUpDown();
-            this.label19 = new System.Windows.Forms.Label();
             this.customSubCheckBox = new System.Windows.Forms.CheckBox();
+            this.customSubGroupBox = new System.Windows.Forms.GroupBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.fontButton = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
-            this.fontSizeBox = new System.Windows.Forms.DomainUpDown();
             this.subtitleTextBox = new System.Windows.Forms.TextBox();
             this.subtitleButton = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
@@ -132,8 +130,10 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
-            this.fontDialog1 = new System.Windows.Forms.FontDialog();
+            this.fontDialog = new System.Windows.Forms.FontDialog();
             this.delProfileButton = new System.Windows.Forms.Button();
+            this.fontSizeBox = new System.Windows.Forms.NumericUpDown();
+            this.fontBottomBox = new System.Windows.Forms.NumericUpDown();
             this.mainTabControl.SuspendLayout();
             this.videoEditTabPage.SuspendLayout();
             this.gbVideoSource.SuspendLayout();
@@ -153,6 +153,8 @@
             this.videoScriptTabPage.SuspendLayout();
             this.audioScriptTabPage.SuspendLayout();
             this.inputScriptTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fontSizeBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fontBottomBox)).BeginInit();
             this.SuspendLayout();
             // 
             // previewButton
@@ -960,40 +962,6 @@
             this.autoLoadSubtitleCheckBox.UseVisualStyleBackColor = true;
             this.autoLoadSubtitleCheckBox.CheckedChanged += new System.EventHandler(this.autoLoadSubtitleCheckBox_CheckedChanged);
             // 
-            // customSubGroupBox
-            // 
-            this.customSubGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.customSubGroupBox.Controls.Add(this.fontBottomBox);
-            this.customSubGroupBox.Controls.Add(this.label19);
-            this.customSubGroupBox.Controls.Add(this.label21);
-            this.customSubGroupBox.Controls.Add(this.fontButton);
-            this.customSubGroupBox.Controls.Add(this.label20);
-            this.customSubGroupBox.Controls.Add(this.fontSizeBox);
-            this.customSubGroupBox.Location = new System.Drawing.Point(3, 180);
-            this.customSubGroupBox.Name = "customSubGroupBox";
-            this.customSubGroupBox.Size = new System.Drawing.Size(431, 194);
-            this.customSubGroupBox.TabIndex = 11;
-            this.customSubGroupBox.TabStop = false;
-            this.customSubGroupBox.Text = "字幕风格";
-            // 
-            // fontBottomBox
-            // 
-            this.fontBottomBox.Location = new System.Drawing.Point(66, 89);
-            this.fontBottomBox.Name = "fontBottomBox";
-            this.fontBottomBox.Size = new System.Drawing.Size(79, 21);
-            this.fontBottomBox.TabIndex = 9;
-            this.fontBottomBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AllowInteger);
-            // 
-            // label19
-            // 
-            this.label19.Location = new System.Drawing.Point(6, 51);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(43, 23);
-            this.label19.TabIndex = 4;
-            this.label19.Text = "字体";
-            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // customSubCheckBox
             // 
             this.customSubCheckBox.Location = new System.Drawing.Point(6, 146);
@@ -1003,6 +971,32 @@
             this.customSubCheckBox.Text = "自定义字幕风格";
             this.customSubCheckBox.UseVisualStyleBackColor = true;
             this.customSubCheckBox.CheckedChanged += new System.EventHandler(this.CustomSubCheckBoxCheckedChanged);
+            // 
+            // customSubGroupBox
+            // 
+            this.customSubGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.customSubGroupBox.Controls.Add(this.fontBottomBox);
+            this.customSubGroupBox.Controls.Add(this.fontSizeBox);
+            this.customSubGroupBox.Controls.Add(this.label19);
+            this.customSubGroupBox.Controls.Add(this.label21);
+            this.customSubGroupBox.Controls.Add(this.fontButton);
+            this.customSubGroupBox.Controls.Add(this.label20);
+            this.customSubGroupBox.Location = new System.Drawing.Point(3, 180);
+            this.customSubGroupBox.Name = "customSubGroupBox";
+            this.customSubGroupBox.Size = new System.Drawing.Size(431, 194);
+            this.customSubGroupBox.TabIndex = 11;
+            this.customSubGroupBox.TabStop = false;
+            this.customSubGroupBox.Text = "字幕风格";
+            // 
+            // label19
+            // 
+            this.label19.Location = new System.Drawing.Point(6, 51);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(43, 23);
+            this.label19.TabIndex = 4;
+            this.label19.Text = "字体";
+            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label21
             // 
@@ -1031,14 +1025,6 @@
             this.label20.TabIndex = 6;
             this.label20.Text = "字号";
             this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // fontSizeBox
-            // 
-            this.fontSizeBox.Location = new System.Drawing.Point(216, 51);
-            this.fontSizeBox.Name = "fontSizeBox";
-            this.fontSizeBox.Size = new System.Drawing.Size(79, 21);
-            this.fontSizeBox.TabIndex = 7;
-            this.fontSizeBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AllowInteger);
             // 
             // subtitleTextBox
             // 
@@ -1156,8 +1142,7 @@
             // 
             // autoVideoScriptTextBox
             // 
-            this.autoVideoScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
+            this.autoVideoScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.autoVideoScriptTextBox.Location = new System.Drawing.Point(23, 38);
             this.autoVideoScriptTextBox.Multiline = true;
@@ -1228,8 +1213,7 @@
             // 
             // autoAudioScriptTextBox
             // 
-            this.autoAudioScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
+            this.autoAudioScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.autoAudioScriptTextBox.Location = new System.Drawing.Point(23, 38);
             this.autoAudioScriptTextBox.Multiline = true;
@@ -1252,6 +1236,7 @@
             // 
             // avsInputScriptSaveButton
             // 
+            this.avsInputScriptSaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.avsInputScriptSaveButton.Location = new System.Drawing.Point(327, 346);
             this.avsInputScriptSaveButton.Name = "avsInputScriptSaveButton";
             this.avsInputScriptSaveButton.Size = new System.Drawing.Size(75, 23);
@@ -1278,7 +1263,7 @@
             // 
             // destFileBox
             // 
-            this.destFileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.destFileBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.destFileBox.FormattingEnabled = true;
             this.destFileBox.Location = new System.Drawing.Point(105, 508);
@@ -1288,6 +1273,7 @@
             // 
             // label6
             // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.Location = new System.Drawing.Point(20, 506);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 23);
@@ -1297,7 +1283,7 @@
             // 
             // btOutBrowse
             // 
-            this.btOutBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btOutBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btOutBrowse.Location = new System.Drawing.Point(382, 508);
             this.btOutBrowse.Name = "btOutBrowse";
             this.btOutBrowse.Size = new System.Drawing.Size(75, 23);
@@ -1381,6 +1367,42 @@
             this.delProfileButton.UseVisualStyleBackColor = true;
             this.delProfileButton.Click += new System.EventHandler(this.delProfileButton_Click);
             // 
+            // fontSizeBox
+            // 
+            this.fontSizeBox.Location = new System.Drawing.Point(216, 51);
+            this.fontSizeBox.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.fontSizeBox.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.fontSizeBox.Name = "fontSizeBox";
+            this.fontSizeBox.Size = new System.Drawing.Size(49, 21);
+            this.fontSizeBox.TabIndex = 10;
+            this.fontSizeBox.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.fontSizeBox.Validating += new System.ComponentModel.CancelEventHandler(this.forbidEmptyValidating);
+            // 
+            // fontBottomBox
+            // 
+            this.fontBottomBox.Location = new System.Drawing.Point(66, 92);
+            this.fontBottomBox.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.fontBottomBox.Name = "fontBottomBox";
+            this.fontBottomBox.Size = new System.Drawing.Size(75, 21);
+            this.fontBottomBox.TabIndex = 11;
+            this.fontBottomBox.Validating += new System.ComponentModel.CancelEventHandler(this.forbidEmptyValidating);
+            // 
             // JobSettingForm
             // 
             this.AcceptButton = this.okButton;
@@ -1429,6 +1451,8 @@
             this.audioScriptTabPage.PerformLayout();
             this.inputScriptTabPage.ResumeLayout(false);
             this.inputScriptTabPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fontSizeBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fontBottomBox)).EndInit();
             this.ResumeLayout(false);
 
 		}
@@ -1496,12 +1520,10 @@
         private System.Windows.Forms.TabPage subtitleTabPage;
         private System.Windows.Forms.CheckBox customSubCheckBox;
         private System.Windows.Forms.GroupBox customSubGroupBox;
-        private System.Windows.Forms.DomainUpDown fontBottomBox;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button fontButton;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.DomainUpDown fontSizeBox;
         private System.Windows.Forms.TextBox subtitleTextBox;
         private System.Windows.Forms.Button subtitleButton;
         private System.Windows.Forms.Label label18;
@@ -1513,7 +1535,7 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
-        private System.Windows.Forms.FontDialog fontDialog1;
+        private System.Windows.Forms.FontDialog fontDialog;
         private System.Windows.Forms.ComboBox avsAudioModeComboBox;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.ComboBox avsVideoModeComboBox;
@@ -1541,6 +1563,8 @@
         private System.Windows.Forms.TextBox avsInputScriptEditTextBox;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Button avsInputScriptSaveButton;
+        private System.Windows.Forms.NumericUpDown fontBottomBox;
+        private System.Windows.Forms.NumericUpDown fontSizeBox;
 
     }
 }

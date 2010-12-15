@@ -30,7 +30,7 @@
         /// <param name="encoderPath"></param>
         /// <param name="avisynthScriptFile"></param>
         /// <param name="destFile"></param>
-        public AudioEncoderHandler(string encoderPath, string avisynthScriptFile, string destFile)
+        protected AudioEncoderHandler(string encoderPath, string avisynthScriptFile, string destFile)
         {
             if (!File.Exists(avisynthScriptFile))
             {

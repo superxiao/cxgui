@@ -8,6 +8,9 @@
         protected string _customCmdLine = null;
         protected bool _usingCustomCmd;
 
+        protected VideoEncConfigBase()
+        { }
+
         public abstract string GetArgument();
 
         public string CustomCmdLine

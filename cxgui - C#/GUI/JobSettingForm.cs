@@ -320,10 +320,12 @@
 
         private void FontButtonClick(object sender, EventArgs e)
         {
-            this.fontDialog1.Font = new Font(this.fontButton.Text, float.Parse(this.fontSizeBox.Text));
-            this.fontDialog1.ShowDialog();
-            this.fontButton.Text = this.fontDialog1.Font.Name;
-            this.fontSizeBox.Text = this.fontDialog1.Font.SizeInPoints.ToString();
+            this.fontDialog.Font = new Font(this.fontButton.Text, float.Parse(this.fontSizeBox.Text));
+            this.fontDialog.ShowDialog();
+            this.fontButton.Text = this.fontDialog.Font.Name;
+            // UNDONE: 为什么返回小数，谜团
+            MessageBox.Show(this.fontDialog.Font.Size.ToString());
+            this.fontSizeBox.Text = this.fontDialog.Font.Size.ToString();
         }
 
         private void FrameRateBoxValidating(object sender, CancelEventArgs e)
@@ -686,7 +688,7 @@
             //videoEncConfig和audioEncConfig由jobItem克隆得来，跟随GUI即时变化
             this.jobItem.VideoEncConfig = this.videoEncConfig;
             this.jobItem.AudioEncConfig = this.audioEncConfig;
-            if (this.jobItem.State != JobState.Waiting)
+            if (this.jobItem.State != JobState.Waiting && this.jobItem.State != JobState.Working)
                 this.jobItem.State = JobState.NotProccessed;
             this.jobItem.ProfileName = this.profileBox.Text;
             if (this.videoInfo.Container == "avs")
@@ -1219,7 +1221,7 @@
 
         private void SaveToSubtitleConfig(SubtitleConfig subtitleConfig)
         {
-            subtitleConfig.Fontname = this.fontDialog1.Font.Name;
+            subtitleConfig.Fontname = this.fontDialog.Font.Name;
             int.TryParse(this.fontSizeBox.Text, out subtitleConfig.Fontsize);
             int.TryParse(this.fontBottomBox.Text, out subtitleConfig.MarginV);
             subtitleConfig.UsingStyle = this.customSubCheckBox.Checked;
@@ -1621,6 +1623,12 @@
         {
             if (this.Created)
                 this.avsInputScriptEdited = true;
+        }
+
+        private void forbidEmptyValidating(object sender, CancelEventArgs e)
+        {
+            NumericUpDown upDown = sender as NumericUpDown;
+            upDown.Text = upDown.Value.ToString();
         }
     }
 }

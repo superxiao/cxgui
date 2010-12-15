@@ -121,6 +121,9 @@
     <Compile Include="GUI\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MainForm.Worker.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\ProgramConfigForm.cs">
       <SubType>Form</SubType>
     </Compile>

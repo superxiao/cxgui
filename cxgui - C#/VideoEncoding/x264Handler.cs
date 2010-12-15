@@ -19,6 +19,7 @@
             this.errOccured = false;
             base.encodingProcess.StartInfo.FileName = "x264.exe";
             base.encodingProcess.StartInfo.RedirectStandardError = true;
+            base.encodingProcess.StartInfo.CreateNoWindow = false;
         }
 
         private void ReadStdErr()
@@ -75,6 +76,7 @@
                 outputFile = "\""+base._destinationFile+"\"";
             }
             base.encodingProcess.StartInfo.Arguments = new StringBuilder().Append(this._config.GetArgument()).Append(" --output ").Append(outputFile).Append(" \"").Append(base._avisynthScriptFile).Append("\"").ToString();
+            File.WriteAllText("c:\\t.txt", base.encodingProcess.StartInfo.FileName+" "+base.encodingProcess.StartInfo.Arguments);
             Thread thread = new Thread(new ThreadStart(this.ReadStdErr));
             this.startTime = DateTime.Now;
             base.encodingProcess.Start();

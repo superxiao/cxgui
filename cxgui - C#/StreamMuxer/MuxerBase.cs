@@ -17,6 +17,9 @@
         protected string _videoFile;
         protected bool processingDone;
 
+        protected MuxerBase()
+        { }
+
         public abstract void Start();
 
         public void Stop()
