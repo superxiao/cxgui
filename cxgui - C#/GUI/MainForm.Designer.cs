@@ -158,7 +158,7 @@
             this.backgroundWorker.WorkerSupportsCancellation = true;
             this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorkerDoWork);
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.BackgroundWorkerProgressChanged);
-            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.NextJobOrExit);
+            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
             // 
             // openFileDialog1
             // 
@@ -251,7 +251,7 @@
             this.progressPage.Location = new System.Drawing.Point(4, 22);
             this.progressPage.Name = "progressPage";
             this.progressPage.Padding = new System.Windows.Forms.Padding(3);
-            this.progressPage.Size = new System.Drawing.Size(513, 384);
+            this.progressPage.Size = new System.Drawing.Size(513, 483);
             this.progressPage.TabIndex = 1;
             this.progressPage.Text = "进度";
             // 
@@ -304,7 +304,7 @@
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusLable});
-            this.statusStrip.Location = new System.Drawing.Point(3, 359);
+            this.statusStrip.Location = new System.Drawing.Point(3, 458);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(507, 22);
             this.statusStrip.TabIndex = 19;

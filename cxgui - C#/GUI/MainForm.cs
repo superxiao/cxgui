@@ -28,11 +28,6 @@
         protected ProgramConfigForm configForm;
         protected JobSettingForm jobSettingForm;
         protected AboutForm aboutForm;
-        protected bool workerReporting;
-        protected JobItem workingJobItem;
-        protected List<JobItem> workingJobItems;
-        private delegate void ReportInvoke(JobItem jobItem, IMediaProcessor encoder, DoWorkEventArgs e);
-        private bool formClosing;
         
         [STAThread]
         public static void Main(string[] argv)
@@ -103,17 +98,6 @@
             }
         }
 
-        private bool DidUserPressStopButton(JobItem jobItem, DoWorkEventArgs e)
-        {
-            if (this.backgroundWorker.CancellationPending)
-            {
-                jobItem.Event = JobEvent.QuitAllProcessing;
-                this.JobEventReport(jobItem);
-                return true;
-            }
-            return false;
-        }
-
         private void JobItemListViewItemDrag(object sender, ItemDragEventArgs e)
         {
             this.jobItemListView.DoDragDrop(this.jobItemListView.SelectedItems, DragDropEffects.Move);
@@ -128,9 +112,10 @@
                     this.StopButtonClick(null, null);
                     this.formClosing = true;
                 }
-                    e.Cancel = true;
-                    return;
+                e.Cancel = true;
+                return;
             }
+            else { this.SaveJobItemsAndProfiles(); }
         }
 
         private void MainFormLoad(object sender, EventArgs e)
@@ -253,9 +238,10 @@
             string notExistingSourceFile = string.Empty;
             foreach (JobItem item in this.workingJobItems)
             {
+                // TODO: 检查各文件是否存在并给出错误提示
                 if (!MyIO.Exists(item.SourceFile))
                 {
-                    notExistingSourceFile += new StringBuilder("\n").Append(item.SourceFile).ToString();
+                    notExistingSourceFile += "\n" + item.SourceFile;
                     item.State = JobState.Error;
                     this.workingJobItems.Remove(item);
                 }
@@ -275,13 +261,7 @@
 
         private void StopButtonClick(object sender, EventArgs e)
         {
-            try
-            {
-                this.backgroundWorker.CancelAsync();
-            }
-            catch (Exception)
-            {
-            }
+            this.backgroundWorker.CancelAsync();
         }
 
         private void UpdateProfileBox(string[] newProfileNames, string selectedProfile)

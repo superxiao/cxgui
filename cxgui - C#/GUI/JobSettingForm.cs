@@ -324,7 +324,6 @@
             this.fontDialog.ShowDialog();
             this.fontButton.Text = this.fontDialog.Font.Name;
             // UNDONE: 为什么返回小数，谜团
-            MessageBox.Show(this.fontDialog.Font.Size.ToString());
             this.fontSizeBox.Text = this.fontDialog.Font.Size.ToString();
         }
 
