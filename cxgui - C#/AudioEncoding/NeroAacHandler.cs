@@ -6,69 +6,86 @@
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
+    using System.Diagnostics;
+    using System.Threading;
 
     [Serializable]
-    public class NeroAacHandler : AudioEncoderHandler
+    public class NeroAacHandler : AudioEncoderHandlerBase
     {
         protected NeroAacConfig _config;
         protected DateTime startTime;
 
-        public NeroAacHandler(string avisynthScriptFile, string destFile) : base("neroAacEnc.exe", avisynthScriptFile, destFile)
+        public NeroAacHandler(string avsFile, string destFile)
+            : base(avsFile, destFile)
         {
+            this.Initialize();
+        }
+
+        public NeroAacHandler()
+            : base()
+        {
+            this.Initialize();
+        }
+
+        private void Initialize()
+        {
+            this.encodingProcess.StartInfo.FileName = "neroAacEnc.exe";
+            this.encodingProcess.Exited += this.encodingProcess_Existed;
+        }
+
+        private void encodingProcess_Existed(object sender, EventArgs e)
+        {
+            base._hasExisted = true;
+            base.timeLeft = TimeSpan.Zero;
         }
 
         public override void Start()
         {
-            base.encodingProcess.StartInfo.Arguments = new StringBuilder().Append(this._config.GetSettings()).Append(" -if - -of \"").Append(base.destFile).Append("\"").ToString();
+            base._hasExisted = false;
+            base.encodingProcess.StartInfo.Arguments = new StringBuilder().Append(this._config.GetSettings()).Append(" -if - -of \"").Append(base._destFile).Append("\"").ToString();
             base.encodingProcess.Start();
-            Stream baseStream = base.encodingProcess.StandardInput.BaseStream;
-            WriteWavHeader.Write(baseStream, base.scriptInfo);
-            int currentSample = 0;
-            int num2 = (0x1000 * base.scriptInfo.ChannelsCount) * base.scriptInfo.BytesPerSample;
-            byte[] buffer = new byte[num2];
-            GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-            IntPtr addr = handle.AddrOfPinnedObject();
-            this.startTime = DateTime.Now;
-            try
-            {
-                IDisposable disposable = (base.scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(base.avisynthScriptFile)) as IDisposable;
-                try
-                {
-                    while (1 != 0)
-                    {
-                        int count = Math.Min(((int) base.scriptInfo.SamplesCount) - currentSample, 0x1000);
-                        base.scriptInfo.ReadAudio(addr, (long) currentSample, count);
-                        baseStream.Write(buffer, 0, (count * base.scriptInfo.ChannelsCount) * base.scriptInfo.BytesPerSample);
-                        baseStream.Flush();
-                        currentSample += count;
-                        this.UpdateProgress(currentSample);
-                        if (currentSample == base.scriptInfo.SamplesCount)
-                        {
-                            break;
-                        }
-                    }
-                    baseStream.Write(buffer, 0, 10);
-                }
-                finally
-                {
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                        disposable = null;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                handle.Free();
-                baseStream.Flush();
-                baseStream.Close();
-            }
-            base.encodingProcess.WaitForExit();
-            base.processingDone = true;
+            new Thread(
+                   delegate()
+                   {
+                       Stream baseStream = base.encodingProcess.StandardInput.BaseStream;
+                       WriteWavHeader.Write(baseStream, base.scriptInfo);
+                       int currentSample = 0;
+                       int num2 = (0x1000 * base.scriptInfo.ChannelsCount) * base.scriptInfo.BytesPerSample;
+                       byte[] buffer = new byte[num2];
+                       GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+                       IntPtr addr = handle.AddrOfPinnedObject();
+                       this.startTime = DateTime.Now;
+
+
+                       using (base.scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(base._avsFile))
+                       {
+                           try
+                           {
+                               while (true)
+                               {
+                                   int count = Math.Min(((int)base.scriptInfo.SamplesCount) - currentSample, 0x1000);
+                                   base.scriptInfo.ReadAudio(addr, (long)currentSample, count);
+                                   baseStream.Write(buffer, 0, (count * base.scriptInfo.ChannelsCount) * base.scriptInfo.BytesPerSample);
+                                   baseStream.Flush();
+                                   currentSample += count;
+                                   this.UpdateProgress(currentSample);
+                                   if (currentSample == base.scriptInfo.SamplesCount)
+                                       break;
+                               }
+                               baseStream.Write(buffer, 0, 10);
+                           }
+                           catch (Exception)
+                           {
+                           }
+                           finally
+                           {
+                               handle.Free();
+                               baseStream.Flush();
+                               baseStream.Close();
+                           }
+                       }
+                   }
+            ).Start();
         }
 
         private void UpdateProgress(int currentSample)

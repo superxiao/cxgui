@@ -92,6 +92,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AudioEncoding\IAudioEncodingInfo.cs" />
     <Compile Include="Clinky\ArrayBuilder.cs" />
     <Compile Include="Clinky\MyIO.cs">
       <SubType>Code</SubType>
@@ -99,7 +100,7 @@
     <Compile Include="AudioEncoding\AudioEncConfigBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AudioEncoding\AudioEncoderHandler.cs">
+    <Compile Include="AudioEncoding\AudioEncoderHandlerBase.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AudioEncoding\NeroAacConfig.cs">
@@ -199,7 +200,8 @@
     <Compile Include="GUI\ControlResetter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exception\IMediaProcessor.cs">
+    <Compile Include="StreamMuxer\IMuxingInfo.cs" />
+    <Compile Include="VideoEncoding\IMediaProcessingInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exception\AvisynthAudioStreamNotFoundException.cs">
@@ -229,25 +231,26 @@
     <Compile Include="Exception\ProfileNotFoundException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StreamMuxer\FFMP4.cs">
+    <Compile Include="StreamMuxer\FFMp4Handler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StreamMuxer\MKVMerge.cs">
+    <Compile Include="StreamMuxer\MkvMergeHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StreamMuxer\MP4Box.cs">
+    <Compile Include="StreamMuxer\Mp4BoxHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StreamMuxer\MuxerBase.cs">
+    <Compile Include="StreamMuxer\MuxerHandlerBase.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="VideoEncoding\IVideoEncodingInfo.cs" />
     <Compile Include="VideoEncoding\NodeType.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="VideoEncoding\VideoEncConfigBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="VideoEncoding\VideoEncoderHandler.cs">
+    <Compile Include="VideoEncoding\VideoEncoderHandlerBase.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="VideoEncoding\x264Config.cs">
@@ -256,7 +259,7 @@
     <Compile Include="VideoEncoding\x264ConfigNode.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="VideoEncoding\x264Handler.cs">
+    <Compile Include="VideoEncoding\X264Handler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MediaInfo\VideoInfo.cs">

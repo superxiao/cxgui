@@ -5,20 +5,25 @@
     using System.Diagnostics;
 
     [Serializable]
-    public abstract class MuxerBase : IMediaProcessor
+    public abstract class MuxerHandlerBase : IMuxingInfo
     {
         protected string _audioFile;
         protected string _dstFile;
         protected bool _errOccured;
-        protected Process muxerProcess = new Process();
+        protected Process muxerProcess;
         protected int _progress;
         protected TimeSpan _timeLeft;
         protected TimeSpan _timeUsed;
         protected string _videoFile;
-        protected bool processingDone;
+        protected bool _hasExisted;
 
-        protected MuxerBase()
-        { }
+        protected MuxerHandlerBase()
+        {
+            this.muxerProcess = new Process();
+            this.muxerProcess.StartInfo.UseShellExecute = false;
+            this.muxerProcess.StartInfo.CreateNoWindow = true;
+            this.muxerProcess.EnableRaisingEvents = true;
+        }
 
         public abstract void Start();
 
@@ -58,23 +63,11 @@
             }
         }
 
-        public bool ErrorOccured
+        public bool HasExited
         {
             get
             {
-                return this._errOccured;
-            }
-            set
-            {
-                this._errOccured = value;
-            }
-        }
-
-        public bool ProcessingDone
-        {
-            get
-            {
-                return this.processingDone;
+                return this._hasExisted;
             }
         }
 

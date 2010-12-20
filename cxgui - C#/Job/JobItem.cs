@@ -11,30 +11,29 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Windows.Forms;
+    using Clinky;
 
     [Serializable]
     public class JobItem
     {
         protected AudioEncConfigBase _audioEncConfig;
         [NonSerialized]
-        protected AudioEncoderHandler _audioEncoder;
+        protected AudioEncoderHandlerBase _audioEncoder;
         protected AvisynthConfig _avsConfig;
         protected List<string> _filesToDeleteWhenProcessingFails = new List<string>(3);
         protected Cxgui.Job.CxListViewItem _cxListViewItem;
         protected string _destFile;
-        protected string _encodedAudio;
-        protected string _encodedVideo;
         protected JobEvent _event;
         protected string _externalAudio;
         protected JobItemConfig _jobConfig;
         [NonSerialized]
-        protected MuxerBase _muxer;
+        protected MuxerHandlerBase _muxer;
         protected string _profileName;
-        protected bool _readAudioCfg;
-        protected bool _readAvsCfg;
-        protected bool _readJobCfg;
-        protected bool _readSubCfg;
-        protected bool _readVideoCfg;
+        protected bool readAudioCfg;
+        protected bool readAvsCfg;
+        protected bool readJobCfg;
+        protected bool readSubCfg;
+        protected bool readVideoCfg;
         protected string _sourceFile;
         protected JobState _state;
         protected Cxgui.Avisynth.SubtitleConfig _subtitleConfig;
@@ -42,9 +41,10 @@
         protected bool _usingExternalAudio;
         protected VideoEncConfigBase _videoEncConfig;
         [NonSerialized]
-        protected VideoEncoderHandler _videoEncoder;
+        protected VideoEncoderHandlerBase _videoEncoder;
         protected VideoInfo _videoInfo;
         protected AudioInfo _audioInfo;
+        protected SubStyleWriter subStyleWriter;
 
         public JobItem(string sourceFile, string destFile, string profileName)
         {
@@ -59,7 +59,7 @@
             this._state = JobState.NotProccessed;
         }
 
-        private void CreateNewMuxer()
+        private void BuildMuxer()
         {
             if (this._jobConfig == null)
             {
@@ -70,24 +70,24 @@
                 switch (this.JobConfig.Container)
                 {
                     case OutputContainer.MKV:
-                        this._muxer = new MKVMerge();
+                        this._muxer = new MkvMergeHandler();
                         break;
 
                     case OutputContainer.MP4:
                         if ((this.JobConfig.VideoMode == StreamProcessMode.Copy) || (this.JobConfig.AudioMode == StreamProcessMode.Copy))
                         {
-                            this._muxer = new FFMP4();
+                            this._muxer = new FFMp4Handler();
                         }
                         else
                         {
                             string ext = Path.GetExtension(this._destFile).ToLower();
                             if (ext != ".mp4" && ext != ".m4v" && ext != ".m4a")
                             {
-                                this._muxer = new FFMP4();
+                                this._muxer = new FFMp4Handler();
                             }
                             else if ((this.JobConfig.VideoMode == StreamProcessMode.Encode) && (this.JobConfig.AudioMode == StreamProcessMode.Encode))
                             {
-                                this._muxer = new MP4Box();
+                                this._muxer = new Mp4BoxHandler();
                             }
                             else
                             {
@@ -99,6 +99,12 @@
             }
         }
 
+        private void BuildEncoder()
+        { 
+            this._videoEncoder = new X264Handler();
+            this._audioEncoder = new NeroAacHandler();
+        }
+
         [OnDeserialized]
         private void OnDeserialize(StreamingContext context)
         {
@@ -108,36 +114,37 @@
         private void ReadProfile(string profileName)
         {
             Profile profile = null;
-            if ((this._readAvsCfg || this._readVideoCfg) || ((this._readAudioCfg || this._readJobCfg) || this._readSubCfg))
+            if ((this.readAvsCfg || this.readVideoCfg) || ((this.readAudioCfg || this.readJobCfg) || this.readSubCfg))
             {
                 profile = new Profile(profileName);
             }
-            if (this._readAvsCfg)
+            if (this.readAvsCfg)
             {
                 this._avsConfig = profile.AvsConfig;
-                this._readAvsCfg = false;
+                this.readAvsCfg = false;
             }
-            if (this._readVideoCfg)
+            if (this.readVideoCfg)
             {
                 this._videoEncConfig = profile.VideoEncConfig;
-                this._readVideoCfg = false;
+                this.readVideoCfg = false;
             }
-            if (this._readAudioCfg)
+            if (this.readAudioCfg)
             {
                 this._audioEncConfig = profile.AudioEncConfig;
-                this._readAudioCfg = false;
+                this.readAudioCfg = false;
             }
-            if (this._readJobCfg)
+            if (this.readJobCfg)
             {
                 this._jobConfig = profile.JobConfig;
-                this._readJobCfg = false;
+                this.readJobCfg = false;
             }
-            if (this._readSubCfg)
+            if (this.readSubCfg)
             {
                 this._subtitleConfig = profile.SubtitleConfig;
-                this._readSubCfg = false;
+                this.readSubCfg = false;
             }
         }
+
         /// <summary>
         /// 根据ProfileName获取各设置，附加混流控制器，并根据源文件内容修正音频和视频处理模式
         /// </summary>
@@ -146,23 +153,23 @@
         {
             if (this._avsConfig == null || overWriteConfig)
             {
-                this._readAvsCfg = true;
+                this.readAvsCfg = true;
             }
             if (this._videoEncConfig == null || overWriteConfig)
             {
-                this._readVideoCfg = true;
+                this.readVideoCfg = true;
             }
             if (this._audioEncConfig == null || overWriteConfig)
             {
-                this._readAudioCfg = true;
+                this.readAudioCfg = true;
             }
             if (this.JobConfig == null || overWriteConfig)
             {
-                this._readJobCfg = true;
+                this.readJobCfg = true;
             }
             if (this.SubtitleConfig == null || overWriteConfig)
             {
-                this._readSubCfg = true;
+                this.readSubCfg = true;
             }
             this.ReadProfile(this._profileName);
             if (!this._videoInfo.HasVideo)
@@ -180,7 +187,8 @@
                     this._jobConfig.VideoMode = StreamProcessMode.Encode;
                 }
             }
-            this.CreateNewMuxer();
+            this.BuildMuxer();
+            this.BuildEncoder();
             if (this._avsConfig.AutoLoadSubtitle&&!File.Exists(this._subtitleFile))
             {
                 this._subtitleFile = FindFirstSubtitleFile();
@@ -211,6 +219,122 @@
             return string.Empty;
         }
 
+        /// <summary>
+        /// 启动视频编码过程，这个过程是异步的。每次调用前必须先SetUp()。
+        /// </summary>
+        public void ProcessVideo()
+        {
+            new VideoAvsWriter(this._sourceFile, this._avsConfig, this._subtitleFile, this._videoInfo).WriteScript("video.avs");
+            if (MyIO.Exists(this._subtitleFile) && this._subtitleConfig.UsingStyle)
+            {
+                this.subStyleWriter = new SubStyleWriter(this._subtitleFile, this._subtitleConfig);
+                this.subStyleWriter.Write();
+            }
+            this._filesToDeleteWhenProcessingFails.Add(this._destFile);
+
+            this._videoEncoder.AvsFile = "video.avs";
+            this._videoEncoder.DestFile = this._destFile;
+            X264Handler encoder = this._videoEncoder as X264Handler;
+            encoder.Config = this._videoEncConfig as x264Config;
+            encoder.Start();
+        }
+
+        /// <summary>
+        /// 启动音频编码过程，这个过程是异步的。每次调用前必须先SetUp()。
+        /// </summary>
+        public void ProcessAudio()
+        {
+            string audio = string.Empty;
+            if (this._usingExternalAudio && File.Exists(this._externalAudio))
+            {
+                audio = this._externalAudio;
+            }
+            else
+            {
+                audio = this._sourceFile;
+            }
+            new AudioAvsWriter(audio, this._avsConfig, this._audioInfo).WriteScript("audio.avs");
+            string destAudio = string.Empty;
+            if (this.JobConfig.VideoMode == StreamProcessMode.None)
+            {
+                destAudio = this.DestFile;
+            }
+            else
+            {
+                destAudio = Path.ChangeExtension(this.DestFile, "m4a");
+                destAudio = MyIO.GetUniqueName(destAudio);
+            }
+            this.FilesToDeleteWhenProcessingFails.Add(destAudio);
+            this._audioEncoder.AvsFile = "audio.avs";
+            this._audioEncoder.DestFile = destAudio;
+            NeroAacHandler encoder = this._audioEncoder as NeroAacHandler;
+            encoder.Config = this._audioEncConfig as NeroAacConfig;
+            this._audioEncoder.Start();
+        }
+
+        /// <summary>
+        /// 启动混流过程，这个过程是异步的。每次调用前必须先SetUp()。
+        /// </summary>
+        public void ProcessMuxing()
+        {
+            string audioToMux, videoToMux;
+            if (this._jobConfig.AudioMode == StreamProcessMode.Encode)
+            {
+                audioToMux = this._audioEncoder.DestFile;
+            }
+            else if (this._jobConfig.AudioMode == StreamProcessMode.Copy)
+            {
+                if (this._usingExternalAudio && (this._externalAudio != string.Empty))
+                {
+                    audioToMux = this._externalAudio;
+                }
+                else
+                {
+                    audioToMux = this._sourceFile;
+                }
+            }
+            else
+            {
+                audioToMux = string.Empty;
+            }
+            if (this._jobConfig.VideoMode == StreamProcessMode.Encode)
+            {
+                videoToMux = this._videoEncoder.DestFile;
+            }
+            else if (this.JobConfig.VideoMode == StreamProcessMode.Copy)
+            {
+                videoToMux = this._sourceFile;
+            }
+            else
+            {
+                videoToMux = string.Empty;
+            }
+            this.FilesToDeleteWhenProcessingFails.Add(this.DestFile);
+            this._muxer.VideoFile = videoToMux;
+            this._muxer.AudioFile = audioToMux;
+            this._muxer.DstFile = this.DestFile;
+            this._muxer.Start();
+        }
+
+        //TODO: 线程不安全。如果ProcessVideo是异步的，其同步操作保证至少启动编码进程，则在其后同步关闭进程是安全的；如果ProcessVideo是同步的，必须使用异步操作来检查是否调用QuitProcessing，则难以保证检查成立时编码进程已开始，或检查不成立时编码进程未开始。
+        public void QuitProcessing()
+        {
+            if (this._videoEncoder != null)
+                this._videoEncoder.Stop();
+            if (this._audioEncoder != null)
+                this._audioEncoder.Stop();
+            if (this._muxer != null)
+                this._muxer.Stop();
+        }
+
+        public void ClearTempFiles()
+        {
+            if (this.subStyleWriter != null)
+                this.subStyleWriter.DeleteTempFiles();
+            // 可设置项
+            File.Delete(this._sourceFile + ".ffindex");
+        }
+
         public AudioEncConfigBase AudioEncConfig
         {
             get
@@ -223,15 +347,14 @@
             }
         }
 
-        public AudioEncoderHandler AudioEncoder
+        /// <summary>
+        /// 只应用作获取进度信息之用。
+        /// </summary>
+        public IAudioEncodingInfo AudioEncInfo
         {
             get
             {
                 return this._audioEncoder;
-            }
-            set
-            {
-                this._audioEncoder = value;
             }
         }
 
@@ -269,31 +392,6 @@
             {
                 this._destFile = value;
                 this._cxListViewItem.SubItems[2].Text = value;
-            }
-        }
-
-        public string EncodedAudio
-        {
-            get
-            {
-                return this._encodedAudio;
-            }
-            set
-            {
-                this._encodedAudio = value;
-            }
-        }
-
-        // TODO: 删除这两个属性
-        public string EncodedVideo
-        {
-            get
-            {
-                return this._encodedVideo;
-            }
-            set
-            {
-                this._encodedVideo = value;
             }
         }
 
@@ -350,8 +448,8 @@
                 this._jobConfig = value;
             }
         }
-        
-        public MuxerBase Muxer
+
+        public IMuxingInfo MuxingInfo
         {
             get
             {
@@ -463,15 +561,14 @@
             }
         }
 
-        public VideoEncoderHandler VideoEncoder
+        /// <summary>
+        /// 只应用作获取进度信息之用。
+        /// </summary>
+        public IVideoEncodingInfo VideoEncInfo
         {
             get
             {
                 return this._videoEncoder;
-            }
-            set
-            {
-                this._videoEncoder = value;
             }
         }
 

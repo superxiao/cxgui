@@ -7,7 +7,6 @@
     {
         protected StreamProcessMode _audioMode;
         protected OutputContainer _container;
-        protected bool _useSepAudio;
         protected StreamProcessMode _videoMode;
 
         public StreamProcessMode AudioMode

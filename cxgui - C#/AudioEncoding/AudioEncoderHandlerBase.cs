@@ -7,59 +7,57 @@
     using System.IO;
 
     [Serializable]
-    public abstract class AudioEncoderHandler : IMediaProcessor
+    public abstract class AudioEncoderHandlerBase : IAudioEncodingInfo
     {
-        protected string avisynthScriptFile;
+        protected string _avsFile;
         protected long currentFileSize;
         protected int currentPosition;
-        protected string destFile;
+        protected string _destFile;
         protected Process encodingProcess;
         protected long estimatedFileSize;
-        protected double length;
+        protected double _length;
         protected string log;
-        protected bool processingDone;
+        protected bool _hasExisted;
         protected double progress;
         protected AviSynthClip scriptInfo;
-        protected string stantardError;
         protected TimeSpan timeLeft;
         protected TimeSpan timeUsed;
 
         /// <summary>
-        /// 如脚本有错误，引发AviSynthException；如脚本有效但不含音频，引发AvisynthVideoStreamNotFoundException
+        /// 如脚本有错误或未安装AviSynth，引发AviSynthException；如脚本有效但不含音频，引发AvisynthVideoStreamNotFoundException
         /// </summary>
         /// <param name="encoderPath"></param>
-        /// <param name="avisynthScriptFile"></param>
+        /// <param name="avsFile"></param>
         /// <param name="destFile"></param>
-        protected AudioEncoderHandler(string encoderPath, string avisynthScriptFile, string destFile)
+        protected AudioEncoderHandlerBase(string avsFile, string destFile)
+            : this()
         {
-            if (!File.Exists(avisynthScriptFile))
-            {
-                throw new FileNotFoundException(string.Empty, avisynthScriptFile);
-            }
-            avisynthScriptFile = Path.GetFullPath(avisynthScriptFile);
-            // 如果不是有效的avs脚本，则AvsSynthException
-            IDisposable disposable = (this.scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(avisynthScriptFile)) as IDisposable;
-            if (disposable != null)
-                {
-                    disposable.Dispose();
-                    disposable = null;
-                }
-            // 是有效的avs脚本，但不包含音频内容，AvisynthVideoStreamNotFoundException
-            if ((this.scriptInfo.ChannelsCount == 0) || (((int) this.scriptInfo.SamplesCount) == 0))
-            {
-                throw new AvisynthAudioStreamNotFoundException(avisynthScriptFile);
-            }
-            this.avisynthScriptFile = avisynthScriptFile;
-            this.destFile = destFile;
-            this.length = ((double) this.scriptInfo.SamplesCount) / ((double) this.scriptInfo.AudioSampleRate);
+            this.SetUpForAvsFile(avsFile);
+            this._destFile = destFile;
+        }
+
+        protected AudioEncoderHandlerBase()
+        {
             this.encodingProcess = new Process();
             this.encodingProcess.StartInfo.UseShellExecute = false;
             this.encodingProcess.StartInfo.RedirectStandardInput = true;
             this.encodingProcess.StartInfo.CreateNoWindow = true;
-            if (File.Exists(encoderPath))
+            this.encodingProcess.EnableRaisingEvents = true;
+        }
+
+        private void SetUpForAvsFile(string avsFile)
+        {
+            avsFile = Path.GetFullPath(avsFile);
+            // 如果不是有效的avs脚本，则AvsSynthException
+            using (this.scriptInfo = new AviSynthScriptEnvironment().OpenScriptFile(avsFile))
+            { }
+            // 是有效的avs脚本，但不包含音频内容，AvisynthVideoStreamNotFoundException
+            if ((this.scriptInfo.ChannelsCount == 0) || (((int)this.scriptInfo.SamplesCount) == 0))
             {
-                this.encodingProcess.StartInfo.FileName = encoderPath;
+                throw new AvisynthAudioStreamNotFoundException(avsFile);
             }
+            this._avsFile = avsFile;
+            this._length = ((double)this.scriptInfo.SamplesCount) / ((double)this.scriptInfo.AudioSampleRate);
         }
 
         public abstract void Start();
@@ -76,13 +74,8 @@
             }
         }
 
-        public string AvisynthScriptFile
-        {
-            get
-            {
-                return this.avisynthScriptFile;
-            }
-        }
+        public string AvsFile
+        { get { return this._avsFile; } set { this.SetUpForAvsFile(value); } }
 
         public long CurrentFileSize
         {
@@ -104,11 +97,11 @@
         {
             get
             {
-                return this.destFile;
+                return this._destFile;
             }
             set
             {
-                this.destFile = value;
+                this._destFile = value;
             }
         }
 
@@ -124,7 +117,7 @@
         {
             get
             {
-                return this.length;
+                return this._length;
             }
         }
 
@@ -136,11 +129,11 @@
             }
         }
 
-        public bool ProcessingDone
+        public bool HasExited
         {
             get
             {
-                return this.processingDone;
+                return this._hasExisted;
             }
         }
 
@@ -149,14 +142,6 @@
             get
             {
                 return (int) this.progress;
-            }
-        }
-
-        public string StantardError
-        {
-            get
-            {
-                return this.stantardError;
             }
         }
 
