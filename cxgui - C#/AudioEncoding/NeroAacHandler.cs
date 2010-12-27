@@ -36,7 +36,8 @@
         private void encodingProcess_Existed(object sender, EventArgs e)
         {
             base._hasExisted = true;
-            base.timeLeft = TimeSpan.Zero;
+            base._timeLeft = TimeSpan.Zero;
+            this.encodingProcess.Dispose();
         }
 
         public override void Start()
@@ -90,19 +91,19 @@
 
         private void UpdateProgress(int currentSample)
         {
-            base.currentPosition = currentSample / base.scriptInfo.AudioSampleRate;
-            base.currentFileSize = (long)((double)currentSample * base.scriptInfo.BytesPerSample / 1024);
-            base.progress = (((double) currentSample) / ((double) base.scriptInfo.SamplesCount)) * 100;
-            if (base.progress != 0)
+            base._currentPosition = currentSample / base.scriptInfo.AudioSampleRate;
+            base._currentFileSize = (long)((double)currentSample * base.scriptInfo.BytesPerSample / 1024);
+            base._progress = (((double) currentSample) / ((double) base.scriptInfo.SamplesCount)) * 100;
+            if (base._progress != 0)
             {
-                base.estimatedFileSize = (long) ((((double) base.currentFileSize) / base.progress) * 100);
+                base._estimatedFileSize = (long) ((((double) base._currentFileSize) / base._progress) * 100);
             }
-            base.timeUsed = (TimeSpan) (DateTime.Now - this.startTime);
-            if (base.progress != 0)
+            base._timeUsed = (TimeSpan) (DateTime.Now - this.startTime);
+            if (base._progress != 0)
             {
-                base.timeLeft = TimeSpan.FromSeconds((double) ((int) ((this.timeUsed.TotalSeconds * (100.0 - base.progress)) / base.progress)));
+                base._timeLeft = TimeSpan.FromSeconds((double) ((int) ((this._timeUsed.TotalSeconds * (100.0 - base._progress)) / base._progress)));
             }
-            base.timeUsed = TimeSpan.FromSeconds((double) ((int) this.timeUsed.TotalSeconds));
+            base._timeUsed = TimeSpan.FromSeconds((double) ((int) this._timeUsed.TotalSeconds));
         }
 
         public NeroAacConfig Config

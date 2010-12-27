@@ -30,24 +30,25 @@
                 this.tempVideoOrAudio = string.Empty;
             }
             base._timeLeft = TimeSpan.Zero;
+            this.muxerProcess.Dispose();
         }
 
-        private string GetArgument(VideoInfo vInfo, AudioInfo aInfo)
+        private string GetArguments(VideoInfo vInfo, AudioInfo aInfo)
         {
-            string str = "";
+            string arguments = string.Empty;
             if (vInfo.HasVideo && (aInfo.StreamsCount != 0))
             {
-                return new StringBuilder("-o \"").Append(base._dstFile).Append("\" -A -d ").Append(vInfo.ID).Append(" \"").Append(base._videoFile).Append("\" -D -a ").Append(aInfo.ID).Append(" \"").Append(base._audioFile).Append("\"").ToString();
+                return new StringBuilder("-o \"").Append(base._dstFile).Append("\" -A -d ").Append(vInfo.MkvmergeId).Append(" \"").Append(base._videoFile).Append("\" -D -a ").Append(aInfo.TrackId).Append(" \"").Append(base._audioFile).Append("\"").ToString();
             }
             if (!vInfo.HasVideo)
             {
-                return new StringBuilder("-o \"").Append(base._dstFile).Append("\" -D -a ").Append(aInfo.ID).Append(" \"").Append(base._audioFile).Append("\"").ToString();
+                return new StringBuilder("-o \"").Append(base._dstFile).Append("\" -D -a ").Append(aInfo.TrackId).Append(" \"").Append(base._audioFile).Append("\"").ToString();
             }
             if (aInfo.StreamsCount == 0)
             {
-                str = new StringBuilder("-o \"").Append(base._dstFile).Append("\" -A -d ").Append(vInfo.ID).Append(" \"").Append(base._videoFile).Append("\"").ToString();
+                return new StringBuilder("-o \"").Append(base._dstFile).Append("\" -A -d ").Append(vInfo.MkvmergeId).Append(" \"").Append(base._videoFile).Append("\"").ToString();
             }
-            return str;
+            return string.Empty;
         }
 
         public override void Start()
@@ -65,10 +66,10 @@
                 File.Move(base._audioFile, this.tempVideoOrAudio);
                 base._audioFile = this.tempVideoOrAudio;
             }
-            VideoInfo info = new VideoInfo(base._videoFile);
-            AudioInfo info2 = new AudioInfo(base._audioFile);
-            string argument = this.GetArgument(info as VideoInfo, info2 as AudioInfo);
-            base.muxerProcess.StartInfo.Arguments = argument;
+            VideoInfo videoInfo = new VideoInfo(base._videoFile);
+            AudioInfo audioInfo = new AudioInfo(base._audioFile);
+            base.muxerProcess.StartInfo.Arguments = this.GetArguments(videoInfo as VideoInfo, audioInfo as AudioInfo);
+            // File.WriteAllText("d:\\mkvmergelog.txt", base.muxerProcess.StartInfo.Arguments);
             this.startTime = DateTime.Now;
             base.muxerProcess.Start();
             this.muxerProcess.BeginOutputReadLine();

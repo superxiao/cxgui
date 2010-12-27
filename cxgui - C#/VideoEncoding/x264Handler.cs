@@ -61,14 +61,17 @@
             base.encodingProcess.BeginErrorReadLine();
         }
 
-  
+
 
         private void UpdateProgress(object sender, DataReceivedEventArgs e)
         {
+
             if (string.IsNullOrEmpty(e.Data))
                 return;
+            // File.AppendAllText("d:\\x264.log", e.Data);
             if (e.Data.StartsWith("["))
             {
+                
                 string[] strArray = e.Data.Split(new char[] { ',' });
                 string s = strArray[0];
                 base._currentFrame = int.Parse(s.Substring(s.IndexOf("]") + 1, s.IndexOf("/") - s.IndexOf("]") - 1));
@@ -106,6 +109,7 @@
             }
             if (!this._config.UsingCustomCmd && this._config.CurrentPass < this._config.TotalPass)
                 this.Start(this._config.CurrentPass + 1);
+            this.encodingProcess.Dispose();
         }
 
         public x264Config Config

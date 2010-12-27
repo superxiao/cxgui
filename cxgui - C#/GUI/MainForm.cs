@@ -219,6 +219,11 @@
         {
             CxListViewItem item = (CxListViewItem) this.jobItemListView.SelectedItems[0];
             JobItem jobItem = item.JobItem;
+            if (jobItem.State == JobState.Working)
+            {
+                MessageBox.Show("项目正在工作中，无法设置。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             JobItem[] items = new JobItem[] { jobItem };
             this.SetUpJobItems(items);
             if (this.jobSettingForm == null)

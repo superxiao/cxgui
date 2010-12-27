@@ -31,6 +31,7 @@
         protected VideoEncConfigBase videoEncConfig;
         protected VideoInfo videoInfo;
         protected bool avsInputScriptEdited;
+        private Process playerProcess;
 
         public JobSettingForm()
         {
@@ -573,6 +574,11 @@
 
         private void MediaSettingFormFormClosed(object sender, FormClosedEventArgs e)
         {
+            if (this.playerProcess != null)
+            {
+                this.playerProcess.Dispose();
+                this.playerProcess = null;
+            }
             if ((e.CloseReason == CloseReason.UserClosing) && this.resetter.Changed())
             {
                 //foreach (Control control in this.resetter.GetChangedControls())
@@ -684,6 +690,11 @@
 
         private void OkButtonClick(object sender, EventArgs e)
         {
+            if (this.jobItem.State == JobState.Working)
+            {
+                MessageBox.Show("项目正在工作中，无法更改设置。", "无效操作", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             //videoEncConfig和audioEncConfig由jobItem克隆得来，跟随GUI即时变化
             this.jobItem.VideoEncConfig = this.videoEncConfig;
             this.jobItem.AudioEncConfig = this.audioEncConfig;
@@ -716,9 +727,19 @@
                 }
                 else if (MyIO.Exists(this.destFileBox.Text))
                 {
-                    if (MessageBox.Show(Path.GetFileName(this.destFileBox.Text) + " 已存在。\n要替换它吗？", "确认另存为", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
-                        return;
-                    this.jobItem.DestFile = this.destFileBox.Text;
+                    if ((this.destFileBox.Text == jobItem.DestFile && !this.jobItem.UserConfirmedOverwriteFile) || this.destFileBox.Text != jobItem.DestFile)
+                    {
+                        if (MessageBox.Show(Path.GetFileName(this.destFileBox.Text) + " 已存在。\n要替换它吗？", "文件已存在", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            this.jobItem.DestFile = this.destFileBox.Text;
+                            this.jobItem.UserConfirmedOverwriteFile = true;
+                        }
+                        else
+                        {
+                            this.jobItem.UserConfirmedOverwriteFile = false;
+                            return;
+                        }
+                    }
                 }
                 else if (Directory.Exists(destDir))
                 {
@@ -878,10 +899,11 @@
                 if (contents != string.Empty)
                 {
                     File.WriteAllText("preview.avs", contents, Encoding.Default);
-                    Process process = new Process();
-                    process.StartInfo.FileName = ProgramConfig.Get().PlayerPath;
-                    process.StartInfo.Arguments = ("\"" + Path.GetFullPath("preview.avs")) + "\"";
-                    process.Start();
+                    if (this.playerProcess == null)
+                        playerProcess = new Process();
+                    playerProcess.StartInfo.FileName = ProgramConfig.Get().PlayerPath;
+                    playerProcess.StartInfo.Arguments = ("\"" + Path.GetFullPath("preview.avs")) + "\"";
+                    playerProcess.Start();
                 }
             }
         }
@@ -1220,7 +1242,7 @@
 
         private void SaveToSubtitleConfig(SubtitleConfig subtitleConfig)
         {
-            subtitleConfig.Fontname = this.fontDialog.Font.Name;
+            subtitleConfig.Fontname = this.fontButton.Text;
             int.TryParse(this.fontSizeBox.Text, out subtitleConfig.Fontsize);
             int.TryParse(this.fontBottomBox.Text, out subtitleConfig.MarginV);
             subtitleConfig.UsingStyle = this.customSubCheckBox.Checked;

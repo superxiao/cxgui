@@ -31,14 +31,15 @@
                 this.tempVideoOrAudio = string.Empty;
             }
             base._timeLeft = TimeSpan.Zero;
+            this.muxerProcess.Dispose();
         }
 
-        private string GetArgument(VideoInfo vInfo, AudioInfo aInfo)
+        private string GetArguments(VideoInfo vInfo, AudioInfo aInfo)
         {
-            string str = "";
+            string arguments = "";
             if (vInfo.HasVideo && (aInfo.StreamsCount != 0))
             {
-                return (new StringBuilder("-i \"").Append(base._videoFile).Append("\" -i \"").Append(base._audioFile).Append("\"").ToString() + new StringBuilder(" -y -vcodec copy -acodec copy -sn \"").Append(base._dstFile).Append("\" -map 0.").Append(vInfo.StreamID).Append(" -map 1.").Append(aInfo.StreamID).ToString());
+                return (new StringBuilder("-i \"").Append(base._videoFile).Append("\" -i \"").Append(base._audioFile).Append("\"").ToString() + new StringBuilder(" -y -vcodec copy -acodec copy -sn \"").Append(base._dstFile).Append("\" -map 0.").Append(vInfo.FFmpegId).Append(" -map 1.").Append(aInfo.StreamId).ToString());
             }
             if (!vInfo.HasVideo)
             {
@@ -46,9 +47,9 @@
             }
             if (aInfo.StreamsCount == 0)
             {
-                str = new StringBuilder("-i \"").Append(base._videoFile).Append("\"").ToString() + new StringBuilder(" -y -vcodec copy -an -sn \"").Append(base._dstFile).Append("\"").ToString();
+                arguments = new StringBuilder("-i \"").Append(base._videoFile).Append("\"").ToString() + new StringBuilder(" -y -vcodec copy -an -sn \"").Append(base._dstFile).Append("\"").ToString();
             }
-            return str;
+            return arguments;
         }
 
         public override void Start()
@@ -68,7 +69,8 @@
             }
             VideoInfo videoInfo = new VideoInfo(base._videoFile);
             AudioInfo audioInfo = new AudioInfo(base._audioFile);
-            base.muxerProcess.StartInfo.Arguments = this.GetArgument(videoInfo, audioInfo);
+            base.muxerProcess.StartInfo.Arguments = this.GetArguments(videoInfo, audioInfo);
+            // File.WriteAllText("d:\\ffmp4log.txt", base.muxerProcess.StartInfo.Arguments);
             this.startTime = DateTime.Now;
             if (videoInfo.HasVideo)
             {

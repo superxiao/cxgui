@@ -42,10 +42,15 @@
                     MessageBox.Show(jobItem.SourceFile + "\n源文件不是视频文件，或设置有错误。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                if (MyIO.Exists(jobItem.DestFile) && (MessageBox.Show(jobItem.DestFile + "\n目标文件已存在。决定覆盖吗？", "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel))
+                if (MyIO.Exists(jobItem.DestFile) &&!jobItem.UserConfirmedOverwriteFile)
                 {
-                    this.SetJobEventAndReportProgress(jobItem, JobEvent.OneJobItemCancelled);
-                    return;
+                    if (MessageBox.Show(jobItem.DestFile + "\n目标文件已存在。决定覆盖吗？", "文件已存在", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        jobItem.UserConfirmedOverwriteFile = true;
+                    else
+                    {
+                        this.SetJobEventAndReportProgress(jobItem, JobEvent.OneJobItemCancelled);
+                        return;
+                    }
                 }
                 // 工作过程
                 this.SetJobEventAndReportProgress(jobItem, JobEvent.OneJobItemProcessing);
@@ -484,6 +489,8 @@
                         if (jobItem.State == JobState.Waiting)
                             jobItem.State = JobState.NotProccessed;
                     this.workingJobItems.Clear();
+                    // 根据当前所选条目的JobState决定是否启用编辑按钮
+                    this.JobItemListViewItemSelectionChanged(null, null);
                     // 当关闭程序时，如果worker正在运行，设此旗标为true并取消worker的运行，在此退出程序
                     if (this.formClosing)
                     {

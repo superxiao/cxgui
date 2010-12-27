@@ -8,19 +8,19 @@
     [Serializable]
     public class VideoInfo
     {
-        protected int _audioStreamsCount;
-        protected double _displayAspectRatio;
-        protected string _filePath;
-        protected string _format;
-        protected int _frameCount;
-        protected double _frameRate;
-        protected bool _hasVideo;
-        protected int _height;
-        protected int _id;
-        protected double _length;
-        protected int _streamID;
-        protected int _width;
-        protected string _container;
+        private int _audioStreamsCount;
+        private double _displayAspectRatio;
+        private string _filePath;
+        private string _format;
+        private int _frameCount;
+        private double _frameRate;
+        private bool _hasVideo;
+        private int _height;
+        private int _mkvmergeId;
+        private double _length;
+        private int _ffmpegId;
+        private int _width;
+        private string _container;
 
         public VideoInfo(string path)
         {
@@ -30,23 +30,14 @@
         private void AvisynthInfo(string path)
         {
             AviSynthClip clip;
-            IDisposable disposable = null;
             // 如果出错说明不是正确的avs脚本
             try
             {
-                disposable = (clip = new AviSynthScriptEnvironment().OpenScriptFile(path)) as IDisposable;
+                using (clip = new AviSynthScriptEnvironment().OpenScriptFile(path)) { }
             }
-            catch (Exception)
+            catch
             {
                 return;
-            }
-            finally
-            {
-                if (disposable != null)
-                {
-                    disposable.Dispose();
-                    disposable = null;
-                }
             }
             // 是正确的avs脚本
             this._container = "avs";
@@ -67,9 +58,9 @@
                 this._displayAspectRatio = ((double) this._width) / ((double) this._height);
                 this._frameRate = Math.Round((double) (((double) clip.raten) / ((double) clip.rated)), 3, MidpointRounding.AwayFromZero);
                 this._frameCount = clip.num_frames;
-                this._streamID = 0;
+                this._ffmpegId = 0;
                 this._length = ((double) clip.num_frames) / this._frameRate;
-                this._id = 0;
+                this._mkvmergeId = 0;
                 this._format = "avs";
             }
             else
@@ -116,21 +107,17 @@
                     this._container = info.Get(StreamKind.General, 0, "Format");
                     string str = info.Get(StreamKind.Audio, 0, "ID");
                     string str2 = info.Get(StreamKind.Video, 0, "ID");
+                    int.TryParse(info.Get(StreamKind.Video, 0, "ID"), out this._mkvmergeId);
                     if ((str == "0") || (str2 == "0"))
                     {
-                        this._id = 0;
+                        this._ffmpegId = this._mkvmergeId;
                     }
                     else if ((str == "1") || (str2 == "1"))
                     {
-                        this._id = 1;
+                        this._ffmpegId = this._mkvmergeId - 1;
                     }
                     double.TryParse(info.Get(StreamKind.Video, 0, "Duration"), out this._length);
                     this._length /= (double) 0x3e8;
-                    int.TryParse(info.Get(StreamKind.Video, 0, "ID", InfoKind.Text), out this._streamID);
-                    if (this._streamID > 0)
-                    {
-                        this._streamID -= this._id;
-                    }
                     int.TryParse(info.Get(StreamKind.Video, 0, "Width", InfoKind.Text), out this._width);
                     int.TryParse(info.Get(StreamKind.Video, 0, "Height", InfoKind.Text), out this._height);
                     double.TryParse(info.Get(StreamKind.Video, 0, "FrameRate", InfoKind.Text), out this._frameRate);
@@ -223,11 +210,14 @@
             }
         }
 
-        public int ID
+        /// <summary>
+        /// 流序号，根据容器不同，可能从0开始也可能从1开始。用于mkvmerge混流。
+        /// </summary>
+        public int MkvmergeId
         {
             get
             {
-                return this._id;
+                return this._mkvmergeId;
             }
         }
 
@@ -239,11 +229,14 @@
             }
         }
 
-        public int StreamID
+        /// <summary>
+        /// 从0开始的流序号。用于ffmpeg混流。
+        /// </summary>
+        public int FFmpegId
         {
             get
             {
-                return this._streamID;
+                return this._ffmpegId;
             }
         }
 

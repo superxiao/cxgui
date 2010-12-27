@@ -16,35 +16,36 @@
     [Serializable]
     public class JobItem
     {
-        protected AudioEncConfigBase _audioEncConfig;
+        private AudioEncConfigBase _audioEncConfig;
         [NonSerialized]
-        protected AudioEncoderHandlerBase _audioEncoder;
-        protected AvisynthConfig _avsConfig;
-        protected List<string> _filesToDeleteWhenProcessingFails = new List<string>(3);
-        protected Cxgui.Job.CxListViewItem _cxListViewItem;
-        protected string _destFile;
-        protected JobEvent _event;
-        protected string _externalAudio;
-        protected JobItemConfig _jobConfig;
+        private AudioEncoderHandlerBase _audioEncoder;
+        private AvisynthConfig _avsConfig;
+        private List<string> _filesToDeleteWhenProcessingFails = new List<string>(3);
+        private Cxgui.Job.CxListViewItem _cxListViewItem;
+        private string _destFile;
+        private JobEvent _event;
+        private string _externalAudio;
+        private JobItemConfig _jobConfig;
         [NonSerialized]
-        protected MuxerHandlerBase _muxer;
-        protected string _profileName;
-        protected bool readAudioCfg;
-        protected bool readAvsCfg;
-        protected bool readJobCfg;
-        protected bool readSubCfg;
-        protected bool readVideoCfg;
-        protected string _sourceFile;
-        protected JobState _state;
-        protected Cxgui.Avisynth.SubtitleConfig _subtitleConfig;
-        protected string _subtitleFile;
-        protected bool _usingExternalAudio;
-        protected VideoEncConfigBase _videoEncConfig;
+        private MuxerHandlerBase _muxer;
+        private string _profileName;
+        private bool readAudioCfg;
+        private bool readAvsCfg;
+        private bool readJobCfg;
+        private bool readSubCfg;
+        private bool readVideoCfg;
+        private string _sourceFile;
+        private JobState _state;
+        private Cxgui.Avisynth.SubtitleConfig _subtitleConfig;
+        private string _subtitleFile;
+        private bool _usingExternalAudio;
+        private VideoEncConfigBase _videoEncConfig;
         [NonSerialized]
-        protected VideoEncoderHandlerBase _videoEncoder;
-        protected VideoInfo _videoInfo;
-        protected AudioInfo _audioInfo;
-        protected SubStyleWriter subStyleWriter;
+        private VideoEncoderHandlerBase _videoEncoder;
+        private VideoInfo _videoInfo;
+        private AudioInfo _audioInfo;
+        private SubStyleWriter subStyleWriter;
+        private bool _userConfirmedOverwriteFile;
 
         public JobItem(string sourceFile, string destFile, string profileName)
         {
@@ -390,6 +391,8 @@
             }
             set
             {
+                if (this._destFile != value)
+                    this._userConfirmedOverwriteFile = false;
                 this._destFile = value;
                 this._cxListViewItem.SubItems[2].Text = value;
             }
@@ -590,6 +593,9 @@
                 return this._audioInfo;
             }
         }
+
+        public bool UserConfirmedOverwriteFile
+        { get { return this._userConfirmedOverwriteFile; } set { this._userConfirmedOverwriteFile = value; } }
     }
 }
 

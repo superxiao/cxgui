@@ -25,6 +25,7 @@
             if (base._progress >= 99)
                 base._progress = 100;
             base._timeLeft = TimeSpan.Zero;
+            this.muxerProcess.Dispose();
         }
 
         public override void Start()
@@ -40,6 +41,7 @@
         {
             if (e.Data != null)
             {
+                // File.AppendAllText("d:\\mp4box.log", e.Data);
                 if (e.Data.Contains("Writing"))
                 {
                     int num = e.Data.LastIndexOf('(');

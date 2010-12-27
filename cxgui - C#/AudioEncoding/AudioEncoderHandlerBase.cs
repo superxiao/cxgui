@@ -6,22 +6,21 @@
     using System.Diagnostics;
     using System.IO;
 
-    [Serializable]
     public abstract class AudioEncoderHandlerBase : IAudioEncodingInfo
     {
         protected string _avsFile;
-        protected long currentFileSize;
-        protected int currentPosition;
+        protected long _currentFileSize;
+        protected int _currentPosition;
         protected string _destFile;
         protected Process encodingProcess;
-        protected long estimatedFileSize;
+        protected long _estimatedFileSize;
         protected double _length;
-        protected string log;
+        protected string _log;
         protected bool _hasExisted;
-        protected double progress;
+        protected double _progress;
         protected AviSynthClip scriptInfo;
-        protected TimeSpan timeLeft;
-        protected TimeSpan timeUsed;
+        protected TimeSpan _timeLeft;
+        protected TimeSpan _timeUsed;
 
         /// <summary>
         /// 如脚本有错误或未安装AviSynth，引发AviSynthException；如脚本有效但不含音频，引发AvisynthVideoStreamNotFoundException
@@ -69,7 +68,7 @@
                 this.encodingProcess.Kill();
                 this.encodingProcess.WaitForExit();
             }
-            catch (Exception)
+            catch
             {
             }
         }
@@ -81,7 +80,7 @@
         {
             get
             {
-                return this.currentFileSize;
+                return this._currentFileSize;
             }
         }
 
@@ -89,7 +88,7 @@
         {
             get
             {
-                return this.currentPosition;
+                return this._currentPosition;
             }
         }
 
@@ -109,7 +108,7 @@
         {
             get
             {
-                return this.estimatedFileSize;
+                return this._estimatedFileSize;
             }
         }
 
@@ -125,7 +124,7 @@
         {
             get
             {
-                return this.log;
+                return this._log;
             }
         }
 
@@ -141,7 +140,7 @@
         {
             get
             {
-                return (int) this.progress;
+                return (int) this._progress;
             }
         }
 
@@ -149,7 +148,7 @@
         {
             get
             {
-                return this.timeLeft;
+                return this._timeLeft;
             }
         }
 
@@ -157,7 +156,7 @@
         {
             get
             {
-                return this.timeUsed;
+                return this._timeUsed;
             }
         }
     }

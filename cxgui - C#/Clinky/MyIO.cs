@@ -18,10 +18,13 @@
         {
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream serializationStream = new MemoryStream();
-            formatter.Serialize(serializationStream, obj);
-            serializationStream.Position = 0;
-            obj = (T) formatter.Deserialize(serializationStream);
-            serializationStream.Close();
+            try
+            {
+                formatter.Serialize(serializationStream, obj);
+                serializationStream.Position = 0;
+                obj = (T)formatter.Deserialize(serializationStream);
+            }
+            finally { serializationStream.Close(); }
             return obj;
         }
 
@@ -46,7 +49,7 @@
                 {
                     num = 2;
                 }
-                fileNameWithoutExtension = new StringBuilder().Append(fileNameWithoutExtension).Append("_").Append(num).ToString();
+                fileNameWithoutExtension = fileNameWithoutExtension + "_" + num.ToString();
                 path = Path.Combine(Path.GetDirectoryName(path), fileNameWithoutExtension + Path.GetExtension(path));
                 if (Exists(path))
                 {

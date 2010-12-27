@@ -1,14 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CXGUI", "CXGUI.csproj", "{736CD372-0922-47BE-A918-4FD873F62197}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EE23983F-D968-4AA6-BBCE-607BB943B0BB}"
-	ProjectSection(SolutionItems) = preProject
-		CXGUI.vsmdi = CXGUI.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cxgui", "Cxgui.csproj", "{736CD372-0922-47BE-A918-4FD873F62197}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
