@@ -1,4 +1,4 @@
-![界面](https://github.com/superxiao/cxgui/blob/wiki/screenshot.jpg)
+![界面](screenshot.jpg)
 
 这是一个x264的gui，同时也使用到neroaac、mp4box、mkvmerge和ffmpeg的混流部分，通过avisynth进行简单的处理。目前x264仅能进行一些基本的设置。功能方面，可以对视频或音频编码，也可以复制流。适合批量压制一些掌上设备的视频。
 
